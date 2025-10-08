@@ -1,0 +1,1035 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Media & Mental Health Assessment</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 15px;
+            font-weight: 600;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            letter-spacing: 1px;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 1;
+            font-weight: 400;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.5;
+        }
+
+        .form-container {
+            padding: 40px;
+        }
+
+        .section {
+            margin-bottom: 40px;
+            border: 2px solid #e9ecef;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        .section-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            font-size: 1.4em;
+            font-weight: 600;
+        }
+
+        .section-content {
+            padding: 30px;
+        }
+
+        .question-group {
+            margin-bottom: 25px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 5px solid #4facfe;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .question-group:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        .question {
+            font-size: 1.1em;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #2c3e50;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .option {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .option:hover {
+            border-color: #4facfe;
+            background: #f0f8ff;
+        }
+
+        .option input[type="radio"] {
+            margin-right: 12px;
+            transform: scale(1.1);
+        }
+
+        .option.selected {
+            border-color: #4facfe;
+            background: #e3f2fd;
+            box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.1);
+        }
+
+        .score-display {
+            position: absolute;
+            right: 12px;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 0.9em;
+            font-weight: 700;
+            box-shadow: 0 2px 8px rgba(79, 172, 254, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .text-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 1em;
+            margin-top: 10px;
+            transition: border-color 0.3s ease;
+        }
+
+        .text-input:focus {
+            outline: none;
+            border-color: #4facfe;
+            box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.1);
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.2em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 30px;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(79, 172, 254, 0.3);
+        }
+
+        .submit-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .results {
+            display: none;
+            margin-top: 30px;
+            padding: 25px;
+            background: #e8f5e8;
+            border-radius: 10px;
+            border-left: 5px solid #28a745;
+        }
+
+        .total-score {
+            font-size: 2em;
+            font-weight: bold;
+            color: #28a745;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .score-breakdown {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+
+        .score-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .score-item:last-child {
+            border-bottom: none;
+            font-weight: bold;
+            font-size: 1.1em;
+            color: #28a745;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #e9ecef;
+            border-radius: 3px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .risk-indicator {
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-weight: 600;
+        }
+
+        .risk-low {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .risk-medium {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+
+        .risk-high {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 10px;
+            }
+            
+            .form-container {
+                padding: 20px;
+            }
+            
+            .header {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Digital Media & Mental Health Assessment</h1>
+            <p>Please answer all questions honestly to get your comprehensive assessment</p>
+        </div>
+        
+        <div class="form-container">
+            <form id="questionnaireForm" action="/submit" method="POST">
+                
+                <!-- Section A: Demographics & Family Background -->
+                <div class="section">
+                    <div class="section-header">Section A: Demographics & Family Background</div>
+                    <div class="section-content">
+                        
+                        <!-- Question 1 -->
+                        <div class="question-group">
+                            <div class="question">1. Age (in years):</div>
+                            <input type="number" name="q1" class="text-input" placeholder="Enter your age" min="1" max="100" data-score="0">
+                        </div>
+
+                        <!-- Question 2 -->
+                        <div class="question-group">
+                            <div class="question">2. Gender:</div>
+                            <div class="options">
+                                <label class="option">
+                                    <input type="radio" name="q2" value="male" data-score="0">
+                                    <span>Male</span>
+                                    <span class="score-display">0</span>
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q2" value="female" data-score="1">
+                                    <span>Female</span>
+                                    <span class="score-display">1</span>
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q2" value="other" data-score="2">
+                                    <span>Other</span>
+                                    <span class="score-display">2</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Question 3 -->
+                        <div class="question-group">
+                            <div class="question">3. Educational Status:</div>
+                            <div class="options">
+                                <label class="option">
+                                    <input type="radio" name="q3" value="8th" data-score="0">
+                                    <span>8th standard</span>
+                                    <span class="score-display">0</span>
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q3" value="9th" data-score="1">
+                                    <span>9th standard</span>
+                                    <span class="score-display">1</span>
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q3" value="10th" data-score="2">
+                                    <span>10th standard</span>
+                                    <span class="score-display">2</span>
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q3" value="other" data-score="3">
+                                    <span>Other: <input type="text" name="q3_other" class="text-input" placeholder="Specify" style="width: 200px; display: inline-block; margin-left: 10px;"></span>
+                                    <span class="score-display">3</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Question 4 -->
+                        <div class="question-group">
+                            <div class="question">4. Occupation (if applicable):</div>
+                            <input type="text" name="q4" class="text-input" placeholder="Enter your occupation" data-score="0">
+                        </div>
+
+                        <!-- Question 5 -->
+                        <div class="question-group">
+                            <div class="question">5. Type of Family:</div>
+                            <div class="options">
+                                <label class="option">
+                                    <input type="radio" name="q5" value="nuclear" data-score="0">
+                                    <span>Nuclear</span>
+                                    <span class="score-display">0</span>
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q5" value="joint" data-score="1">
+                                    <span>Joint</span>
+                                    <span class="score-display">1</span>
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q5" value="other" data-score="2">
+                                    <span>Other</span>
+                                    <span class="score-display">2</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Question 6 -->
+                        <div class="question-group">
+                            <div class="question">6. Socio-economic Background:</div>
+                            <div class="options">
+                                <label class="option">
+                                    <input type="radio" name="q6" value="low" data-score="0">
+                                    <span>Low</span>
+                                    <span class="score-display">0</span>
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q6" value="middle" data-score="1">
+                                    <span>Middle</span>
+                                    <span class="score-display">1</span>
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q6" value="high" data-score="2">
+                                    <span>High</span>
+                                    <span class="score-display">2</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section B: Digital Media & Internet Use -->
+                <div class="section">
+                    <div class="section-header">Section B: Digital Media & Internet Use</div>
+                    <div class="section-content">
+                        
+                        <!-- Question 7 -->
+                        <div class="question-group">
+                            <div class="question">7. On average, how many hours per day do you spend online (excluding academic/work-related use)?</div>
+                            <div class="options">
+                                <label class="option">
+                                    <input type="radio" name="q7" value="less_2" data-score="1">
+                                    <span>Less than 2 hours</span>
+                                    <span class="score-display">1 pt</span>
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q7" value="2_4" data-score="2">
+                                    <span>2–4 hours</span>
+                                    <span class="score-display">2 pts</span>
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q7" value="4_6" data-score="3">
+                                    <span>4–6 hours</span>
+                                    <span class="score-display">3 pts</span>
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q7" value="more_6" data-score="4">
+                                    <span>More than 6 hours</span>
+                                    <span class="score-display">4 pts</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Question 8 -->
+                        <div class="question-group">
+                            <div class="question">8. What is your primary online activity?</div>
+                            <div class="options">
+                                <label class="option">
+                                    <input type="radio" name="q8" value="social_media" data-score="3">
+                                    <span>Social Media (Instagram, Facebook, etc.)</span>
+                                    <span class="score-display">3 pts</span>
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q8" value="gaming" data-score="4">
+                                    <span>Online Gaming</span>
+                                    <span class="score-display">4 pts</span>
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q8" value="streaming" data-score="2">
+                                    <span>Streaming/Entertainment (YouTube, OTT, etc.)</span>
+                                    <span class="score-display">2 pts</span>
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q8" value="education" data-score="1">
+                                    <span>Information/Education</span>
+                                    <span class="score-display">1 pt</span>
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q8" value="other" data-score="2">
+                                    <span>Other: <input type="text" name="q8_other" class="text-input" placeholder="Specify" style="width: 200px; display: inline-block; margin-left: 10px;"></span>
+                                    <span class="score-display">2 pts</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Question 9 -->
+                        <div class="question-group">
+                            <div class="question">9. How often do you stay online longer than intended?</div>
+                            <div class="options">
+                                <label class="option">
+                                    <input type="radio" name="q9" value="never" data-score="1">
+                                    <span>Never</span>
+                                    <span class="score-display">1 pt</span>
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q9" value="rarely" data-score="2">
+                                    <span>Rarely</span>
+                                    <span class="score-display">2 pts</span>
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q9" value="sometimes" data-score="3">
+                                    <span>Sometimes</span>
+                                    <span class="score-display">3 pts</span>
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q9" value="often" data-score="4">
+                                    <span>Often</span>
+                                    <span class="score-display">4 pts</span>
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q9" value="always" data-score="5">
+                                    <span>Always</span>
+                                    <span class="score-display">5 pts</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Question 10 -->
+                        <div class="question-group">
+                            <div class="question">10. Have you ever neglected sleep, meals, or responsibilities due to internet/gaming/smartphone use?</div>
+                            <div class="options">
+                                <label class="option">
+                                    <input type="radio" name="q10" value="yes" data-score="4">
+                                    <span>Yes</span>
+                                    <span class="score-display">4 pts</span>
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q10" value="no" data-score="1">
+                                    <span>No</span>
+                                    <span class="score-display">1 pt</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section C: Behavioral & Emotional Indicators -->
+                <div class="section">
+                    <div class="section-header">Section C: Behavioral & Emotional Indicators</div>
+                    <div class="section-content">
+                        
+                        <!-- Question 11 -->
+                        <div class="question-group">
+                            <div class="question">11. Do you feel restless/irritated when you can't get online or play?</div>
+                            <div class="options">
+                                <label class="option">
+                                    <input type="radio" name="q11" value="never" data-score="1">
+                                    <span>Never</span>
+                                    <span class="score-display">1 pt</span>
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q11" value="rarely" data-score="2">
+                                    <span>Rarely</span>
+                                    <span class="score-display">2 pts</span>
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q11" value="sometimes" data-score="3">
+                                    <span>Sometimes</span>
+                                    <span class="score-display">3 pts</span>
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q11" value="often" data-score="4">
+                                    <span>Often</span>
+                                    <span class="score-display">4 pts</span>
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q11" value="always" data-score="5">
+                                    <span>Always</span>
+                                    <span class="score-display">5 pts</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Question 12 -->
+                        <div class="question-group">
+                            <div class="question">12. Have you tried to reduce your online/gaming time but failed?</div>
+                            <div class="options">
+                                <label class="option">
+                                    <input type="radio" name="q12" value="yes" data-score="4">
+                                    <span>Yes</span>
+                                    <span class="score-display">4 pts</span>
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q12" value="no" data-score="1">
+                                    <span>No</span>
+                                    <span class="score-display">1 pt</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Question 13 -->
+                        <div class="question-group">
+                            <div class="question">13. Do you hide or lie about how much time you're online/gaming?</div>
+                            <div class="options">
+                                <label class="option">
+                                    <input type="radio" name="q13" value="yes" data-score="4">
+                                    <span>Yes</span>
+                                    <span class="score-display">4 pts</span>
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q13" value="no" data-score="1">
+                                    <span>No</span>
+                                    <span class="score-display">1 pt</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Question 14 -->
+                        <div class="question-group">
+                            <div class="question">14. Has your academic/work performance suffered due to excessive internet/gaming use?</div>
+                            <div class="options">
+                                <label class="option">
+                                    <input type="radio" name="q14" value="yes" data-score="4">
+                                    <span>Yes</span>
+                                    <span class="score-display">4 pts</span>
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q14" value="no" data-score="1">
+                                    <span>No</span>
+                                    <span class="score-display">1 pt</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Question 15 -->
+                        <div class="question-group">
+                            <div class="question">15. Do you prefer being online rather than spending time with family/friends offline?</div>
+                            <div class="options">
+                                <label class="option">
+                                    <input type="radio" name="q15" value="yes" data-score="4">
+                                    <span>Yes</span>
+                                    <span class="score-display">4 pts</span>
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q15" value="no" data-score="1">
+                                    <span>No</span>
+                                    <span class="score-display">1 pt</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section D: Mental Health & Well-being -->
+                <div class="section">
+                    <div class="section-header">Section D: Mental Health & Well-being</div>
+                    <div class="section-content">
+                        
+                        <!-- Question 16 -->
+                        <div class="question-group">
+                            <div class="question">16. In general, how would you describe your mental health?</div>
+                            <div class="options">
+                                <label class="option">
+                                    <input type="radio" name="q16" value="excellent" data-score="1">
+                                    <span>Excellent</span>
+                                    <span class="score-display">1 pt</span>
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q16" value="very_good" data-score="2">
+                                    <span>Very good</span>
+                                    <span class="score-display">2 pts</span>
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q16" value="good" data-score="3">
+                                    <span>Good</span>
+                                    <span class="score-display">3 pts</span>
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q16" value="fair" data-score="4">
+                                    <span>Fair</span>
+                                    <span class="score-display">4 pts</span>
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q16" value="poor" data-score="5">
+                                    <span>Poor</span>
+                                    <span class="score-display">5 pts</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Question 17 -->
+                        <div class="question-group">
+                            <div class="question">17. During the past 12 months, have you seriously thought about suicide?</div>
+                            <div class="options">
+                                <label class="option">
+                                    <input type="radio" name="q17" value="yes" data-score="5">
+                                    <span>Yes</span>
+                                    <span class="score-display">5 pts</span>
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q17" value="no" data-score="1">
+                                    <span>No</span>
+                                    <span class="score-display">1 pt</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Question 18 -->
+                        <div class="question-group">
+                            <div class="question">18. Have you ever attempted suicide in your lifetime?</div>
+                            <div class="options">
+                                <label class="option">
+                                    <input type="radio" name="q18" value="yes" data-score="5">
+                                    <span>Yes</span>
+                                    <span class="score-display">5 pts</span>
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q18" value="no" data-score="1">
+                                    <span>No</span>
+                                    <span class="score-display">1 pt</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Question 19 -->
+                        <div class="question-group">
+                            <div class="question">19. Have you been told by a health professional that you may be at risk of depression, anxiety, or an eating disorder?</div>
+                            <div class="options">
+                                <label class="option">
+                                    <input type="radio" name="q19" value="yes" data-score="4">
+                                    <span>Yes</span>
+                                    <span class="score-display">4 pts</span>
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q19" value="no" data-score="1">
+                                    <span>No</span>
+                                    <span class="score-display">1 pt</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section E: Family & Social Impact -->
+                <div class="section">
+                    <div class="section-header">Section E: Family & Social Impact</div>
+                    <div class="section-content">
+                        
+                        <!-- Question 20 -->
+                        <div class="question-group">
+                            <div class="question">20. Do family members complain about the time you spend online/gaming?</div>
+                            <div class="options">
+                                <label class="option">
+                                    <input type="radio" name="q20" value="yes" data-score="3">
+                                    <span>Yes</span>
+                                    <span class="score-display">3 pts</span>
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q20" value="no" data-score="1">
+                                    <span>No</span>
+                                    <span class="score-display">1 pt</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Question 21 -->
+                        <div class="question-group">
+                            <div class="question">21. Have your relationships with friends/family been negatively affected by your online/gaming habits?</div>
+                            <div class="options">
+                                <label class="option">
+                                    <input type="radio" name="q21" value="yes" data-score="4">
+                                    <span>Yes</span>
+                                    <span class="score-display">4 pts</span>
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q21" value="no" data-score="1">
+                                    <span>No</span>
+                                    <span class="score-display">1 pt</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Question 22 -->
+                        <div class="question-group">
+                            <div class="question">22. Do you skip going out/meeting people to stay online or play?</div>
+                            <div class="options">
+                                <label class="option">
+                                    <input type="radio" name="q22" value="yes" data-score="4">
+                                    <span>Yes</span>
+                                    <span class="score-display">4 pts</span>
+                                </label>
+                                <label class="option">
+                                    <input type="radio" name="q22" value="no" data-score="1">
+                                    <span>No</span>
+                                    <span class="score-display">1 pt</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+
+                <button type="submit" class="submit-btn" id="submitBtn" disabled>
+                    Calculate My Assessment Score
+                </button>
+            </form>
+
+            <div class="results" id="results">
+                <div class="total-score" id="totalScore">0/77</div>
+                <div class="score-breakdown" id="scoreBreakdown"></div>
+                <div class="risk-indicator" id="riskIndicator"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Form handling and scoring logic
+        const form = document.getElementById('questionnaireForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const progressFill = document.getElementById('progressFill');
+        const results = document.getElementById('results');
+        const totalScore = document.getElementById('totalScore');
+        const scoreBreakdown = document.getElementById('scoreBreakdown');
+        const riskIndicator = document.getElementById('riskIndicator');
+
+        let answeredQuestions = 0;
+        const totalQuestions = 22;
+        const maxPossibleScore = 77; // 9+17+21+19+11 (Section A+B+C+D+E)
+
+        // Add event listeners to all radio buttons and text inputs
+        document.querySelectorAll('input[type="radio"], input[type="number"], input[type="text"]').forEach(input => {
+            input.addEventListener('change', function() {
+                if (this.type === 'radio') {
+                    // Remove selected class from all options in this question group
+                    const questionGroup = this.closest('.question-group');
+                    questionGroup.querySelectorAll('.option').forEach(option => {
+                        option.classList.remove('selected');
+                    });
+                    
+                    // Add selected class to the chosen option
+                    this.closest('.option').classList.add('selected');
+                }
+                
+                updateProgress();
+            });
+        });
+
+        function updateProgress() {
+            // Count answered questions (radio buttons checked + text inputs with values)
+            const radioAnswers = document.querySelectorAll('input[type="radio"]:checked').length;
+            const textAnswers = Array.from(document.querySelectorAll('input[type="number"], input[type="text"]')).filter(input => input.value.trim() !== '').length;
+            
+            answeredQuestions = radioAnswers + textAnswers;
+            const progress = (answeredQuestions / totalQuestions) * 100;
+            progressFill.style.width = progress + '%';
+            
+            if (answeredQuestions === totalQuestions) {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Calculate My Assessment Score';
+            } else {
+                submitBtn.disabled = true;
+                submitBtn.textContent = `Answer ${totalQuestions - answeredQuestions} more questions`;
+            }
+        }
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Check if all questions are answered
+            if (answeredQuestions !== totalQuestions) {
+                alert(`Please answer all ${totalQuestions} questions before submitting.`);
+                return;
+            }
+            
+            // Submit to Flask backend
+            const formData = new FormData(form);
+            
+            fetch('/submit', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Redirect to results page
+                    window.location.href = data.redirect_url || '/results';
+                } else {
+                    alert('Error submitting form: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error submitting form. Please try again.');
+            });
+        });
+
+        function calculateScore() {
+            let total = 0;
+            let breakdown = [];
+            let sectionScores = {
+                'Section A': 0,
+                'Section B': 0,
+                'Section C': 0,
+                'Section D': 0,
+                'Section E': 0
+            };
+
+            // Calculate score for each question
+            for (let i = 1; i <= totalQuestions; i++) {
+                const selectedOption = document.querySelector(`input[name="q${i}"]:checked`);
+                const textInput = document.querySelector(`input[name="q${i}"]`);
+                
+                if (selectedOption && selectedOption.dataset.score) {
+                    const score = parseInt(selectedOption.dataset.score);
+                    total += score;
+                    
+                    // Determine section
+                    let section = 'Section A';
+                    if (i >= 7 && i <= 10) section = 'Section B';
+                    else if (i >= 11 && i <= 15) section = 'Section C';
+                    else if (i >= 16 && i <= 19) section = 'Section D';
+                    else if (i >= 20 && i <= 22) section = 'Section E';
+                    
+                    sectionScores[section] += score;
+                    
+                    breakdown.push({
+                        question: i,
+                        score: score,
+                        maxScore: getMaxScoreForQuestion(i),
+                        section: section
+                    });
+                } else if (textInput && textInput.value.trim() !== '' && textInput.dataset.score) {
+                    const score = parseInt(textInput.dataset.score);
+                    total += score;
+                    sectionScores['Section A'] += score;
+                }
+            }
+
+            // Display results
+            totalScore.textContent = `${total}/${maxPossibleScore}`;
+            
+            // Create Python Flask terminal style output
+            let pythonOutput = '{';
+            for (let i = 1; i <= totalQuestions; i++) {
+                const selectedOption = document.querySelector(`input[name="q${i}"]:checked`);
+                const textInput = document.querySelector(`input[name="q${i}"]`);
+                let score = 0;
+                
+                if (selectedOption && selectedOption.dataset.score) {
+                    score = parseInt(selectedOption.dataset.score);
+                } else if (textInput && textInput.value.trim() !== '' && textInput.dataset.score) {
+                    score = parseInt(textInput.dataset.score);
+                } else if (textInput && textInput.value.trim() !== '' && textInput.type === 'number') {
+                    // For age (Q1), use the actual age value
+                    score = parseInt(textInput.value) || 0;
+                }
+                
+                pythonOutput += `Q${i}: ${score}`;
+                if (i < totalQuestions) {
+                    pythonOutput += ', ';
+                }
+            }
+            pythonOutput += '}';
+            
+            // Create breakdown HTML
+            let breakdownHTML = '<h3>Assessment Results:</h3>';
+            
+            // Python Flask terminal style output
+            breakdownHTML += '<h4>Python Flask Terminal Output:</h4>';
+            breakdownHTML += `
+                <div style="background: #1e1e1e; color: #00ff00; padding: 15px; border-radius: 8px; font-family: 'Courier New', monospace; font-size: 14px; margin: 10px 0; white-space: pre-wrap; border: 1px solid #333;">
+${pythonOutput}
+                </div>
+            `;
+            
+            // Section breakdown
+            breakdownHTML += '<h4>Section Scores:</h4>';
+            Object.keys(sectionScores).forEach(section => {
+                const sectionMax = getSectionMaxScore(section);
+                const percentage = sectionMax > 0 ? (sectionScores[section] / sectionMax) * 100 : 0;
+                breakdownHTML += `
+                    <div class="score-item">
+                        <span>${section}</span>
+                        <span>${sectionScores[section]}/${sectionMax} (${percentage.toFixed(0)}%)</span>
+                    </div>
+                `;
+            });
+            
+            breakdownHTML += '<h4>Overall Score:</h4>';
+            breakdownHTML += `
+                <div class="score-item">
+                    <span>Total Assessment Score</span>
+                    <span>${total}/${maxPossibleScore} (${((total / maxPossibleScore) * 100).toFixed(0)}%)</span>
+                </div>
+            `;
+            
+            scoreBreakdown.innerHTML = breakdownHTML;
+            
+            // Risk assessment
+            let riskLevel = 'Low Risk';
+            let riskClass = 'risk-low';
+            let riskMessage = 'Your responses suggest healthy digital media usage patterns.';
+            
+            if (total >= 55) { // 70% of 77
+                riskLevel = 'High Risk';
+                riskClass = 'risk-high';
+                riskMessage = 'Your responses indicate significant concerns regarding digital media usage and mental health. Please consider seeking professional help.';
+            } else if (total >= 31) { // 40% of 77
+                riskLevel = 'Medium Risk';
+                riskClass = 'risk-medium';
+                riskMessage = 'Your responses suggest some areas of concern with digital media usage. Consider implementing healthier digital habits.';
+            }
+            
+            riskIndicator.className = `risk-indicator ${riskClass}`;
+            riskIndicator.innerHTML = `
+                <strong>Risk Assessment: ${riskLevel}</strong><br>
+                ${riskMessage}
+            `;
+            
+            results.style.display = 'block';
+            
+            // Scroll to results
+            results.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function getMaxScoreForQuestion(questionNum) {
+            const maxScores = {
+                1: 0, 2: 2, 3: 3, 4: 0, 5: 2, 6: 2, // Section A - demographic scoring
+                7: 4, 8: 4, 9: 5, 10: 4, // Section B
+                11: 5, 12: 4, 13: 4, 14: 4, 15: 4, // Section C
+                16: 5, 17: 5, 18: 5, 19: 4, // Section D
+                20: 3, 21: 4, 22: 4 // Section E
+            };
+            return maxScores[questionNum] || 0;
+        }
+
+        function getSectionMaxScore(section) {
+            const sectionMaxScores = {
+                'Section A': 9,  // 0+2+3+0+2+2 (demographic scoring)
+                'Section B': 17, // 4+4+5+4
+                'Section C': 21, // 5+4+4+4+4
+                'Section D': 19, // 5+5+5+4
+                'Section E': 11  // 3+4+4
+            };
+            return sectionMaxScores[section] || 0;
+        }
+
+        // Initialize progress
+        updateProgress();
+    </script>
+</body>
+</html>

@@ -1,0 +1,501 @@
+record_id,total_score,risk_level,Q1,Q2,Q3,Q4,Q5,Q6,Q7,Q8,Q9,Q10,Q11,Q12,Q13,Q14,Q15,Q16,Q17,Q18,Q19,Q20,Q21,Q22
+1,8,Low risk,31,2,0,0,0,0,0,0,0,0,0,0,2,0,0,0,0,0,4,0,0,0
+2,4,Low risk,35,0,0,0,0,0,0,0,0,0,4,0,0,0,0,0,0,0,0,0,0,0
+4,7,Low risk,38,0,0,0,0,2,0,0,0,4,0,0,0,1,0,0,0,0,0,0,0,0
+8,1,Low risk,32,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0
+12,2,Low risk,44,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2
+16,9,Low risk,24,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4,0,4,0,0
+20,10,Low risk,20,0,0,0,2,0,0,0,4,0,0,0,0,0,0,0,0,0,4,0,0,0
+24,3,Low risk,29,0,0,0,0,0,0,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+28,1,Low risk,56,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+32,7,Low risk,47,0,0,0,0,0,0,0,0,0,0,4,0,0,0,0,0,0,3,0,0,0
+36,6,Low risk,60,0,0,0,0,0,0,0,0,0,0,0,4,0,0,0,2,0,0,0,0,0
+40,7,Low risk,35,0,0,0,0,0,0,0,0,0,0,3,0,0,0,4,0,0,0,0,0,0
+44,0,Low risk,44,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+48,7,Low risk,40,0,2,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,4,0,0,0
+52,7,Low risk,47,0,0,0,0,0,4,0,0,0,0,0,0,0,0,0,0,0,3,0,0,0
+56,5,Low risk,59,0,0,0,0,0,0,0,0,0,0,1,4,0,0,0,0,0,0,0,0,0
+60,5,Low risk,43,0,0,0,0,1,0,0,4,0,0,0,0,0,0,0,0,0,0,0,0,0
+64,6,Low risk,38,0,0,0,0,0,0,4,0,0,0,0,0,0,0,0,0,0,0,0,2,0
+68,7,Low risk,55,0,0,0,0,2,0,0,4,0,0,0,0,0,0,0,0,0,1,0,0,0
+72,2,Low risk,21,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,0,0,0,0
+76,7,Low risk,36,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4,0,0,0,1
+80,8,Low risk,61,0,0,0,2,2,0,0,0,0,0,0,0,0,0,0,0,4,0,0,0,0
+84,3,Low risk,50,2,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+88,8,Low risk,54,0,0,0,0,0,0,0,0,0,0,0,4,0,0,0,0,4,0,0,0,0
+92,6,Low risk,20,0,0,0,0,0,0,0,0,0,0,4,0,0,0,0,0,0,0,0,2,0
+96,7,Low risk,35,0,0,0,0,0,4,0,0,0,0,3,0,0,0,0,0,0,0,0,0,0
+100,10,Low risk,46,0,0,0,0,0,0,0,0,0,4,0,0,0,2,0,0,0,0,0,0,4
+104,4,Low risk,57,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4,0
+108,10,Low risk,62,0,0,0,0,0,2,0,4,0,0,0,0,0,0,0,0,0,0,4,0,0
+112,5,Low risk,55,0,0,0,0,0,0,0,0,0,4,0,0,1,0,0,0,0,0,0,0,0
+116,10,Low risk,34,0,0,0,0,0,0,2,0,0,0,0,0,0,4,0,4,0,0,0,0,0
+120,10,Low risk,33,0,2,0,0,0,0,0,0,0,0,0,0,0,4,0,0,0,0,0,0,4
+124,2,Low risk,36,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+128,5,Low risk,60,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4,0,0,0
+132,7,Low risk,59,2,2,0,2,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0
+136,9,Low risk,25,0,0,0,2,0,0,0,0,0,0,0,0,4,0,0,0,0,0,0,3,0
+140,4,Low risk,59,0,0,0,0,0,0,0,0,0,0,0,0,0,4,0,0,0,0,0,0,0
+147,9,Low risk,38,0,0,0,0,0,0,0,0,0,1,0,0,0,4,0,0,0,4,0,0,0
+151,8,Low risk,37,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4,0,0,4,0,0,0
+155,5,Low risk,35,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,4,0,0,0,0
+159,10,Low risk,42,0,2,0,0,0,0,0,0,0,0,0,0,0,4,0,0,0,4,0,0,0
+163,7,Low risk,38,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,1,4,0,0
+167,6,Low risk,48,0,0,0,0,0,2,0,0,0,0,0,0,0,0,0,0,4,0,0,0,0
+171,9,Low risk,60,0,0,0,0,0,0,0,1,4,0,0,0,0,0,0,0,0,0,0,0,4
+175,5,Low risk,54,0,0,0,0,0,0,0,4,0,0,0,0,0,0,0,0,0,0,0,1,0
+179,2,Low risk,18,0,0,0,0,0,0,0,0,0,0,2,0,0,0,0,0,0,0,0,0,0
+183,9,Low risk,38,1,0,0,2,2,0,0,0,0,0,0,0,0,0,0,0,0,4,0,0,0
+187,7,Low risk,27,0,0,0,0,0,0,0,0,0,0,0,0,3,0,0,0,0,4,0,0,0
+191,6,Low risk,24,0,0,0,0,0,2,0,0,0,0,0,0,4,0,0,0,0,0,0,0,0
+195,10,Low risk,27,0,0,0,0,2,4,0,0,0,0,0,0,0,0,0,4,0,0,0,0,0
+199,3,Low risk,25,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,0,0,0,0,0
+203,2,Low risk,29,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,0
+207,4,Low risk,54,0,0,0,0,0,0,0,0,0,4,0,0,0,0,0,0,0,0,0,0,0
+211,2,Low risk,36,0,0,0,0,0,0,0,0,0,0,2,0,0,0,0,0,0,0,0,0,0
+215,8,Low risk,23,0,0,0,2,0,0,0,0,0,0,0,0,2,0,4,0,0,0,0,0,0
+219,10,Low risk,55,0,0,0,0,0,0,0,0,4,0,2,0,0,4,0,0,0,0,0,0,0
+223,9,Low risk,43,0,2,0,0,0,4,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+227,8,Low risk,51,2,0,0,0,0,0,0,0,0,0,0,4,0,2,0,0,0,0,0,0,0
+231,10,Low risk,37,0,0,0,0,0,4,0,2,0,0,0,0,0,0,0,0,0,4,0,0,0
+235,0,Low risk,21,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+236,6,Low risk,62,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,4,0,0,0,0
+240,5,Low risk,35,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,4,0,0,0,0
+244,5,Low risk,35,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4,0
+251,7,Low risk,29,0,0,0,0,0,0,0,0,0,0,0,0,3,4,0,0,0,0,0,0,0
+255,4,Low risk,52,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4,0,0,0,0
+259,6,Low risk,62,0,0,0,0,0,0,0,4,0,0,0,0,0,2,0,0,0,0,0,0,0
+266,7,Low risk,64,0,0,0,0,0,0,0,0,4,0,0,0,0,0,0,0,0,3,0,0,0
+267,2,Low risk,49,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,0,0,0,0
+271,7,Low risk,19,2,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,4,0,0,0,0
+275,7,Low risk,65,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4,0,0,3,0,0,0
+276,9,Low risk,39,0,0,0,0,0,0,0,0,0,0,4,0,0,0,4,1,0,0,0,0,0
+277,9,Low risk,45,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,4,4,0,0
+281,2,Low risk,51,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+285,0,Low risk,25,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+289,5,Low risk,32,0,0,0,0,1,0,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+293,10,Low risk,22,0,0,0,0,0,4,0,0,0,0,0,0,0,0,0,0,2,0,0,4,0
+297,2,Low risk,34,0,0,0,0,0,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0
+301,10,Low risk,26,0,0,0,0,2,0,0,0,0,4,0,0,0,0,0,0,4,0,0,0,0
+305,1,Low risk,32,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+309,6,Low risk,56,0,0,0,0,0,4,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0
+313,2,Low risk,25,0,0,0,0,0,0,0,0,0,0,2,0,0,0,0,0,0,0,0,0,0
+317,7,Low risk,64,0,0,0,0,0,0,0,0,4,0,0,0,0,0,0,0,0,0,0,0,3
+321,5,Low risk,43,0,0,0,0,0,0,0,1,4,0,0,0,0,0,0,0,0,0,0,0,0
+325,8,Low risk,19,0,0,0,2,2,0,0,0,4,0,0,0,0,0,0,0,0,0,0,0,0
+329,5,Low risk,25,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,4,0,0
+333,5,Low risk,33,0,2,0,0,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,0,0
+337,1,Low risk,35,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0
+341,2,Low risk,53,0,0,0,0,0,0,0,0,0,0,0,2,0,0,0,0,0,0,0,0,0
+345,9,Low risk,48,0,0,0,0,0,0,0,4,4,0,1,0,0,0,0,0,0,0,0,0,0
+349,1,Low risk,34,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0
+353,6,Low risk,34,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4,2,0,0,0
+354,5,Low risk,56,0,0,0,0,0,0,0,1,4,0,0,0,0,0,0,0,0,0,0,0,0
+361,1,Low risk,48,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1
+365,9,Low risk,53,0,0,0,0,2,0,0,0,0,0,3,0,0,4,0,0,0,0,0,0,0
+369,10,Low risk,36,0,0,0,0,0,0,0,0,4,0,0,0,0,0,0,0,0,0,2,4,0
+372,5,Low risk,22,0,0,0,0,0,0,0,0,0,0,0,0,4,0,0,0,0,0,0,1,0
+376,0,Low risk,32,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+383,4,Low risk,28,2,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,0,0,0,0
+387,4,Low risk,26,0,2,0,0,0,0,0,0,0,0,0,2,0,0,0,0,0,0,0,0,0
+391,10,Low risk,37,0,0,0,0,0,0,0,2,0,0,0,0,4,0,0,0,0,4,0,0,0
+398,3,Low risk,59,0,0,0,2,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0
+402,8,Low risk,38,0,0,0,2,0,0,4,2,0,0,0,0,0,0,0,0,0,0,0,0,0
+406,6,Low risk,35,2,0,0,0,0,0,0,4,0,0,0,0,0,0,0,0,0,0,0,0,0
+410,10,Low risk,37,0,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,4,0,4,0,0
+414,0,Low risk,50,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+418,9,Low risk,22,0,0,0,0,2,4,0,0,0,0,0,0,0,0,0,3,0,0,0,0,0
+422,6,Low risk,46,0,0,0,0,0,0,0,0,4,0,2,0,0,0,0,0,0,0,0,0,0
+429,5,Low risk,21,0,0,0,2,0,0,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+436,6,Low risk,21,0,0,0,0,0,0,0,0,0,0,0,4,2,0,0,0,0,0,0,0,0
+440,9,Low risk,41,0,0,0,0,0,1,4,0,0,0,0,0,0,0,0,0,0,0,0,4,0
+441,1,Low risk,21,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0
+442,1,Low risk,59,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0
+443,9,Low risk,36,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,4,4
+446,6,Low risk,63,0,0,0,0,0,0,0,0,0,4,0,0,0,0,0,0,0,0,2,0,0
+450,2,Low risk,61,0,0,0,0,0,0,0,0,0,0,0,2,0,0,0,0,0,0,0,0,0
+454,6,Low risk,37,0,0,0,0,0,0,0,0,0,4,0,0,0,0,2,0,0,0,0,0,0
+458,2,Low risk,63,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2
+462,3,Low risk,53,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,0,0
+466,8,Low risk,51,0,0,0,0,0,0,0,4,0,0,0,0,0,0,4,0,0,0,0,0,0
+470,10,Low risk,54,0,0,0,2,2,0,0,0,0,0,2,0,0,0,0,0,0,4,0,0,0
+474,0,Low risk,33,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+478,5,Low risk,36,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4
+480,9,Low risk,41,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4,3,0,0,0,0
+481,6,Low risk,54,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4,0,0,0
+484,2,Low risk,51,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0
+3,18,At-risk (brief advice/monitor),55,0,0,0,2,0,4,0,4,0,0,4,4,0,0,0,0,0,0,0,0,0
+6,14,At-risk (brief advice/monitor),40,0,0,0,2,0,0,4,0,0,0,0,0,0,4,0,0,0,0,4,0,0
+10,12,At-risk (brief advice/monitor),39,0,0,0,0,0,0,0,0,0,0,0,0,0,4,0,0,4,0,0,4,0
+14,11,At-risk (brief advice/monitor),37,0,0,0,0,2,0,0,0,0,0,0,1,0,0,0,0,0,4,4,0,0
+18,12,At-risk (brief advice/monitor),24,2,0,0,2,0,0,4,0,0,0,0,0,0,0,0,0,0,4,0,0,0
+22,19,At-risk (brief advice/monitor),43,0,0,0,0,0,0,0,4,4,0,3,0,0,0,4,0,0,0,0,0,4
+26,12,At-risk (brief advice/monitor),65,0,0,0,0,0,0,0,0,4,0,0,0,0,0,0,0,0,0,0,4,4
+30,13,At-risk (brief advice/monitor),47,2,0,0,0,0,0,0,0,4,4,0,0,0,0,0,0,0,0,0,0,3
+34,11,At-risk (brief advice/monitor),22,0,0,0,0,0,0,3,4,0,0,0,0,0,0,0,4,0,0,0,0,0
+38,19,At-risk (brief advice/monitor),29,2,1,0,2,2,4,0,0,0,0,0,4,0,0,0,0,0,0,0,0,4
+42,12,At-risk (brief advice/monitor),40,2,0,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,4,4,0
+46,18,At-risk (brief advice/monitor),18,0,2,0,2,0,0,4,2,0,0,4,4,0,0,0,0,0,0,0,0,0
+50,13,At-risk (brief advice/monitor),52,0,0,0,0,0,1,0,0,4,0,0,0,0,4,0,4,0,0,0,0,0
+54,14,At-risk (brief advice/monitor),40,0,0,0,0,0,0,0,4,0,4,0,0,0,0,0,0,0,0,2,0,4
+58,19,At-risk (brief advice/monitor),49,0,0,0,2,1,0,0,4,4,4,0,0,4,0,0,0,0,0,0,0,0
+62,19,At-risk (brief advice/monitor),43,0,2,0,2,0,0,4,0,4,0,0,3,0,0,0,0,0,4,0,0,0
+66,17,At-risk (brief advice/monitor),18,0,0,0,0,0,4,0,4,0,0,4,0,0,0,0,0,0,0,4,0,1
+70,20,At-risk (brief advice/monitor),64,2,2,0,0,0,0,0,0,4,0,0,4,0,4,0,0,0,4,0,0,0
+74,12,At-risk (brief advice/monitor),41,0,2,0,0,2,0,0,0,4,0,0,0,0,0,0,0,0,4,0,0,0
+78,20,At-risk (brief advice/monitor),39,0,0,0,0,0,0,0,0,0,0,0,0,0,4,4,0,0,4,4,4,0
+82,20,At-risk (brief advice/monitor),19,0,0,0,0,0,0,0,4,0,4,0,0,4,0,0,4,0,0,0,4,0
+86,12,At-risk (brief advice/monitor),39,0,2,0,2,2,0,0,0,0,4,0,0,0,0,0,0,2,0,0,0,0
+90,16,At-risk (brief advice/monitor),63,0,0,0,0,2,0,0,4,0,4,0,0,0,0,0,0,0,2,0,0,4
+94,15,At-risk (brief advice/monitor),21,0,0,0,2,2,3,0,0,4,0,0,0,0,4,0,0,0,0,0,0,0
+98,14,At-risk (brief advice/monitor),60,0,0,0,0,0,4,0,0,0,2,0,4,0,0,0,0,0,4,0,0,0
+102,13,At-risk (brief advice/monitor),56,0,0,0,0,1,0,0,4,0,0,0,4,0,0,0,4,0,0,0,0,0
+103,18,At-risk (brief advice/monitor),20,0,0,0,0,0,0,0,0,2,0,4,0,4,4,0,0,0,0,0,4,0
+107,17,At-risk (brief advice/monitor),60,0,0,0,2,0,0,0,0,0,4,4,0,0,0,4,0,0,3,0,0,0
+111,16,At-risk (brief advice/monitor),50,0,0,0,2,2,4,0,0,0,0,0,4,0,4,0,0,0,0,0,0,0
+115,19,At-risk (brief advice/monitor),44,0,0,0,0,2,0,0,0,1,0,4,0,0,4,0,0,4,0,0,0,4
+119,11,At-risk (brief advice/monitor),39,0,0,0,0,0,0,0,3,0,0,4,0,4,0,0,0,0,0,0,0,0
+123,17,At-risk (brief advice/monitor),63,0,0,0,2,0,3,0,0,0,0,0,0,0,0,0,0,4,0,4,0,4
+127,11,At-risk (brief advice/monitor),41,0,0,0,2,0,0,0,0,0,1,0,0,0,4,0,4,0,0,0,0,0
+131,17,At-risk (brief advice/monitor),29,0,0,0,0,2,0,0,0,0,0,4,0,4,0,3,0,4,0,0,0,0
+135,13,At-risk (brief advice/monitor),22,0,0,0,0,0,0,4,0,0,4,0,0,0,0,0,4,0,0,0,0,1
+139,17,At-risk (brief advice/monitor),52,2,0,0,0,0,4,0,0,0,0,4,0,3,0,0,0,0,0,0,0,4
+143,13,At-risk (brief advice/monitor),45,0,0,0,2,2,0,0,4,4,0,0,0,0,0,0,0,1,0,0,0,0
+144,11,At-risk (brief advice/monitor),38,0,0,0,2,0,0,4,0,0,4,0,0,0,0,0,1,0,0,0,0,0
+145,14,At-risk (brief advice/monitor),33,0,0,0,0,0,0,0,0,0,4,2,0,0,4,0,0,0,0,0,4,0
+149,17,At-risk (brief advice/monitor),58,0,0,0,0,2,4,0,0,4,0,0,0,0,0,4,0,0,0,3,0,0
+153,11,At-risk (brief advice/monitor),40,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4,3,0,0,4,0
+157,18,At-risk (brief advice/monitor),33,2,0,0,0,0,0,0,0,0,0,0,0,4,0,0,0,4,4,4,0,0
+161,12,At-risk (brief advice/monitor),45,0,0,0,0,0,4,0,0,0,0,0,4,0,0,0,0,0,0,0,4,0
+165,18,At-risk (brief advice/monitor),37,0,0,0,0,0,0,2,0,0,0,0,0,4,0,4,0,0,4,4,0,0
+169,20,At-risk (brief advice/monitor),56,0,0,0,0,2,0,0,4,4,0,0,0,4,0,0,4,2,0,0,0,0
+173,12,At-risk (brief advice/monitor),36,0,0,0,0,2,0,0,2,0,4,0,0,0,0,0,0,0,0,0,0,4
+177,16,At-risk (brief advice/monitor),28,0,0,0,0,0,0,0,0,4,0,0,4,0,0,4,4,0,0,0,0,0
+181,14,At-risk (brief advice/monitor),47,0,0,0,2,0,4,4,0,0,4,0,0,0,0,0,0,0,0,0,0,0
+185,12,At-risk (brief advice/monitor),53,0,0,0,2,0,4,0,4,0,0,0,2,0,0,0,0,0,0,0,0,0
+189,19,At-risk (brief advice/monitor),37,2,0,0,0,0,0,0,0,1,0,0,4,0,4,0,0,4,0,4,0,0
+193,15,At-risk (brief advice/monitor),45,0,0,0,0,0,0,0,0,0,3,0,0,0,4,4,0,0,4,0,0,0
+197,12,At-risk (brief advice/monitor),58,0,0,0,0,2,0,4,0,0,4,0,0,0,0,2,0,0,0,0,0,0
+201,16,At-risk (brief advice/monitor),48,2,2,0,2,0,0,0,0,0,4,0,2,0,0,4,0,0,0,0,0,0
+205,20,At-risk (brief advice/monitor),26,0,0,0,2,0,4,0,4,0,0,0,0,2,0,4,0,0,4,0,0,0
+209,11,At-risk (brief advice/monitor),62,0,0,0,0,0,0,4,4,3,0,0,0,0,0,0,0,0,0,0,0,0
+213,13,At-risk (brief advice/monitor),31,0,0,0,0,0,0,0,0,4,0,4,0,0,0,0,0,0,0,1,0,4
+217,11,At-risk (brief advice/monitor),59,2,0,0,0,2,0,0,0,4,0,0,0,3,0,0,0,0,0,0,0,0
+221,18,At-risk (brief advice/monitor),42,0,0,0,0,2,0,0,0,4,0,0,0,0,0,4,0,4,0,0,0,4
+225,11,At-risk (brief advice/monitor),38,0,2,0,1,0,0,0,4,0,0,0,0,0,0,0,0,4,0,0,0,0
+229,17,At-risk (brief advice/monitor),18,0,2,0,0,0,0,0,0,4,0,3,0,0,0,0,0,0,4,0,4,0
+233,14,At-risk (brief advice/monitor),26,0,0,0,0,0,4,0,0,2,4,0,0,4,0,0,0,0,0,0,0,0
+237,19,At-risk (brief advice/monitor),65,0,0,0,2,0,4,0,4,0,0,0,1,0,0,0,0,0,4,0,4,0
+241,11,At-risk (brief advice/monitor),33,0,0,0,0,0,0,4,0,0,0,0,0,0,0,0,0,3,0,4,0,0
+245,20,At-risk (brief advice/monitor),26,0,0,0,0,2,0,0,4,0,2,4,0,0,0,0,0,0,0,0,4,4
+249,15,At-risk (brief advice/monitor),63,0,0,0,0,2,0,0,0,0,4,0,0,1,4,4,0,0,0,0,0,0
+253,12,At-risk (brief advice/monitor),58,2,2,0,0,0,0,0,0,0,0,0,0,0,4,0,0,0,4,0,0,0
+257,16,At-risk (brief advice/monitor),46,0,0,0,2,0,0,4,0,0,0,0,2,0,0,4,0,4,0,0,0,0
+261,16,At-risk (brief advice/monitor),27,0,0,0,0,0,0,4,0,0,0,4,4,0,0,0,4,0,0,0,0,0
+268,13,At-risk (brief advice/monitor),64,0,0,0,0,0,0,0,0,0,0,4,0,4,0,0,1,0,4,0,0,0
+272,14,At-risk (brief advice/monitor),29,0,0,0,0,0,0,0,0,2,0,4,0,0,4,0,0,0,0,4,0,0
+279,14,At-risk (brief advice/monitor),40,2,0,0,0,0,4,0,0,0,0,0,0,0,4,0,0,0,0,0,4,0
+283,15,At-risk (brief advice/monitor),51,0,0,0,0,0,0,3,0,0,0,0,0,4,0,0,4,0,4,0,0,0
+287,15,At-risk (brief advice/monitor),32,0,0,0,2,0,0,0,0,0,0,0,0,4,0,4,1,0,0,4,0,0
+291,12,At-risk (brief advice/monitor),56,0,0,0,0,0,0,0,0,0,4,0,0,0,0,4,0,0,4,0,0,0
+292,17,At-risk (brief advice/monitor),61,0,2,0,0,0,3,0,0,0,4,0,0,0,4,0,4,0,0,0,0,0
+296,17,At-risk (brief advice/monitor),57,0,0,0,0,2,0,3,0,0,0,0,0,4,0,0,0,0,0,4,4,0
+300,17,At-risk (brief advice/monitor),62,0,0,0,0,0,4,0,0,0,0,0,0,0,0,4,4,0,0,4,0,1
+304,20,At-risk (brief advice/monitor),43,0,0,0,0,0,0,4,0,0,0,4,0,0,4,4,4,0,0,0,0,0
+311,17,At-risk (brief advice/monitor),39,1,0,0,2,2,0,0,4,0,4,0,0,0,0,0,0,0,0,0,0,4
+315,13,At-risk (brief advice/monitor),39,0,0,0,2,2,0,0,0,0,0,0,1,0,0,0,4,0,4,0,0,0
+319,18,At-risk (brief advice/monitor),49,2,0,0,0,2,4,0,0,2,0,4,0,0,0,0,0,0,0,4,0,0
+323,20,At-risk (brief advice/monitor),33,0,2,0,2,0,0,0,0,0,0,0,0,4,4,0,4,0,0,4,0,0
+327,15,At-risk (brief advice/monitor),53,0,0,0,2,0,0,0,0,1,4,0,4,0,0,0,0,0,4,0,0,0
+331,19,At-risk (brief advice/monitor),43,0,0,0,0,0,3,4,0,0,0,0,0,0,4,0,4,4,0,0,0,0
+335,18,At-risk (brief advice/monitor),59,0,0,0,0,0,0,0,0,0,0,0,4,0,4,4,0,0,0,4,0,2
+339,11,At-risk (brief advice/monitor),28,0,2,0,2,2,0,0,0,0,0,0,0,1,0,0,0,4,0,0,0,0
+343,12,At-risk (brief advice/monitor),48,0,0,0,0,0,0,0,0,0,4,0,0,0,0,4,4,0,0,0,0,0
+347,13,At-risk (brief advice/monitor),52,0,2,0,0,0,0,4,4,0,0,0,0,0,3,0,0,0,0,0,0,0
+351,18,At-risk (brief advice/monitor),21,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4,0,0,4,2,4,4
+352,16,At-risk (brief advice/monitor),47,0,0,0,2,2,0,0,0,0,0,0,0,0,0,4,0,0,4,0,4,0
+356,13,At-risk (brief advice/monitor),57,0,1,0,0,0,0,0,0,0,4,0,0,0,0,0,4,0,0,0,4,0
+363,16,At-risk (brief advice/monitor),44,0,0,0,0,0,4,0,0,4,0,0,0,0,4,0,0,0,4,0,0,0
+367,13,At-risk (brief advice/monitor),18,0,0,0,0,0,0,0,4,0,4,0,0,0,4,0,1,0,0,0,0,0
+368,19,At-risk (brief advice/monitor),46,0,2,0,2,0,0,0,0,4,0,3,4,4,0,0,0,0,0,0,0,0
+371,19,At-risk (brief advice/monitor),20,0,0,0,0,2,0,0,1,0,0,0,0,0,0,4,4,0,0,4,4,0
+375,14,At-risk (brief advice/monitor),32,0,2,0,0,0,0,0,0,0,0,0,4,0,0,0,0,4,0,4,0,0
+379,17,At-risk (brief advice/monitor),64,0,0,0,0,0,0,0,0,0,0,0,0,4,4,0,4,0,0,4,0,1
+380,19,At-risk (brief advice/monitor),36,2,2,0,0,2,0,0,0,0,4,0,0,0,0,4,4,0,0,0,0,1
+384,18,At-risk (brief advice/monitor),32,0,0,0,0,0,0,4,0,4,0,0,0,0,0,0,0,2,0,4,0,4
+388,15,At-risk (brief advice/monitor),53,2,0,0,0,0,4,0,4,1,0,0,0,0,0,0,4,0,0,0,0,0
+392,19,At-risk (brief advice/monitor),37,2,2,0,1,2,0,0,0,0,4,0,0,0,0,4,0,4,0,0,0,0
+393,15,At-risk (brief advice/monitor),23,0,0,0,0,0,0,4,4,0,0,0,0,0,0,4,3,0,0,0,0,0
+394,19,At-risk (brief advice/monitor),26,0,0,0,0,0,0,3,4,0,4,0,0,0,0,0,0,0,4,4,0,0
+395,14,At-risk (brief advice/monitor),39,0,0,0,0,0,0,0,0,0,4,0,0,2,0,0,0,0,0,4,4,0
+396,18,At-risk (brief advice/monitor),44,2,0,0,0,0,0,0,0,0,0,0,0,0,4,0,4,0,4,0,4,0
+397,18,At-risk (brief advice/monitor),35,2,0,0,0,0,0,0,0,0,0,4,4,4,0,4,0,0,0,0,0,0
+404,13,At-risk (brief advice/monitor),22,0,2,0,0,0,0,0,0,0,0,4,0,4,0,0,0,0,0,3,0,0
+408,17,At-risk (brief advice/monitor),49,0,0,0,0,0,0,0,1,4,0,0,0,0,4,0,4,0,0,0,4,0
+412,17,At-risk (brief advice/monitor),52,0,2,0,0,2,0,0,4,0,4,4,0,0,0,0,0,0,1,0,0,0
+416,11,At-risk (brief advice/monitor),59,0,0,0,2,1,0,4,0,0,0,0,0,0,0,0,0,0,4,0,0,0
+420,20,At-risk (brief advice/monitor),65,0,0,0,0,0,0,0,0,4,0,0,0,4,0,4,4,4,0,0,0,0
+427,17,At-risk (brief advice/monitor),33,2,0,0,0,0,3,0,0,0,0,0,4,0,4,4,0,0,0,0,0,0
+428,16,At-risk (brief advice/monitor),23,0,0,0,0,0,0,0,0,0,0,4,0,4,0,0,4,0,0,4,0,0
+432,12,At-risk (brief advice/monitor),33,0,2,0,2,0,0,0,4,0,0,0,4,0,0,0,0,0,0,0,0,0
+433,15,At-risk (brief advice/monitor),23,0,0,0,0,2,1,0,0,0,0,0,4,0,0,0,0,0,4,4,0,0
+437,13,At-risk (brief advice/monitor),50,0,0,0,0,0,0,0,0,4,1,0,4,0,0,4,0,0,0,0,0,0
+438,11,At-risk (brief advice/monitor),21,0,0,0,0,0,4,3,0,0,0,0,0,0,0,0,0,0,0,4,0,0
+448,15,At-risk (brief advice/monitor),43,0,2,0,0,0,0,0,0,0,0,1,0,0,4,4,0,4,0,0,0,0
+452,20,At-risk (brief advice/monitor),47,2,2,0,0,0,0,4,0,0,0,0,4,0,0,4,4,0,0,0,0,0
+456,12,At-risk (brief advice/monitor),39,0,2,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,4,0,4,0
+460,15,At-risk (brief advice/monitor),46,0,0,0,0,0,0,3,4,0,4,0,0,0,0,0,4,0,0,0,0,0
+464,12,At-risk (brief advice/monitor),29,0,0,0,0,0,0,0,0,0,0,0,0,4,0,0,0,0,0,4,0,4
+468,17,At-risk (brief advice/monitor),23,0,0,0,0,1,0,0,0,0,0,0,4,4,4,4,0,0,0,0,0,0
+472,18,At-risk (brief advice/monitor),41,2,0,0,0,0,0,0,0,0,4,0,0,4,0,4,0,0,0,4,0,0
+476,20,At-risk (brief advice/monitor),41,0,2,0,0,2,4,0,0,0,0,0,0,0,0,4,0,0,4,0,4,0
+5,22,Problematic use likely (structured assessment),47,2,0,0,0,0,0,0,4,4,4,0,0,0,0,4,0,0,4,0,0,0
+9,27,Problematic use likely (structured assessment),31,0,2,0,0,0,4,4,0,0,0,0,4,0,0,4,4,0,0,1,4,0
+13,22,Problematic use likely (structured assessment),44,0,0,0,0,2,0,4,4,0,0,0,0,0,0,0,0,4,4,0,4,0
+17,26,Problematic use likely (structured assessment),39,2,0,0,0,2,0,0,4,0,4,0,0,2,4,0,0,0,4,0,4,0
+21,25,Problematic use likely (structured assessment),24,0,2,0,2,0,4,0,4,0,0,4,0,0,0,1,0,4,0,0,0,4
+25,29,Problematic use likely (structured assessment),25,0,2,0,0,2,4,0,4,0,0,4,0,0,0,4,4,1,0,0,0,4
+29,27,Problematic use likely (structured assessment),40,2,2,0,0,2,0,1,0,0,4,0,0,4,0,0,4,0,4,0,4,0
+33,23,Problematic use likely (structured assessment),24,0,0,0,0,0,0,0,0,4,0,0,0,3,0,4,0,4,0,4,4,0
+37,25,Problematic use likely (structured assessment),51,2,0,0,0,2,4,0,4,0,0,0,0,0,0,1,4,0,4,0,4,0
+41,26,Problematic use likely (structured assessment),50,0,0,0,0,2,4,4,0,0,0,4,0,0,0,4,0,0,0,4,4,0
+45,22,Problematic use likely (structured assessment),22,0,0,0,0,0,4,0,2,0,0,0,4,4,0,0,0,4,0,0,4,0
+49,23,Problematic use likely (structured assessment),65,0,0,0,2,2,0,0,0,4,0,0,0,0,0,0,4,4,4,3,0,0
+53,25,Problematic use likely (structured assessment),37,0,0,0,0,2,4,0,0,4,0,0,0,3,0,0,0,4,0,0,4,4
+57,23,Problematic use likely (structured assessment),37,0,0,0,2,0,0,0,4,4,0,4,1,0,4,0,0,0,0,0,0,4
+61,23,Problematic use likely (structured assessment),20,2,0,0,2,2,0,0,0,0,4,0,0,0,1,0,0,4,4,4,0,0
+65,27,Problematic use likely (structured assessment),58,0,0,0,0,0,4,0,4,3,0,0,4,0,0,4,4,4,0,0,0,0
+69,25,Problematic use likely (structured assessment),54,0,2,0,0,0,0,0,0,0,4,0,4,4,3,4,4,0,0,0,0,0
+73,28,Problematic use likely (structured assessment),28,0,2,0,2,0,0,0,0,0,0,4,0,4,0,0,4,4,4,0,4,0
+77,22,Problematic use likely (structured assessment),22,0,0,0,0,0,0,0,0,4,0,0,0,0,4,4,0,0,4,2,0,4
+81,28,Problematic use likely (structured assessment),52,0,2,0,2,0,4,4,0,0,4,0,4,0,0,0,0,0,0,0,4,4
+85,24,Problematic use likely (structured assessment),57,0,0,0,2,0,4,0,0,4,2,0,0,0,0,0,0,4,4,0,0,4
+89,24,Problematic use likely (structured assessment),18,2,0,0,2,0,0,0,4,0,0,4,0,0,0,0,4,4,0,4,0,0
+93,21,Problematic use likely (structured assessment),26,2,0,0,0,2,0,4,4,0,4,0,0,4,0,0,0,1,0,0,0,0
+97,28,Problematic use likely (structured assessment),27,0,0,0,0,0,4,0,0,0,4,0,0,4,4,0,0,4,4,0,0,4
+101,21,Problematic use likely (structured assessment),43,2,0,0,0,2,0,0,0,4,4,4,4,0,0,0,0,0,1,0,0,0
+105,21,Problematic use likely (structured assessment),62,0,2,0,0,0,0,0,4,0,0,4,0,0,4,4,0,0,0,0,3,0
+109,27,Problematic use likely (structured assessment),46,2,2,0,2,2,0,4,0,4,3,4,0,0,0,0,0,0,0,0,4,0
+113,25,Problematic use likely (structured assessment),51,0,0,0,1,0,0,4,0,0,4,4,0,0,4,0,0,0,0,4,0,4
+117,25,Problematic use likely (structured assessment),19,0,2,0,2,0,0,0,0,4,1,4,0,0,0,0,0,0,4,4,4,0
+121,24,Problematic use likely (structured assessment),26,0,2,0,2,0,0,0,4,4,0,4,0,4,0,0,0,0,4,0,0,0
+125,21,Problematic use likely (structured assessment),38,0,0,0,2,0,4,0,0,3,0,4,0,4,0,0,0,0,0,0,0,4
+129,28,Problematic use likely (structured assessment),49,0,2,0,2,0,0,0,0,0,4,4,0,0,4,4,0,4,0,0,0,4
+133,26,Problematic use likely (structured assessment),45,0,2,0,0,0,4,0,4,0,0,0,4,4,0,4,0,0,0,0,0,4
+137,23,Problematic use likely (structured assessment),40,0,0,0,0,0,0,3,4,0,4,0,4,0,0,0,0,0,0,0,4,4
+138,25,Problematic use likely (structured assessment),59,0,0,0,0,2,4,3,0,4,0,0,0,4,0,4,0,0,0,0,0,4
+142,25,Problematic use likely (structured assessment),52,0,0,0,2,2,0,4,0,4,4,4,4,1,0,0,0,0,0,0,0,0
+146,26,Problematic use likely (structured assessment),46,2,0,0,0,0,0,0,0,4,4,4,0,0,0,0,0,4,0,4,0,4
+150,21,Problematic use likely (structured assessment),54,0,0,0,2,2,0,0,4,0,1,0,0,4,0,0,4,0,0,0,4,0
+154,24,Problematic use likely (structured assessment),51,2,0,0,0,0,4,0,0,0,0,0,4,0,4,4,2,0,4,0,0,0
+158,23,Problematic use likely (structured assessment),34,0,0,0,0,0,0,4,0,0,0,4,0,4,0,0,3,4,4,0,0,0
+162,29,Problematic use likely (structured assessment),29,2,0,0,0,0,0,0,4,0,0,0,0,4,4,0,3,4,0,0,4,4
+166,24,Problematic use likely (structured assessment),23,0,2,0,2,0,4,4,0,0,4,0,0,0,4,4,0,0,0,0,0,0
+170,24,Problematic use likely (structured assessment),34,2,0,0,0,0,0,0,4,0,0,4,4,0,0,2,0,0,0,4,4,0
+174,22,Problematic use likely (structured assessment),26,0,2,0,2,2,0,0,0,0,0,0,4,0,4,0,0,4,0,4,0,0
+178,26,Problematic use likely (structured assessment),37,0,0,0,2,0,0,0,4,4,0,0,4,4,0,0,0,4,0,0,4,0
+182,23,Problematic use likely (structured assessment),22,0,0,0,0,0,4,0,3,0,0,0,0,0,4,4,4,4,0,0,0,0
+186,27,Problematic use likely (structured assessment),26,0,2,0,0,2,0,0,0,0,0,4,4,4,0,4,4,0,0,0,0,3
+190,22,Problematic use likely (structured assessment),22,0,0,0,2,0,0,0,0,0,4,0,4,0,0,4,0,0,0,4,4,0
+194,23,Problematic use likely (structured assessment),30,0,0,0,2,0,4,4,0,4,4,0,1,0,0,4,0,0,0,0,0,0
+198,29,Problematic use likely (structured assessment),42,0,0,0,2,0,0,0,4,4,0,0,4,0,4,0,0,3,0,4,0,4
+202,21,Problematic use likely (structured assessment),25,2,2,0,0,0,4,0,4,0,4,4,0,0,0,0,0,1,0,0,0,0
+206,22,Problematic use likely (structured assessment),45,0,0,0,0,0,0,4,4,2,0,0,4,0,0,0,4,4,0,0,0,0
+210,27,Problematic use likely (structured assessment),24,0,0,0,0,0,0,4,0,0,0,0,0,4,4,0,4,3,0,4,0,4
+214,24,Problematic use likely (structured assessment),65,0,2,0,0,2,4,0,4,0,0,4,0,0,0,0,0,0,4,0,0,4
+218,23,Problematic use likely (structured assessment),40,2,0,0,0,0,4,0,0,0,1,0,0,0,0,4,4,0,0,4,0,4
+222,22,Problematic use likely (structured assessment),62,0,0,0,2,0,0,4,0,0,0,4,0,0,4,4,4,0,0,0,0,0
+226,26,Problematic use likely (structured assessment),46,2,2,0,0,0,0,4,0,0,2,4,0,0,4,0,0,0,0,0,4,4
+230,26,Problematic use likely (structured assessment),45,0,0,0,0,2,0,4,4,0,0,0,4,4,0,0,0,0,4,4,0,0
+234,21,Problematic use likely (structured assessment),50,2,0,0,2,0,0,4,0,0,4,0,0,0,0,4,0,0,0,0,4,1
+238,24,Problematic use likely (structured assessment),45,2,0,0,2,2,0,4,4,0,0,0,0,4,0,0,0,2,0,0,4,0
+242,26,Problematic use likely (structured assessment),38,0,0,0,0,2,4,4,0,0,0,0,0,4,4,0,0,4,4,0,0,0
+246,21,Problematic use likely (structured assessment),33,0,0,0,0,0,0,0,4,0,0,0,0,4,4,0,4,0,1,4,0,0
+247,28,Problematic use likely (structured assessment),36,0,2,0,0,2,0,4,0,0,4,0,0,4,0,0,0,0,4,0,4,4
+248,21,Problematic use likely (structured assessment),53,0,0,0,0,0,0,0,4,4,0,1,0,4,0,0,0,0,4,0,4,0
+252,21,Problematic use likely (structured assessment),35,0,0,0,0,0,4,0,0,1,4,0,0,0,0,4,0,0,4,0,0,4
+256,28,Problematic use likely (structured assessment),26,0,2,0,0,2,4,0,0,0,4,4,0,0,4,0,0,0,4,0,0,4
+260,22,Problematic use likely (structured assessment),33,0,0,0,2,0,0,0,0,0,0,4,0,0,0,0,0,4,0,4,4,4
+264,23,Problematic use likely (structured assessment),53,0,0,0,0,2,0,0,4,4,0,0,0,0,0,0,0,0,4,4,1,4
+265,22,Problematic use likely (structured assessment),28,2,2,0,0,2,0,4,0,0,0,0,0,0,4,0,0,4,0,4,0,0
+269,28,Problematic use likely (structured assessment),22,0,0,0,0,2,0,0,4,0,0,4,0,4,0,0,4,0,0,2,4,4
+273,25,Problematic use likely (structured assessment),38,2,0,0,2,0,0,0,0,4,4,4,0,0,1,0,0,4,0,0,4,0
+280,23,Problematic use likely (structured assessment),22,0,0,0,0,0,0,4,0,0,3,0,0,0,0,4,0,0,4,4,0,4
+284,24,Problematic use likely (structured assessment),25,0,2,0,0,2,0,0,0,4,4,0,0,4,0,0,0,0,0,0,4,4
+288,22,Problematic use likely (structured assessment),51,0,0,0,2,0,0,4,4,0,4,0,0,0,0,0,4,4,0,0,0,0
+295,21,Problematic use likely (structured assessment),31,2,2,0,2,0,0,0,0,0,4,0,3,0,0,0,0,0,0,4,4,0
+299,27,Problematic use likely (structured assessment),34,0,2,0,2,0,4,0,3,0,0,4,0,4,4,0,0,0,4,0,0,0
+303,25,Problematic use likely (structured assessment),24,0,2,0,0,0,4,0,4,4,0,4,0,3,0,0,4,0,0,0,0,0
+307,23,Problematic use likely (structured assessment),34,0,2,0,1,0,4,4,0,0,0,4,4,0,0,0,0,4,0,0,0,0
+308,27,Problematic use likely (structured assessment),35,0,1,0,2,0,0,0,4,4,0,0,0,0,4,0,4,4,0,0,4,0
+312,26,Problematic use likely (structured assessment),35,2,0,0,2,0,4,0,0,0,4,0,4,0,0,4,0,0,2,0,0,4
+316,28,Problematic use likely (structured assessment),32,0,2,0,2,2,0,0,0,4,4,4,0,0,2,4,4,0,0,0,0,0
+320,24,Problematic use likely (structured assessment),23,2,0,0,0,2,0,0,4,0,0,0,0,0,0,0,4,4,4,4,0,0
+324,28,Problematic use likely (structured assessment),20,0,0,0,0,2,0,4,2,0,0,0,4,0,0,4,4,4,0,0,4,0
+328,25,Problematic use likely (structured assessment),45,2,0,0,0,2,0,4,1,4,4,4,0,0,0,0,0,0,0,4,0,0
+332,24,Problematic use likely (structured assessment),20,0,2,0,2,0,0,0,0,4,0,0,0,0,4,4,4,4,0,0,0,0
+336,25,Problematic use likely (structured assessment),55,0,0,0,0,1,0,0,4,4,0,4,0,0,4,4,0,0,0,0,4,0
+340,26,Problematic use likely (structured assessment),59,0,0,0,2,0,4,0,0,0,0,4,4,0,4,0,4,0,0,0,0,4
+344,25,Problematic use likely (structured assessment),31,2,2,0,1,0,4,4,0,0,4,0,0,0,4,0,0,0,0,4,0,0
+348,25,Problematic use likely (structured assessment),18,2,2,0,0,0,0,4,0,0,1,0,0,0,4,0,4,0,0,4,0,4
+355,21,Problematic use likely (structured assessment),44,0,0,0,0,1,0,4,0,0,0,0,0,0,0,4,0,4,0,4,0,4
+359,28,Problematic use likely (structured assessment),43,0,2,0,2,0,4,4,4,4,4,0,0,0,0,0,0,0,0,0,4,0
+360,23,Problematic use likely (structured assessment),59,0,1,0,2,0,0,0,4,0,0,0,0,0,4,0,4,0,0,4,0,4
+364,24,Problematic use likely (structured assessment),43,0,0,0,2,2,0,4,0,0,4,0,0,0,0,4,4,0,0,0,0,4
+373,27,Problematic use likely (structured assessment),49,0,0,0,2,2,4,0,4,0,4,0,0,0,3,4,0,0,0,0,0,4
+377,23,Problematic use likely (structured assessment),53,0,0,0,2,2,0,0,0,0,0,4,3,4,0,0,0,0,0,4,4,0
+381,21,Problematic use likely (structured assessment),59,0,0,0,0,0,0,0,0,4,4,0,0,0,1,0,4,0,4,0,0,4
+385,23,Problematic use likely (structured assessment),65,0,0,0,0,0,4,0,4,0,0,3,4,4,0,0,0,0,0,0,0,4
+389,25,Problematic use likely (structured assessment),20,0,0,0,2,0,0,3,4,0,4,0,0,4,0,0,0,4,0,4,0,0
+399,27,Problematic use likely (structured assessment),27,0,0,0,0,0,0,0,4,0,0,4,0,0,4,4,0,0,4,0,3,4
+403,21,Problematic use likely (structured assessment),37,0,0,0,0,0,4,0,1,0,0,0,4,0,4,0,4,0,0,0,0,4
+407,27,Problematic use likely (structured assessment),64,0,2,0,0,2,4,0,0,4,0,4,0,0,0,0,4,0,3,4,0,0
+411,24,Problematic use likely (structured assessment),24,0,0,0,0,0,0,0,0,4,0,0,4,0,4,4,0,0,4,0,4,0
+415,29,Problematic use likely (structured assessment),43,2,2,0,2,2,0,0,4,0,0,0,0,1,4,4,0,4,0,4,0,0
+419,25,Problematic use likely (structured assessment),45,0,2,0,0,0,0,4,0,0,0,0,4,0,0,0,0,4,3,4,4,0
+423,25,Problematic use likely (structured assessment),59,2,0,0,0,0,4,0,4,0,4,0,0,0,4,0,4,0,0,0,3,0
+424,22,Problematic use likely (structured assessment),37,2,0,0,2,0,0,0,0,0,4,4,0,4,4,0,0,0,0,0,2,0
+431,25,Problematic use likely (structured assessment),30,0,2,0,2,0,0,0,0,1,4,0,4,0,0,0,4,0,0,0,4,4
+444,25,Problematic use likely (structured assessment),24,0,0,0,1,0,0,4,0,0,4,0,4,0,0,4,4,4,0,0,0,0
+445,24,Problematic use likely (structured assessment),61,0,2,0,2,0,4,4,0,0,0,0,4,0,0,0,0,0,0,0,4,4
+449,29,Problematic use likely (structured assessment),36,2,0,0,0,2,0,0,4,4,0,4,0,0,0,0,4,0,0,4,4,1
+453,28,Problematic use likely (structured assessment),48,0,0,0,2,0,4,4,0,0,0,2,4,4,0,0,0,0,0,4,0,4
+457,24,Problematic use likely (structured assessment),32,0,0,0,0,0,4,0,0,0,4,4,0,0,0,0,0,0,4,4,0,4
+461,26,Problematic use likely (structured assessment),35,0,0,0,2,0,4,4,0,0,0,4,0,0,4,0,0,0,4,4,0,0
+465,23,Problematic use likely (structured assessment),20,0,0,0,2,0,0,0,0,0,0,0,1,0,4,4,0,4,4,4,0,0
+469,22,Problematic use likely (structured assessment),29,0,0,0,0,2,0,0,0,4,0,4,4,0,0,0,0,0,0,4,4,0
+473,22,Problematic use likely (structured assessment),30,0,0,0,0,0,0,0,4,4,0,0,2,0,4,4,0,0,4,0,0,0
+477,25,Problematic use likely (structured assessment),46,0,0,0,0,0,4,4,0,0,0,4,0,4,4,1,4,0,0,0,0,0
+482,24,Problematic use likely (structured assessment),33,0,0,0,0,2,4,0,4,4,0,0,4,0,4,0,0,2,0,0,0,0
+485,22,Problematic use likely (structured assessment),23,0,0,0,0,2,4,0,0,0,0,4,4,0,0,0,4,4,0,0,0,0
+488,21,Problematic use likely (structured assessment),33,0,0,0,0,2,0,4,0,4,3,0,0,0,0,0,4,0,0,4,0,0
+490,25,Problematic use likely (structured assessment),21,0,0,0,0,0,0,0,0,0,1,4,0,4,4,4,0,0,4,4,0,0
+492,22,Problematic use likely (structured assessment),48,2,2,0,0,0,0,0,4,4,0,4,0,0,0,0,0,4,0,2,0,0
+494,27,Problematic use likely (structured assessment),33,0,1,0,0,2,0,4,4,0,0,4,4,0,0,0,0,0,0,4,4,0
+496,22,Problematic use likely (structured assessment),33,0,0,0,0,0,4,0,4,4,0,0,4,0,0,0,0,0,2,0,0,4
+498,29,Problematic use likely (structured assessment),55,2,0,0,0,0,4,0,0,4,4,4,0,0,4,0,3,0,0,0,0,4
+7,34,High risk / addictive pattern (consider referral),52,2,0,0,0,0,0,0,0,4,4,0,4,4,0,4,4,0,4,4,0,0
+11,57,High risk / addictive pattern (consider referral),62,2,2,0,2,2,4,4,4,4,0,4,4,4,0,4,0,4,4,4,4,1
+15,47,High risk / addictive pattern (consider referral),33,0,2,0,2,0,4,4,4,4,0,4,0,0,4,4,4,4,0,4,0,3
+19,62,High risk / addictive pattern (consider referral),42,2,2,0,2,2,4,4,4,4,4,4,0,4,4,0,4,4,4,4,4,2
+23,64,High risk / addictive pattern (consider referral),29,2,2,0,0,0,4,4,4,4,0,4,4,4,4,4,4,4,4,4,4,4
+27,61,High risk / addictive pattern (consider referral),18,2,2,0,2,2,4,4,4,4,0,4,0,4,4,4,1,4,4,4,4,4
+31,44,High risk / addictive pattern (consider referral),48,0,0,0,0,0,0,4,4,4,4,4,4,4,0,4,0,0,4,4,0,4
+35,54,High risk / addictive pattern (consider referral),19,2,0,0,2,2,4,0,4,4,0,4,0,0,4,4,4,4,4,4,4,4
+39,53,High risk / addictive pattern (consider referral),61,0,2,0,2,2,4,0,4,4,4,0,0,0,4,4,4,3,4,4,4,4
+43,30,High risk / addictive pattern (consider referral),21,0,2,0,0,0,4,0,4,0,0,4,0,0,0,4,4,4,4,0,0,0
+47,30,High risk / addictive pattern (consider referral),44,0,2,0,2,0,4,4,0,4,4,2,4,0,0,4,0,0,0,0,0,0
+51,39,High risk / addictive pattern (consider referral),57,2,0,0,0,0,0,1,0,4,0,4,4,4,4,4,4,0,0,4,4,0
+55,35,High risk / addictive pattern (consider referral),40,0,0,0,2,0,0,4,4,0,4,0,4,4,0,0,1,0,4,0,4,4
+59,33,High risk / addictive pattern (consider referral),23,0,0,0,0,2,4,0,0,0,0,4,0,4,0,4,3,0,4,0,4,4
+63,68,High risk / addictive pattern (consider referral),58,2,2,0,2,2,4,4,4,4,4,4,4,0,4,4,4,4,4,4,4,4
+67,31,High risk / addictive pattern (consider referral),63,2,2,0,2,2,4,0,0,0,0,0,0,0,4,0,0,4,3,0,4,4
+71,52,High risk / addictive pattern (consider referral),37,2,2,0,2,2,0,4,4,4,4,4,4,4,4,0,0,4,0,0,4,4
+75,56,High risk / addictive pattern (consider referral),22,2,2,0,2,2,4,4,0,0,4,4,4,4,4,0,0,4,4,4,4,4
+79,38,High risk / addictive pattern (consider referral),28,2,0,0,0,0,4,4,4,4,0,0,0,4,0,4,4,0,0,0,4,4
+83,58,High risk / addictive pattern (consider referral),51,2,2,0,2,0,4,4,4,4,4,0,0,4,4,4,4,4,4,4,4,0
+87,59,High risk / addictive pattern (consider referral),53,2,0,0,2,2,0,4,4,4,4,4,4,4,4,0,4,1,4,4,4,4
+91,60,High risk / addictive pattern (consider referral),50,2,0,0,0,2,0,4,4,4,4,4,4,4,4,4,4,4,4,4,4,0
+95,63,High risk / addictive pattern (consider referral),40,1,2,0,2,2,4,4,4,4,4,4,0,4,4,4,4,4,4,4,0,4
+99,46,High risk / addictive pattern (consider referral),47,2,2,0,2,2,2,4,0,4,4,0,4,4,4,4,0,4,0,0,0,4
+106,48,High risk / addictive pattern (consider referral),60,2,2,0,2,2,4,4,0,0,4,4,4,4,4,4,0,4,0,0,4,0
+110,58,High risk / addictive pattern (consider referral),38,0,0,0,2,0,4,4,4,4,4,4,0,4,4,4,4,4,0,4,4,4
+114,35,High risk / addictive pattern (consider referral),48,2,2,0,0,2,0,0,4,4,4,0,1,4,4,0,0,0,4,0,0,4
+118,43,High risk / addictive pattern (consider referral),44,0,0,0,0,2,1,4,4,4,4,4,4,0,4,0,0,4,4,0,0,4
+122,36,High risk / addictive pattern (consider referral),40,0,2,0,0,2,0,0,4,4,4,4,0,4,4,4,4,0,0,0,0,0
+126,63,High risk / addictive pattern (consider referral),54,0,2,0,2,2,4,1,4,4,4,4,4,4,4,4,4,4,0,4,4,4
+130,50,High risk / addictive pattern (consider referral),47,0,2,0,2,2,4,0,0,0,4,0,4,0,4,4,4,4,4,4,4,4
+134,47,High risk / addictive pattern (consider referral),40,2,0,0,2,2,0,4,4,4,4,0,0,4,1,4,0,4,4,4,0,4
+141,54,High risk / addictive pattern (consider referral),54,2,0,0,2,0,4,4,0,4,4,4,4,4,0,4,4,4,4,2,4,0
+148,44,High risk / addictive pattern (consider referral),27,2,0,0,2,2,0,4,4,4,0,0,4,0,4,4,0,4,4,2,0,4
+152,52,High risk / addictive pattern (consider referral),37,2,2,0,2,2,0,0,4,4,0,4,0,0,4,4,4,4,4,4,4,4
+156,36,High risk / addictive pattern (consider referral),41,2,0,0,0,2,4,4,0,4,0,4,0,4,4,4,4,0,0,0,0,0
+160,64,High risk / addictive pattern (consider referral),35,0,2,0,2,2,4,4,4,4,0,4,4,4,4,2,4,4,4,4,4,4
+164,51,High risk / addictive pattern (consider referral),38,1,2,0,2,2,4,0,0,4,4,0,4,4,4,4,0,0,4,4,4,4
+168,67,High risk / addictive pattern (consider referral),48,2,2,0,2,2,4,4,4,4,4,0,4,4,4,4,4,4,4,4,3,4
+172,65,High risk / addictive pattern (consider referral),35,2,2,0,2,2,4,4,4,4,4,4,4,4,4,4,1,4,4,4,0,4
+176,47,High risk / addictive pattern (consider referral),61,2,2,0,2,2,4,0,0,0,4,4,4,4,4,4,0,3,4,0,4,0
+180,38,High risk / addictive pattern (consider referral),47,2,2,0,2,0,4,0,4,0,4,0,0,0,4,0,4,4,0,4,4,0
+184,68,High risk / addictive pattern (consider referral),40,2,2,0,2,2,4,4,4,4,4,4,4,0,4,4,4,4,4,4,4,4
+188,35,High risk / addictive pattern (consider referral),23,2,2,0,2,2,0,3,4,4,0,0,4,0,0,4,0,0,4,4,0,0
+192,31,High risk / addictive pattern (consider referral),39,0,2,0,2,2,0,4,0,0,0,4,0,4,0,0,4,0,4,1,0,4
+196,35,High risk / addictive pattern (consider referral),63,2,0,0,0,0,4,0,1,4,0,0,4,0,4,0,4,0,0,4,4,4
+200,42,High risk / addictive pattern (consider referral),20,2,2,0,2,0,4,0,4,4,4,4,0,4,0,4,0,4,0,4,0,0
+204,65,High risk / addictive pattern (consider referral),60,2,2,0,2,2,1,0,4,4,4,4,4,4,4,4,4,4,4,4,4,4
+208,60,High risk / addictive pattern (consider referral),45,0,2,0,0,2,4,4,4,4,4,4,0,4,4,0,4,4,4,4,4,4
+212,59,High risk / addictive pattern (consider referral),62,2,2,0,0,0,4,4,4,4,4,4,0,0,4,3,4,4,4,4,4,4
+216,57,High risk / addictive pattern (consider referral),43,2,2,0,2,2,0,4,4,4,4,0,4,4,4,4,4,4,0,4,4,1
+220,41,High risk / addictive pattern (consider referral),40,0,2,0,0,0,3,0,0,4,0,0,0,0,4,4,4,4,4,4,4,4
+224,37,High risk / addictive pattern (consider referral),62,0,2,0,0,2,0,0,4,4,4,0,0,4,0,1,4,4,4,0,0,4
+228,34,High risk / addictive pattern (consider referral),42,2,0,0,2,2,4,0,0,0,4,4,4,0,0,0,4,0,0,4,0,4
+232,54,High risk / addictive pattern (consider referral),43,2,0,0,2,2,4,0,4,4,4,4,4,0,4,4,4,0,0,4,4,4
+239,58,High risk / addictive pattern (consider referral),48,2,2,0,2,2,0,4,4,4,4,4,0,4,4,4,0,4,4,2,4,4
+243,64,High risk / addictive pattern (consider referral),24,2,2,0,2,2,4,4,4,4,4,4,4,4,4,4,0,4,4,4,0,4
+250,30,High risk / addictive pattern (consider referral),59,0,0,0,0,0,0,0,2,4,4,4,0,4,0,0,0,0,4,0,4,4
+254,31,High risk / addictive pattern (consider referral),34,0,0,0,0,0,0,0,4,4,4,4,0,4,0,3,0,4,0,4,0,0
+258,56,High risk / addictive pattern (consider referral),32,2,2,0,2,2,4,4,0,4,0,0,0,4,4,4,4,4,4,4,4,4
+262,42,High risk / addictive pattern (consider referral),53,2,2,0,2,0,4,0,0,4,4,0,0,0,4,4,4,0,4,4,4,0
+263,35,High risk / addictive pattern (consider referral),19,0,2,0,2,0,3,4,0,0,0,0,0,4,4,4,0,4,0,0,4,4
+270,60,High risk / addictive pattern (consider referral),41,0,0,0,2,0,4,4,4,4,4,4,4,4,4,4,4,2,4,0,4,4
+274,60,High risk / addictive pattern (consider referral),50,2,2,0,2,2,4,4,4,4,4,4,4,0,0,4,4,4,4,0,4,4
+278,42,High risk / addictive pattern (consider referral),18,2,2,0,0,2,4,0,0,0,4,4,4,0,4,0,4,4,0,4,0,4
+282,30,High risk / addictive pattern (consider referral),62,0,2,0,0,0,0,0,4,0,4,0,4,4,0,0,0,0,0,4,4,4
+286,54,High risk / addictive pattern (consider referral),55,2,0,0,2,2,4,4,4,4,4,4,4,4,0,0,4,0,4,4,4,0
+290,49,High risk / addictive pattern (consider referral),60,0,2,0,0,0,4,4,4,0,4,3,4,0,4,0,0,4,4,4,4,4
+294,61,High risk / addictive pattern (consider referral),65,2,2,0,2,0,0,4,4,4,4,4,4,4,4,4,4,4,0,4,3,4
+298,32,High risk / addictive pattern (consider referral),27,0,2,0,0,2,0,0,4,0,4,4,4,4,4,0,0,0,4,0,0,0
+302,61,High risk / addictive pattern (consider referral),61,2,2,0,2,2,1,4,4,4,0,4,4,4,4,0,4,4,4,4,4,4
+306,65,High risk / addictive pattern (consider referral),25,2,2,0,2,2,4,0,4,4,4,4,4,4,4,4,4,4,4,1,4,4
+310,46,High risk / addictive pattern (consider referral),42,2,2,0,2,0,4,4,0,0,0,4,4,0,4,0,4,4,0,4,4,4
+314,59,High risk / addictive pattern (consider referral),20,2,2,0,2,2,0,3,4,0,4,4,4,4,4,4,0,4,4,4,4,4
+318,56,High risk / addictive pattern (consider referral),46,2,2,0,2,2,4,4,4,4,4,4,0,4,4,4,4,0,0,0,4,4
+322,39,High risk / addictive pattern (consider referral),55,2,0,0,0,2,0,0,4,0,4,0,4,4,4,4,4,0,0,3,4,0
+326,37,High risk / addictive pattern (consider referral),21,0,0,0,0,2,4,4,4,4,0,0,4,0,4,0,0,0,4,0,3,4
+330,31,High risk / addictive pattern (consider referral),28,0,0,0,2,0,0,4,4,0,0,0,4,0,1,0,4,4,4,0,0,4
+334,39,High risk / addictive pattern (consider referral),46,0,0,0,0,0,4,0,0,4,4,0,3,4,4,4,0,4,0,4,0,4
+338,33,High risk / addictive pattern (consider referral),50,0,0,0,0,0,4,0,0,4,1,0,4,4,4,0,4,0,4,4,0,0
+342,44,High risk / addictive pattern (consider referral),51,2,2,0,2,0,0,4,2,4,0,0,4,4,0,4,4,0,4,4,4,0
+346,33,High risk / addictive pattern (consider referral),30,0,0,0,0,2,0,4,0,4,0,4,0,0,3,0,4,4,0,4,4,0
+350,37,High risk / addictive pattern (consider referral),29,2,2,0,2,2,0,0,4,0,1,0,4,4,4,0,4,0,4,4,0,0
+357,67,High risk / addictive pattern (consider referral),51,2,2,0,0,2,1,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4
+358,58,High risk / addictive pattern (consider referral),42,0,2,0,2,2,4,4,4,0,4,0,4,4,4,4,4,4,4,0,4,4
+362,31,High risk / addictive pattern (consider referral),41,2,2,0,0,2,0,0,0,0,1,0,4,0,0,4,4,4,4,0,4,0
+366,32,High risk / addictive pattern (consider referral),59,2,0,0,0,0,0,0,4,4,4,4,0,0,4,0,4,2,0,0,4,0
+370,62,High risk / addictive pattern (consider referral),32,2,2,0,2,2,4,0,4,4,4,4,4,4,2,4,4,4,4,0,4,4
+374,38,High risk / addictive pattern (consider referral),65,2,2,0,0,2,0,0,4,0,4,0,4,4,0,4,0,4,4,4,0,0
+378,46,High risk / addictive pattern (consider referral),29,2,2,0,0,0,2,4,4,4,4,0,0,0,0,4,4,4,4,4,0,4
+382,49,High risk / addictive pattern (consider referral),48,2,0,0,2,0,4,4,4,4,4,0,4,0,4,0,4,1,4,0,4,4
+386,40,High risk / addictive pattern (consider referral),49,0,2,0,0,2,0,4,0,0,0,4,0,4,4,4,0,4,4,0,4,4
+390,67,High risk / addictive pattern (consider referral),33,2,2,0,2,2,4,4,3,4,4,4,4,4,4,4,4,4,4,4,0,4
+400,35,High risk / addictive pattern (consider referral),45,0,0,0,0,2,0,4,0,4,0,0,4,0,4,0,4,4,4,1,4,0
+401,62,High risk / addictive pattern (consider referral),46,2,2,0,2,2,0,4,0,4,4,4,4,4,4,4,4,4,4,2,4,4
+405,62,High risk / addictive pattern (consider referral),48,0,2,0,2,2,4,4,4,4,4,4,4,4,4,4,0,4,4,4,0,4
+409,40,High risk / addictive pattern (consider referral),54,2,0,0,0,2,0,4,4,4,4,0,4,0,0,0,0,0,4,4,4,4
+413,43,High risk / addictive pattern (consider referral),46,2,2,0,2,0,4,4,0,0,4,0,4,0,0,4,1,4,4,0,4,4
+417,56,High risk / addictive pattern (consider referral),24,2,2,0,2,0,4,4,4,4,4,0,0,4,4,4,0,4,4,4,2,4
+421,49,High risk / addictive pattern (consider referral),24,2,0,0,2,2,0,0,0,3,0,0,4,4,4,4,4,4,4,4,4,4
+425,31,High risk / addictive pattern (consider referral),64,0,0,0,2,1,0,4,4,0,0,4,0,0,0,4,0,4,0,4,0,4
+426,44,High risk / addictive pattern (consider referral),33,0,2,0,2,0,0,4,0,0,4,4,4,4,4,4,4,4,4,0,0,0
+430,58,High risk / addictive pattern (consider referral),42,2,2,0,0,0,4,4,4,4,0,4,4,4,4,4,4,2,4,4,4,0
+434,41,High risk / addictive pattern (consider referral),36,2,2,0,2,2,4,0,0,4,4,4,4,1,0,0,4,0,0,4,0,4
+435,63,High risk / addictive pattern (consider referral),63,2,2,0,2,2,4,4,4,0,4,4,4,4,4,4,3,4,4,4,4,0
+439,39,High risk / addictive pattern (consider referral),33,0,2,0,0,0,4,4,4,4,0,4,4,0,0,0,1,0,4,4,0,4
+447,41,High risk / addictive pattern (consider referral),29,2,2,0,2,0,0,0,4,0,4,4,0,3,0,0,4,0,4,4,4,4
+451,55,High risk / addictive pattern (consider referral),51,0,2,0,2,2,4,4,4,4,4,0,0,0,4,4,4,4,4,4,4,1
+455,39,High risk / addictive pattern (consider referral),41,2,2,0,0,2,1,4,0,0,0,4,4,0,4,4,4,4,0,4,0,0
+459,64,High risk / addictive pattern (consider referral),41,2,2,0,2,2,4,4,4,4,4,0,4,4,0,4,4,4,4,4,4,4
+463,32,High risk / addictive pattern (consider referral),18,0,2,0,2,0,0,4,4,0,0,0,0,4,4,0,4,4,0,4,0,0
+467,48,High risk / addictive pattern (consider referral),50,2,2,0,2,0,4,4,0,4,4,4,2,4,0,4,4,0,0,4,4,0
+471,32,High risk / addictive pattern (consider referral),32,0,2,0,0,2,0,0,4,4,4,4,0,0,0,0,4,0,0,4,0,4
+475,53,High risk / addictive pattern (consider referral),38,2,2,0,2,2,1,0,4,4,4,0,4,4,4,0,4,4,4,4,4,0
+479,38,High risk / addictive pattern (consider referral),62,0,2,0,0,0,0,0,0,4,0,4,4,4,4,0,4,4,4,0,4,0
+483,62,High risk / addictive pattern (consider referral),34,2,2,0,2,2,4,4,0,4,0,4,4,4,2,4,4,4,4,4,4,4
+486,56,High risk / addictive pattern (consider referral),23,2,2,0,2,2,4,0,4,4,0,4,4,4,0,4,4,0,4,4,4,4
+487,61,High risk / addictive pattern (consider referral),45,2,2,0,2,2,4,4,4,0,4,1,4,4,4,4,4,4,4,0,4,4
+489,61,High risk / addictive pattern (consider referral),33,2,2,0,2,2,0,4,4,4,4,4,4,4,4,4,4,1,0,4,4,4
+491,55,High risk / addictive pattern (consider referral),24,0,2,0,0,2,4,0,4,3,4,4,0,4,4,4,4,4,4,0,4,4
+493,41,High risk / addictive pattern (consider referral),65,0,0,0,0,2,3,4,4,4,4,0,0,4,4,0,4,0,0,4,4,0
+495,66,High risk / addictive pattern (consider referral),21,2,2,0,2,2,4,4,4,2,4,4,4,4,4,4,4,0,4,4,4,4
+497,60,High risk / addictive pattern (consider referral),27,2,2,0,2,2,4,4,4,4,4,4,0,0,4,4,0,4,4,4,4,4
+499,45,High risk / addictive pattern (consider referral),28,0,2,0,2,2,4,0,4,4,4,3,0,4,0,0,4,4,4,0,4,0
+500,53,High risk / addictive pattern (consider referral),55,2,0,0,2,2,0,4,4,0,4,4,4,0,4,0,3,4,4,4,4,4
