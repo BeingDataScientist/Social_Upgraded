@@ -14,8 +14,12 @@ if %errorlevel% neq 0 (
     exit /b 1
 )
 
-echo [1/4] Stopping any existing containers...
-docker-compose down
+echo [1/4] Checking if container is already running...
+docker-compose ps | findstr "Up" >nul
+if %errorlevel% equ 0 (
+    echo Container is already running! Opening browser...
+    goto :open_browser
+)
 
 echo [2/4] Building Docker image...
 docker-compose build --no-cache
@@ -36,6 +40,7 @@ if %errorlevel% neq 0 (
     exit /b 1
 )
 
+:open_browser
 echo.
 echo ========================================
 echo  SUCCESS! Application is running!

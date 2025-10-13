@@ -44,9 +44,9 @@ class MLModelTrainer:
         print(f"Risk Level Distribution:")
         print(self.df['risk_level'].value_counts())
         
-        # Exclude specified columns
-        exclude_columns = ['Q1', 'Q4', 'total_score', 'record_id']
-        feature_columns = [col for col in self.df.columns if col not in exclude_columns and col != 'risk_level']
+        # Exclude only non-feature columns (keep all questionnaire responses)
+        exclude_columns = ['total_score', 'record_id', 'risk_level']
+        feature_columns = [col for col in self.df.columns if col not in exclude_columns]
         
         print(f"\nExcluded columns: {exclude_columns}")
         print(f"Feature columns ({len(feature_columns)}): {feature_columns}")
@@ -60,6 +60,22 @@ class MLModelTrainer:
         if self.X.isnull().sum().sum() > 0:
             self.X = self.X.fillna(self.X.median())
             print("Filled missing values with median")
+        
+        # Data validation and feature engineering
+        print(f"\nFeature statistics:")
+        print(f"Q1 (Age) range: {self.X['Q1'].min()} - {self.X['Q1'].max()}")
+        print(f"Q2-Q22 score ranges:")
+        for col in self.X.columns[1:]:  # Skip Q1 (age)
+            print(f"  {col}: {self.X[col].min()} - {self.X[col].max()}")
+        
+        # Ensure all features are numeric
+        for col in self.X.columns:
+            if not pd.api.types.is_numeric_dtype(self.X[col]):
+                print(f"Converting {col} to numeric")
+                self.X[col] = pd.to_numeric(self.X[col], errors='coerce')
+        
+        # Handle any remaining non-numeric values
+        self.X = self.X.fillna(0)
         
         # Encode categorical target variable
         self.y_encoded = self.label_encoder.fit_transform(self.y)
@@ -87,13 +103,39 @@ class MLModelTrainer:
         """Train multiple ML models"""
         print("\nTraining ML models...")
         
-        # Define models
+        # Define models with better hyperparameters and class balancing
         self.models = {
-            'Logistic Regression': LogisticRegression(random_state=42, max_iter=1000),
-            'Random Forest': RandomForestClassifier(random_state=42, n_estimators=100),
-            'Gradient Boosting': GradientBoostingClassifier(random_state=42),
-            'SVM': SVC(random_state=42, probability=True),
-            'K-Nearest Neighbors': KNeighborsClassifier(n_neighbors=5)
+            'Logistic Regression': LogisticRegression(
+                random_state=42, 
+                max_iter=1000, 
+                class_weight='balanced',
+                C=1.0
+            ),
+            'Random Forest': RandomForestClassifier(
+                random_state=42, 
+                n_estimators=200,
+                max_depth=10,
+                min_samples_split=5,
+                min_samples_leaf=2,
+                class_weight='balanced'
+            ),
+            'Gradient Boosting': GradientBoostingClassifier(
+                random_state=42,
+                n_estimators=200,
+                learning_rate=0.1,
+                max_depth=6
+            ),
+            'SVM': SVC(
+                random_state=42, 
+                probability=True,
+                class_weight='balanced',
+                C=1.0,
+                kernel='rbf'
+            ),
+            'K-Nearest Neighbors': KNeighborsClassifier(
+                n_neighbors=7,
+                weights='distance'
+            )
         }
         
         # Train each model
@@ -114,25 +156,38 @@ class MLModelTrainer:
             accuracy = accuracy_score(self.y_test, y_pred)
             f1 = f1_score(self.y_test, y_pred, average='weighted')
             
+            # Cross-validation for more robust evaluation
+            if name in ['Logistic Regression', 'SVM', 'K-Nearest Neighbors']:
+                cv_scores = cross_val_score(model, self.X_train_scaled, self.y_train, cv=5, scoring='accuracy')
+            else:
+                cv_scores = cross_val_score(model, self.X_train, self.y_train, cv=5, scoring='accuracy')
+            
+            cv_mean = cv_scores.mean()
+            cv_std = cv_scores.std()
+            
             # Store results
             self.results[name] = {
                 'model': model,
                 'accuracy': accuracy,
                 'f1_score': f1,
+                'cv_mean': cv_mean,
+                'cv_std': cv_std,
                 'predictions': y_pred,
                 'probabilities': y_pred_proba
             }
             
-            print(f"  Accuracy: {accuracy:.4f}")
-            print(f"  F1-Score: {f1:.4f}")
+            print(f"  Test Accuracy: {accuracy:.4f}")
+            print(f"  Test F1-Score: {f1:.4f}")
+            print(f"  CV Accuracy: {cv_mean:.4f} (+/- {cv_std*2:.4f})")
         
-        # Find best model
-        best_accuracy = max(self.results.items(), key=lambda x: x[1]['accuracy'])
-        self.best_model_name = best_accuracy[0]
-        self.best_model = best_accuracy[1]['model']
+        # Find best model based on cross-validation score (more robust)
+        best_cv_score = max(self.results.items(), key=lambda x: x[1]['cv_mean'])
+        self.best_model_name = best_cv_score[0]
+        self.best_model = best_cv_score[1]['model']
         
         print(f"\nBest Model: {self.best_model_name}")
-        print(f"Best Accuracy: {best_accuracy[1]['accuracy']:.4f}")
+        print(f"Best CV Accuracy: {best_cv_score[1]['cv_mean']:.4f} (+/- {best_cv_score[1]['cv_std']*2:.4f})")
+        print(f"Test Accuracy: {best_cv_score[1]['accuracy']:.4f}")
         
         return self.results
     
@@ -299,8 +354,12 @@ class MLModelTrainer:
             'best_model_name': self.best_model_name,
             'accuracy': self.results[self.best_model_name]['accuracy'],
             'f1_score': self.results[self.best_model_name]['f1_score'],
+            'cv_mean': self.results[self.best_model_name]['cv_mean'],
+            'cv_std': self.results[self.best_model_name]['cv_std'],
             'feature_columns': self.X.columns.tolist(),
-            'target_classes': self.label_encoder.classes_.tolist()
+            'target_classes': self.label_encoder.classes_.tolist(),
+            'n_features': len(self.X.columns),
+            'n_samples': len(self.X)
         }
         joblib.dump(model_info, os.path.join(artifacts_dir, 'model_info.pkl'))
         
@@ -324,18 +383,19 @@ class MLModelTrainer:
 
 ## Model Performance Summary
 
-| Model | Accuracy | F1-Score |
-|-------|----------|----------|
+| Model | Test Accuracy | Test F1-Score | CV Accuracy | CV Std |
+|-------|---------------|---------------|-------------|---------|
 """
         
         for name, result in self.results.items():
-            report += f"| {name} | {result['accuracy']:.4f} | {result['f1_score']:.4f} |\n"
+            report += f"| {name} | {result['accuracy']:.4f} | {result['f1_score']:.4f} | {result['cv_mean']:.4f} | {result['cv_std']:.4f} |\n"
         
         report += f"""
 ## Best Model
 - **Model**: {self.best_model_name}
-- **Accuracy**: {self.results[self.best_model_name]['accuracy']:.4f}
-- **F1-Score**: {self.results[self.best_model_name]['f1_score']:.4f}
+- **Test Accuracy**: {self.results[self.best_model_name]['accuracy']:.4f}
+- **Test F1-Score**: {self.results[self.best_model_name]['f1_score']:.4f}
+- **CV Accuracy**: {self.results[self.best_model_name]['cv_mean']:.4f} (+/- {self.results[self.best_model_name]['cv_std']*2:.4f})
 
 ## Detailed Classification Report for Best Model
 """

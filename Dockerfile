@@ -27,6 +27,9 @@ COPY . .
 # Create necessary directories
 RUN mkdir -p ml_model/artifacts ml_model/reports ml_model/visualizations
 
+# Train the ML model during build (if data is available)
+RUN if [ -f "questionnaire_data.csv" ]; then python ml_model/ml_training.py; fi
+
 # Expose port 5000
 EXPOSE 5000
 

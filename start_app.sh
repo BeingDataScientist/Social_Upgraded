@@ -13,8 +13,39 @@ if ! docker version >/dev/null 2>&1; then
     exit 1
 fi
 
-echo "[1/4] Stopping any existing containers..."
-docker-compose down
+echo "[1/4] Checking if container is already running..."
+if docker-compose ps | grep -q "Up"; then
+    echo "Container is already running! Opening browser..."
+    # Jump to browser opening section
+    echo
+    echo "========================================"
+    echo " SUCCESS! Application is running!"
+    echo "========================================"
+    echo
+    echo "Application URL: http://localhost:5000"
+    echo
+
+    # Try to open browser (works on macOS and Linux)
+    if command -v open >/dev/null 2>&1; then
+        echo "Opening browser..."
+        open http://localhost:5000
+    elif command -v xdg-open >/dev/null 2>&1; then
+        echo "Opening browser..."
+        xdg-open http://localhost:5000
+    else
+        echo "Please open your browser and go to: http://localhost:5000"
+    fi
+
+    echo
+    echo "Container Status:"
+    docker-compose ps
+
+    echo
+    echo "To stop the application, run: docker-compose down"
+    echo "To view logs, run: docker-compose logs -f"
+    echo
+    exit 0
+fi
 
 echo "[2/4] Building Docker image..."
 docker-compose build --no-cache

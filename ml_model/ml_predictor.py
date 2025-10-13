@@ -264,9 +264,9 @@ if __name__ == "__main__":
     try:
         predictor = MLPredictor()
         
-        # Test with sample data
+        # Test with sample data (all numeric values)
         sample_data = {
-            'Q1': 25, 'Q2': 1, 'Q3': 2, 'Q4': 'Student', 'Q5': 0, 'Q6': 1,
+            'Q1': 25, 'Q2': 1, 'Q3': 2, 'Q4': 0, 'Q5': 0, 'Q6': 1,
             'Q7': 2, 'Q8': 3, 'Q9': 2, 'Q10': 1, 'Q11': 1, 'Q12': 1,
             'Q13': 1, 'Q14': 1, 'Q15': 1, 'Q16': 2, 'Q17': 1, 'Q18': 1,
             'Q19': 1, 'Q20': 1, 'Q21': 1, 'Q22': 1
