@@ -9,9 +9,13 @@ services:
     environment:
       - FLASK_ENV=development
       - FLASK_DEBUG=1
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - OPENAI_MODEL=${OPENAI_MODEL:-gpt-4o-mini}
     volumes:
       # Mount the current directory to /app for development
       - .:/app
+      # Persist database
+      - ./instance:/app/instance
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:5000/"]

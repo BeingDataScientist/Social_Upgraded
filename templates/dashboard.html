@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor Dashboard - Digital Media & Mental Health Assessment</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .header {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header h1 {
+            color: #333;
+            font-size: 2em;
+        }
+        .header .user-info {
+            text-align: right;
+        }
+        .header .user-info p {
+            color: #666;
+            margin: 5px 0;
+        }
+        .logout-btn {
+            background: #dc3545;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 10px;
+        }
+        .logout-btn:hover {
+            background: #c82333;
+        }
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+        .option-card {
+            background: white;
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+        }
+        .option-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+        .option-card .icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+        }
+        .option-card h2 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+        }
+        .option-card p {
+            color: #666;
+            line-height: 1.6;
+        }
+        .option-card.add-patient {
+            border-top: 5px solid #28a745;
+        }
+        .option-card.assess-patient {
+            border-top: 5px solid #007bff;
+        }
+        .option-card.patient-analysis {
+            border-top: 5px solid #ffc107;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div>
+                <h1>👨‍⚕️ Doctor Dashboard</h1>
+            </div>
+            <div class="user-info">
+                <p><strong>Welcome, {{ doctor_name }}</strong></p>
+                <p>{{ doctor_profession }}</p>
+                <a href="/logout" class="logout-btn">Logout</a>
+            </div>
+        </div>
+        
+        <div class="options-grid">
+            <a href="/add-patient" class="option-card add-patient">
+                <div class="icon">➕</div>
+                <h2>Add New Patient</h2>
+                <p>Register a new patient in the system</p>
+            </a>
+            
+            <a href="/assess-patient" class="option-card assess-patient">
+                <div class="icon">📋</div>
+                <h2>Assess Existing Patient</h2>
+                <p>Conduct assessment for an existing patient</p>
+            </a>
+            
+            <a href="/patient-analysis" class="option-card patient-analysis">
+                <div class="icon">📊</div>
+                <h2>Patients Analysis</h2>
+                <p>View analysis and visualizations of all patients</p>
+            </a>
+        </div>
+    </div>
+</body>
+</html>
+

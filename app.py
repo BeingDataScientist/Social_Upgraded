@@ -1,22 +1,170 @@
-from flask import Flask, render_template, request, jsonify, session, redirect, url_for, send_from_directory
+from flask import Flask, render_template, request, jsonify, session, redirect, url_for, send_from_directory, flash
 import json
 import os
 import pandas as pd
 import numpy as np
+from datetime import datetime, date
 from ml_model.ml_predictor import predict_risk_level, format_questionnaire_data, get_predictor
+from openai_analyzer import format_questionnaire_for_openai, analyze_with_openai
+from database import db, Doctor, Patient, PatientLog, init_db
+from auth import hash_password, verify_password, login_required, get_current_doctor
 
 app = Flask(__name__)
-app.secret_key = 'your-secret-key-here'  # Change this in production
+app.secret_key = 'your-secret-key-here-change-in-production'  # Change this in production
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///health_assessment.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+# Initialize database
+init_db(app)
 
 @app.route('/')
 def index():
-    """Serve the main questionnaire page"""
-    return render_template('questionnaire.html')
+    """Redirect to login if not logged in, otherwise dashboard"""
+    if 'doctor_id' in session:
+        return redirect(url_for('dashboard'))
+    return redirect(url_for('login'))
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    """Login page"""
+    if request.method == 'POST':
+        email = request.form.get('email')
+        password = request.form.get('password')
+        
+        doctor = Doctor.query.filter_by(email=email).first()
+        
+        if doctor and verify_password(doctor.password, password):
+            session['doctor_id'] = doctor.id
+            session['doctor_name'] = doctor.name
+            session['doctor_profession'] = doctor.profession
+            flash('Login successful!', 'success')
+            return redirect(url_for('dashboard'))
+        else:
+            flash('Invalid email or password', 'error')
+    
+    return render_template('login.html')
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    """Registration page"""
+    if request.method == 'POST':
+        email = request.form.get('email')
+        password = request.form.get('password')
+        name = request.form.get('name')
+        dob = request.form.get('dob')
+        profession = request.form.get('profession')
+        address = request.form.get('address')
+        
+        # Check if email already exists
+        if Doctor.query.filter_by(email=email).first():
+            flash('Email already registered', 'error')
+            return render_template('register.html')
+        
+        # Create new doctor
+        try:
+            dob_date = datetime.strptime(dob, '%Y-%m-%d').date()
+            new_doctor = Doctor(
+                email=email,
+                password=hash_password(password),
+                name=name,
+                dob=dob_date,
+                profession=profession,
+                address=address
+            )
+            db.session.add(new_doctor)
+            db.session.commit()
+            flash('Registration successful! Please login.', 'success')
+            return redirect(url_for('login'))
+        except Exception as e:
+            db.session.rollback()
+            flash(f'Registration failed: {str(e)}', 'error')
+    
+    return render_template('register.html')
+
+@app.route('/logout')
+def logout():
+    """Logout"""
+    session.clear()
+    flash('Logged out successfully', 'success')
+    return redirect(url_for('login'))
+
+@app.route('/dashboard')
+@login_required
+def dashboard():
+    """Doctor dashboard"""
+    doctor = Doctor.query.get(session['doctor_id'])
+    return render_template('dashboard.html', 
+                         doctor_name=doctor.name,
+                         doctor_profession=doctor.profession)
+
+@app.route('/add-patient', methods=['GET', 'POST'])
+@login_required
+def add_patient():
+    """Add new patient"""
+    if request.method == 'POST':
+        name = request.form.get('name')
+        age = int(request.form.get('age'))
+        gender = request.form.get('gender')
+        previous_history = request.form.get('previous_history', '')
+        
+        new_patient = Patient(
+            name=name,
+            age=age,
+            gender=gender,
+            previous_history=previous_history,
+            doctor_id=session['doctor_id']
+        )
+        db.session.add(new_patient)
+        db.session.commit()
+        flash(f'Patient {name} added successfully!', 'success')
+        return redirect(url_for('add_patient'))
+    
+    return render_template('add_patient.html')
+
+@app.route('/assess-patient', methods=['GET', 'POST'])
+@login_required
+def assess_patient():
+    """Assess existing patient"""
+    doctor_id = session['doctor_id']
+    patients = Patient.query.filter_by(doctor_id=doctor_id).all()
+    
+    if request.method == 'POST':
+        patient_id = request.form.get('patient_id')
+        if patient_id:
+            session['current_patient_id'] = patient_id
+            return redirect(url_for('questionnaire'))
+        else:
+            flash('Please select a patient', 'error')
+    
+    return render_template('assess_patient.html', patients=patients)
+
+@app.route('/questionnaire')
+@login_required
+def questionnaire():
+    """Serve the questionnaire page"""
+    if 'current_patient_id' not in session:
+        flash('Please select a patient first', 'error')
+        return redirect(url_for('assess_patient'))
+    
+    patient = Patient.query.get(session['current_patient_id'])
+    if not patient:
+        flash('Patient not found', 'error')
+        return redirect(url_for('assess_patient'))
+    
+    return render_template('questionnaire.html', patient=patient)
 
 @app.route('/submit', methods=['POST'])
+@login_required
 def submit_questionnaire():
     """Handle form submission and display results"""
     try:
+        # Check if patient is selected
+        if 'current_patient_id' not in session:
+            return jsonify({
+                'success': False,
+                'error': 'No patient selected'
+            }), 400
+        
         # Get form data
         form_data = request.form.to_dict()
         
@@ -72,13 +220,62 @@ def submit_questionnaire():
         else:
             print("⚠️  ML model not found. Run ml_model/ml_training.py first to train the model.")
         
+        # OpenAI Analysis
+        openai_analysis_result = None
+        openai_category = None
+        try:
+            # Format questionnaire data for OpenAI (with questions and actual choice values)
+            formatted_questionnaire = format_questionnaire_for_openai(form_data)
+            
+            print("\n" + "="*50)
+            print("SENDING TO OPENAI FOR ANALYSIS...")
+            print("="*50)
+            
+            # Get OpenAI analysis
+            openai_analysis_result = analyze_with_openai(formatted_questionnaire)
+            
+            if openai_analysis_result and openai_analysis_result.get('success'):
+                openai_category = openai_analysis_result.get('risk_category', 'Unknown')
+                print(f"✅ OpenAI Analysis:")
+                print(f"   Risk Category: {openai_category}")
+                print(f"   Solutions: {len(openai_analysis_result.get('solutions', []))} provided")
+                print(f"   Suggestions: {len(openai_analysis_result.get('suggestions', []))} provided")
+            else:
+                error_msg = openai_analysis_result.get('error', 'Unknown error') if openai_analysis_result else 'No response'
+                print(f"⚠️  OpenAI Analysis Error: {error_msg}")
+                
+        except Exception as openai_error:
+            print(f"⚠️  OpenAI Analysis Error: {str(openai_error)}")
+            openai_analysis_result = {
+                'success': False,
+                'error': str(openai_error)
+            }
+        
+        # Save to database
+        try:
+            patient_log = PatientLog(
+                patient_id=session['current_patient_id'],
+                doctor_id=session['doctor_id'],
+                responses=json.dumps(python_output),
+                openai_category=openai_category,
+                total_score=total_score,
+                timestamp=datetime.utcnow()
+            )
+            db.session.add(patient_log)
+            db.session.commit()
+            print(f"✅ Assessment saved to database for patient {session['current_patient_id']}")
+        except Exception as db_error:
+            db.session.rollback()
+            print(f"⚠️  Database save error: {str(db_error)}")
+        
         # Store results in session for display on results page
         session['results'] = {
             'python_output': python_output,
             'total_score': total_score,
             'max_score': 68,
             'risk_level_legacy': risk_level_legacy,
-            'ml_prediction': ml_prediction_result
+            'ml_prediction': ml_prediction_result,
+            'openai_analysis': openai_analysis_result
         }
         
         # Return JSON response for AJAX
@@ -193,13 +390,33 @@ def analyze_user_position(user_score):
         return None
 
 @app.route('/results')
+@login_required
 def show_results():
     """Display results page"""
     # Get results from session
     results = session.get('results')
     
     if not results:
-        return redirect(url_for('index'))
+        flash('No assessment results found', 'error')
+        return redirect(url_for('dashboard'))
+    
+    # Get current patient ID from session
+    patient_id = session.get('current_patient_id')
+    if not patient_id:
+        flash('No patient selected', 'error')
+        return redirect(url_for('dashboard'))
+    
+    # Get patient information
+    patient = Patient.query.get(patient_id)
+    if not patient:
+        flash('Patient not found', 'error')
+        return redirect(url_for('dashboard'))
+    
+    # Get all previous assessments for this patient
+    all_assessments = PatientLog.query.filter_by(
+        patient_id=patient_id,
+        doctor_id=session['doctor_id']
+    ).order_by(PatientLog.timestamp.desc()).all()
     
     # Extract data from session
     python_output = results.get('python_output', {})
@@ -207,6 +424,37 @@ def show_results():
     max_score = results.get('max_score', 68)
     risk_level_legacy = results.get('risk_level_legacy', 'Unknown')
     ml_prediction = results.get('ml_prediction', {})
+    openai_analysis = results.get('openai_analysis', {})
+    
+    # Prepare data for charts
+    assessment_dates = []
+    assessment_scores = []
+    assessment_categories = []
+    
+    for assessment in all_assessments:
+        assessment_dates.append(assessment.timestamp.strftime('%Y-%m-%d'))
+        assessment_scores.append(assessment.total_score if assessment.total_score else 0)
+        assessment_categories.append(assessment.openai_category if assessment.openai_category else 'Unknown')
+    
+    # Reverse to show chronological order (oldest to newest)
+    assessment_dates = list(reversed(assessment_dates))
+    assessment_scores = list(reversed(assessment_scores))
+    assessment_categories = list(reversed(assessment_categories))
+    
+    # Calculate performance trend (increasing/decreasing)
+    # Positive trend = improving (score decreasing), Negative trend = worsening (score increasing)
+    performance_trend = []
+    if len(assessment_scores) > 1:
+        for i in range(len(assessment_scores)):
+            if i == 0:
+                performance_trend.append(0)  # First assessment - no comparison
+            else:
+                # Lower score is better, so if current score < previous score, that's improvement (positive)
+                # If current score > previous score, that's worsening (negative)
+                trend = assessment_scores[i-1] - assessment_scores[i]
+                performance_trend.append(trend)
+    else:
+        performance_trend = [0] if assessment_scores else []
     
     # Analyze user's position in the dataset
     dataset_analysis = analyze_user_position(total_score)
@@ -221,6 +469,15 @@ def show_results():
     
     legacy_color = risk_colors.get(risk_level_legacy, "#6c757d")
     ml_color = "#007bff"
+    openai_color = "#9b59b6"  # Purple color for OpenAI analysis
+    
+    # Map OpenAI risk categories to colors
+    openai_risk_colors = {
+        "Low risk": "#28a745",
+        "At-Risk": "#ffc107",
+        "Problematic use likely": "#fd7e14",
+        "High Risk/ addictive pattern": "#dc3545"
+    }
     
     # Create Python output display
     python_output_str = str(python_output).replace("'", '"')
@@ -272,6 +529,81 @@ def show_results():
     ml_confidence = 0
     if ml_prediction and ml_prediction.get('success', False):
         ml_confidence = ml_prediction.get('confidence', 0) * 100
+    
+    # Create OpenAI analysis display
+    openai_display = ""
+    if openai_analysis and openai_analysis.get('success', False):
+        risk_category = openai_analysis.get('risk_category', 'Unknown')
+        solutions = openai_analysis.get('solutions', [])
+        suggestions = openai_analysis.get('suggestions', [])
+        risk_color = openai_risk_colors.get(risk_category, openai_color)
+        
+        solutions_html = ""
+        if solutions:
+            solutions_html = "<ul style='margin: 10px 0; padding-left: 20px;'>"
+            for solution in solutions:
+                solutions_html += f"<li style='margin: 8px 0;'>{solution}</li>"
+            solutions_html += "</ul>"
+        
+        suggestions_html = ""
+        if suggestions:
+            suggestions_html = "<ul style='margin: 10px 0; padding-left: 20px;'>"
+            for suggestion in suggestions:
+                suggestions_html += f"<li style='margin: 8px 0;'>{suggestion}</li>"
+            suggestions_html += "</ul>"
+        
+        openai_display = f"""
+        <div class="result-card openai-analysis" style="border-left-color: {risk_color}; margin-bottom: 30px;">
+            <div class="card-title">
+                <span style="font-size: 1.2em;">🤖</span>
+                OpenAI AI Analysis
+            </div>
+            <div style="margin-top: 20px;">
+                <p style="font-size: 1.1em; margin-bottom: 15px;"><strong>Risk Category:</strong></p>
+                <div class="risk-level" style="background: {risk_color}; margin: 10px 0; padding: 15px; border-radius: 8px; color: white; font-weight: bold; text-align: center; font-size: 1.1em;">
+                    {risk_category}
+                </div>
+                
+                <div style="margin-top: 25px;">
+                    <p style="font-size: 1.1em; margin-bottom: 10px;"><strong>💡 Solutions:</strong></p>
+                    {solutions_html if solutions_html else "<p style='color: #666;'>No solutions provided.</p>"}
+                </div>
+                
+                <div style="margin-top: 25px;">
+                    <p style="font-size: 1.1em; margin-bottom: 10px;"><strong>✨ Suggestions:</strong></p>
+                    {suggestions_html if suggestions_html else "<p style='color: #666;'>No suggestions provided.</p>"}
+                </div>
+            </div>
+        </div>
+        """
+    elif openai_analysis and not openai_analysis.get('success', False):
+        error_msg = openai_analysis.get('error', 'Unknown error')
+        openai_display = f"""
+        <div class="result-card openai-analysis" style="border-left-color: #dc3545; margin-bottom: 30px;">
+            <div class="card-title">
+                <span style="font-size: 1.2em;">🤖</span>
+                OpenAI AI Analysis
+            </div>
+            <div class="error-card" style="margin-top: 20px;">
+                <p class="error">OpenAI Analysis Error: {error_msg}</p>
+                <p style="margin-top: 10px; color: #666; font-size: 0.9em;">
+                    Please check your OpenAI API key in config.py or set OPENAI_API_KEY environment variable.
+                </p>
+            </div>
+        </div>
+        """
+    else:
+        openai_display = """
+        <div class="result-card openai-analysis" style="border-left-color: #6c757d; margin-bottom: 30px;">
+            <div class="card-title">
+                <span style="font-size: 1.2em;">🤖</span>
+                OpenAI AI Analysis
+            </div>
+            <div class="info-card" style="margin-top: 20px;">
+                <p>OpenAI analysis not available.</p>
+            </div>
+        </div>
+        """
     
     return f"""
     <html>
@@ -398,24 +730,6 @@ def show_results():
                 font-weight: bold;
                 text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
             }}
-            .charts-section {{
-                background: #f8f9fa;
-                padding: 30px;
-                border-radius: 15px;
-                margin: 30px 0;
-            }}
-            .chart-container {{
-                display: grid;
-                grid-template-columns: 1fr 1fr;
-                gap: 30px;
-                margin-top: 30px;
-            }}
-            .chart-box {{
-                background: white;
-                padding: 20px;
-                border-radius: 10px;
-                box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            }}
             .terminal {{ 
                 background: #1e1e1e; 
                 color: #00ff00; 
@@ -478,7 +792,7 @@ def show_results():
             .error-card {{ background: #f8d7da; padding: 15px; border-radius: 8px; margin: 10px 0; }}
             .prediction-card {{ background: #d4edda; padding: 15px; border-radius: 8px; margin: 10px 0; }}
             @media (max-width: 768px) {{
-                .results-grid, .chart-container {{ grid-template-columns: 1fr; }}
+                .results-grid {{ grid-template-columns: 1fr; }}
                 .action-buttons {{ flex-direction: column; align-items: center; }}
                 .header h1 {{ font-size: 2em; }}
                 .content {{ padding: 20px; }}
@@ -493,43 +807,67 @@ def show_results():
             </div>
             
             <div class="content">
-                <!-- AI Prediction Only -->
-                <div class="result-card ml-prediction" style="max-width: 600px; margin: 0 auto;">
-                    <div class="card-title">
-                        🤖 AI Risk Assessment
-                    </div>
-                    {ml_display}
+                <!-- Patient Info -->
+                <div class="patient-header" style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin-bottom: 30px;">
+                    <h2 style="color: #333; margin-bottom: 10px;">Patient: {patient.name}</h2>
+                    <p style="color: #666;">Age: {patient.age} | Gender: {patient.gender}</p>
                 </div>
                 
-                <!-- Charts Section -->
-                <div class="charts-section">
-                    <h3 style="text-align: center; margin-bottom: 20px; color: #333;">📈 AI Analysis & Dataset Comparison</h3>
-                    <div class="chart-container" style="grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 30px;">
-                        <div class="chart-box">
-                            <h4 style="text-align: center; margin-bottom: 15px;">🎯 Risk Level Distribution</h4>
-                            <canvas id="riskChart" width="400" height="300"></canvas>
-                        </div>
-                        <div class="chart-box">
-                            <h4 style="text-align: center; margin-bottom: 15px;">🤖 AI Confidence Analysis</h4>
-                            <canvas id="confidenceChart" width="400" height="300"></canvas>
-                        </div>
+                <!-- OpenAI Analysis Section -->
+                {openai_display}
+                
+                <!-- Patient History Table -->
+                <div class="section" style="margin-top: 40px;">
+                    <h2 style="color: #333; margin-bottom: 20px; font-size: 1.8em;">📋 Previous Assessment History</h2>
+                    <div style="overflow-x: auto;">
+                        <table style="width: 100%; border-collapse: collapse; background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                            <thead>
+                                <tr style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                                    <th style="padding: 15px; text-align: left; border-bottom: 2px solid #ddd;">Date</th>
+                                    <th style="padding: 15px; text-align: left; border-bottom: 2px solid #ddd;">Score</th>
+                                    <th style="padding: 15px; text-align: left; border-bottom: 2px solid #ddd;">Risk Category</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {' '.join([f'''
+                                <tr style="border-bottom: 1px solid #eee;">
+                                    <td style="padding: 12px;">{assessment.timestamp.strftime('%Y-%m-%d %H:%M')}</td>
+                                    <td style="padding: 12px;"><strong>{assessment.total_score if assessment.total_score else 'N/A'}</strong> / {max_score}</td>
+                                    <td style="padding: 12px;">
+                                        <span style="padding: 5px 10px; border-radius: 5px; background: {openai_risk_colors.get(assessment.openai_category, '#6c757d') if assessment.openai_category else '#6c757d'}; color: white; font-weight: 600;">
+                                            {assessment.openai_category if assessment.openai_category else 'N/A'}
+                                        </span>
+                                    </td>
+                                </tr>
+                                ''' for assessment in all_assessments]) if all_assessments else '<tr><td colspan="3" style="padding: 20px; text-align: center; color: #666;">No previous assessments found</td></tr>'}
+                            </tbody>
+                        </table>
                     </div>
-                    <div class="chart-container" style="grid-template-columns: 1fr 1fr; gap: 30px;">
-                        <div class="chart-box">
-                            <h4 style="text-align: center; margin-bottom: 15px;">📊 Score Distribution</h4>
-                            <canvas id="scoreChart" width="400" height="300"></canvas>
+                </div>
+                
+                <!-- Patient History Charts -->
+                <div class="section" style="margin-top: 40px;">
+                    <h2 style="color: #333; margin-bottom: 20px; font-size: 1.8em;">📊 Patient Assessment Trends</h2>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 30px; margin-top: 20px;">
+                        <div style="background: #f8f9fa; padding: 20px; border-radius: 10px;">
+                            <h3 style="text-align: center; margin-bottom: 15px; color: #333;">Score Trend Over Time</h3>
+                            <canvas id="scoreTrendChart" width="400" height="300"></canvas>
                         </div>
-                        <div class="chart-box">
-                            <h4 style="text-align: center; margin-bottom: 15px;">📈 Risk Trend Analysis</h4>
-                            <canvas id="trendChart" width="400" height="300"></canvas>
+                        <div style="background: #f8f9fa; padding: 20px; border-radius: 10px;">
+                            <h3 style="text-align: center; margin-bottom: 15px; color: #333;">Performance Improvement Trend</h3>
+                            <canvas id="performanceTrendChart" width="400" height="300"></canvas>
+                        </div>
+                        <div style="background: #f8f9fa; padding: 20px; border-radius: 10px;">
+                            <h3 style="text-align: center; margin-bottom: 15px; color: #333;">Risk Category Distribution</h3>
+                            <canvas id="riskCategoryChart" width="400" height="300"></canvas>
                         </div>
                     </div>
                 </div>
                 
                 <!-- Action Buttons -->
                 <div class="action-buttons">
-                    <a href="/" class="btn btn-primary">🔄 Take New Assessment</a>
-                    <button onclick="goBack()" class="btn btn-secondary">← Back to Previous Choices</button>
+                    <a href="/assess-patient" class="btn btn-primary">🔄 Assess Another Patient</a>
+                    <a href="/dashboard" class="btn btn-secondary">← Back to Dashboard</a>
                 </div>
                 
                 
@@ -542,374 +880,164 @@ def show_results():
         </div>
         
         <script>
-            // Chart 1: Risk Level Distribution (Doughnut Chart)
-            const riskCtx = document.getElementById('riskChart').getContext('2d');
-            {f'''
-            const riskDistribution = {dataset_analysis['risk_distribution']};
-            const riskLabels = Object.keys(riskDistribution);
-            const riskData = Object.values(riskDistribution);
-            const riskColors = ['#28a745', '#ffc107', '#fd7e14', '#dc3545'];
+            // Chart data
+            const assessmentDates = {json.dumps(assessment_dates)};
+            const assessmentScores = {json.dumps(assessment_scores)};
+            const assessmentCategories = {json.dumps(assessment_categories)};
+            const performanceTrend = {json.dumps(performance_trend)};
             
-            new Chart(riskCtx, {{
-                type: 'doughnut',
-                data: {{
-                    labels: riskLabels,
-                    datasets: [{{
-                        data: riskData,
-                        backgroundColor: riskColors.slice(0, riskLabels.length),
-                        borderWidth: 3,
-                        borderColor: '#fff'
-                    }}]
-                }},
-                options: {{
-                    responsive: true,
-                    animation: {{
-                        animateRotate: true,
-                        animateScale: true,
-                        duration: 2000
+            // Chart 1: Score Trend Over Time
+            const scoreTrendCtx = document.getElementById('scoreTrendChart');
+            if (scoreTrendCtx) {{
+                new Chart(scoreTrendCtx, {{
+                    type: 'line',
+                    data: {{
+                        labels: assessmentDates,
+                        datasets: [{{
+                            label: 'Assessment Score',
+                            data: assessmentScores,
+                            borderColor: '#667eea',
+                            backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4,
+                            pointBackgroundColor: '#667eea',
+                            pointBorderColor: '#fff',
+                            pointBorderWidth: 2,
+                            pointRadius: 6
+                        }}]
                     }},
-                    plugins: {{
-                        legend: {{
-                            position: 'bottom',
-                            labels: {{
-                                usePointStyle: true,
-                                padding: 20
-                            }}
-                        }}
-                    }}
-                }}
-            }});
-            ''' if dataset_analysis else '''
-            const riskLevels = ['Low Risk', 'At-Risk', 'Problematic', 'High Risk'];
-            const riskColors = ['#28a745', '#ffc107', '#fd7e14', '#dc3545'];
-            
-            new Chart(riskCtx, {{
-                type: 'doughnut',
-                data: {{
-                    labels: riskLevels,
-                    datasets: [{{
-                        data: [25, 25, 25, 25],
-                        backgroundColor: riskColors,
-                        borderWidth: 3,
-                        borderColor: '#fff'
-                    }}]
-                }},
-                options: {{
-                    responsive: true,
-                    animation: {{
-                        animateRotate: true,
-                        animateScale: true,
-                        duration: 2000
-                    }},
-                    plugins: {{
-                        legend: {{
-                            position: 'bottom',
-                            labels: {{
-                                usePointStyle: true,
-                                padding: 20
-                            }}
-                        }}
-                    }}
-                }}
-            }});
-            '''}
-            
-            // Chart 2: AI Confidence Analysis (Polar Area Chart)
-            const confidenceCtx = document.getElementById('confidenceChart').getContext('2d');
-            {f'''
-            const confidence = {ml_prediction.get('confidence', 0) if ml_prediction and ml_prediction.get('success', False) else 0};
-            const confidenceData = [confidence * 100, (1 - confidence) * 100];
-            
-            new Chart(confidenceCtx, {{
-                type: 'polarArea',
-                data: {{
-                    labels: ['AI Confidence', 'Uncertainty'],
-                    datasets: [{{
-                        data: confidenceData,
-                        backgroundColor: ['#28a745', '#e9ecef'],
-                        borderWidth: 2,
-                        borderColor: '#fff'
-                    }}]
-                }},
-                options: {{
-                    responsive: true,
-                    animation: {{
-                        animateRotate: true,
-                        animateScale: true,
-                        duration: 2000
-                    }},
-                    plugins: {{
-                        legend: {{
-                            position: 'bottom',
-                            labels: {{
-                                usePointStyle: true,
-                                padding: 20
-                            }}
-                        }}
-                    }}
-                }}
-            }});
-            ''' if ml_prediction and ml_prediction.get('success', False) else '''
-            new Chart(confidenceCtx, {{
-                type: 'polarArea',
-                data: {{
-                    labels: ['No AI Data'],
-                    datasets: [{{
-                        data: [100],
-                        backgroundColor: ['#6c757d'],
-                        borderWidth: 2,
-                        borderColor: '#fff'
-                    }}]
-                }},
-                options: {{
-                    responsive: true,
-                    animation: {{
-                        animateRotate: true,
-                        animateScale: true,
-                        duration: 2000
-                    }},
-                    plugins: {{
-                        legend: {{
-                            position: 'bottom',
-                            labels: {{
-                                usePointStyle: true,
-                                padding: 20
-                            }}
-                        }}
-                    }}
-                }}
-            }});
-            '''}
-            
-            // Chart 3: Score Distribution (Bar Chart with Animation)
-            const scoreCtx = document.getElementById('scoreChart').getContext('2d');
-            {f'''
-            new Chart(scoreCtx, {{
-                type: 'bar',
-                data: {{
-                    labels: ['Your Score', 'Dataset Average', 'Dataset Min', 'Dataset Max'],
-                    datasets: [{{
-                        label: 'Score Comparison',
-                        data: [{total_score}, {dataset_analysis['mean_score']:.1f}, {dataset_analysis['min_score']}, {dataset_analysis['max_score']}],
-                        backgroundColor: ['{legacy_color}', '#007bff', '#6c757d', '#6c757d'],
-                        borderWidth: 2,
-                        borderColor: '#fff',
-                        borderRadius: 8,
-                        borderSkipped: false
-                    }}]
-                }},
-                options: {{
-                    responsive: true,
-                    animation: {{
-                        duration: 2000,
-                        easing: 'easeInOutQuart'
-                    }},
-                    plugins: {{
-                        legend: {{
-                            display: false
-                        }}
-                    }},
-                    scales: {{
-                        y: {{
-                            beginAtZero: true,
-                            title: {{
+                    options: {{
+                        responsive: true,
+                        plugins: {{
+                            legend: {{
                                 display: true,
-                                text: 'Score',
-                                font: {{
-                                    size: 14,
-                                    weight: 'bold'
-                                }}
-                            }},
-                            grid: {{
-                                color: 'rgba(0,0,0,0.1)'
+                                position: 'top'
                             }}
                         }},
-                        x: {{
-                            grid: {{
-                                display: false
-                            }}
-                        }}
-                    }}
-                }}
-            }});
-            ''' if dataset_analysis else '''
-            new Chart(scoreCtx, {{
-                type: 'bar',
-                data: {{
-                    labels: ['Your Score', 'Max Possible'],
-                    datasets: [{{
-                        label: 'Score',
-                        data: [{total_score}, {max_score}],
-                        backgroundColor: ['{legacy_color}', '#e9ecef'],
-                        borderWidth: 2,
-                        borderColor: '#fff',
-                        borderRadius: 8,
-                        borderSkipped: false
-                    }}]
-                }},
-                options: {{
-                    responsive: true,
-                    animation: {{
-                        duration: 2000,
-                        easing: 'easeInOutQuart'
-                    }},
-                    plugins: {{
-                        legend: {{
-                            display: false
-                        }}
-                    }},
-                    scales: {{
-                        y: {{
-                            beginAtZero: true,
-                            title: {{
-                                display: true,
-                                text: 'Score',
-                                font: {{
-                                    size: 14,
-                                    weight: 'bold'
+                        scales: {{
+                            y: {{
+                                beginAtZero: true,
+                                max: {max_score},
+                                title: {{
+                                    display: true,
+                                    text: 'Score'
                                 }}
                             }},
-                            grid: {{
-                                color: 'rgba(0,0,0,0.1)'
-                            }}
-                        }},
-                        x: {{
-                            grid: {{
-                                display: false
+                            x: {{
+                                title: {{
+                                    display: true,
+                                    text: 'Assessment Date'
+                                }}
                             }}
                         }}
                     }}
-                }}
-            }});
-            '''}
+                }});
+            }}
             
-            // Chart 4: Risk Trend Analysis (Line Chart with Animation)
-            const trendCtx = document.getElementById('trendChart').getContext('2d');
-            {f'''
-            const riskTrendData = {{
-                labels: ['Low Risk', 'At-Risk', 'Problematic', 'High Risk'],
-                datasets: [{{
-                    label: 'Risk Distribution',
-                    data: Object.values({dataset_analysis['risk_distribution']}),
-                    borderColor: '#007bff',
-                    backgroundColor: 'rgba(0, 123, 255, 0.1)',
-                    borderWidth: 3,
-                    fill: true,
-                    tension: 0.4,
-                    pointBackgroundColor: '#007bff',
-                    pointBorderColor: '#fff',
-                    pointBorderWidth: 2,
-                    pointRadius: 6
-                }}]
-            }};
+            // Chart 2: Performance Improvement Trend
+            const performanceTrendCtx = document.getElementById('performanceTrendChart');
+            if (performanceTrendCtx) {{
+                new Chart(performanceTrendCtx, {{
+                    type: 'bar',
+                    data: {{
+                        labels: assessmentDates,
+                        datasets: [{{
+                            label: 'Performance Change',
+                            data: performanceTrend,
+                            backgroundColor: performanceTrend.map(val => val > 0 ? '#28a745' : val < 0 ? '#dc3545' : '#6c757d'),
+                            borderWidth: 2,
+                            borderColor: '#fff'
+                        }}]
+                    }},
+                    options: {{
+                        responsive: true,
+                        plugins: {{
+                            legend: {{
+                                display: true,
+                                position: 'top'
+                            }},
+                            tooltip: {{
+                                callbacks: {{
+                                    label: function(context) {{
+                                        const val = context.parsed.y;
+                                        if (val > 0) {{
+                                            return 'Improving by ' + val + ' points';
+                                        }} else if (val < 0) {{
+                                            return 'Declining by ' + Math.abs(val) + ' points';
+                                        }} else {{
+                                            return 'No change';
+                                        }}
+                                    }}
+                                }}
+                            }}
+                        }},
+                        scales: {{
+                            y: {{
+                                title: {{
+                                    display: true,
+                                    text: 'Score Change'
+                                }},
+                                grid: {{
+                                    color: function(context) {{
+                                        if (context.tick.value === 0) {{
+                                            return '#000';
+                                        }}
+                                        return '#e0e0e0';
+                                    }}
+                                }}
+                            }},
+                            x: {{
+                                title: {{
+                                    display: true,
+                                    text: 'Assessment Date'
+                                }}
+                            }}
+                        }}
+                    }}
+                }});
+            }}
             
-            new Chart(trendCtx, {{
-                type: 'line',
-                data: riskTrendData,
-                options: {{
-                    responsive: true,
-                    animation: {{
-                        duration: 2000,
-                        easing: 'easeInOutQuart'
+            // Chart 3: Risk Category Distribution
+            const riskCategoryCtx = document.getElementById('riskCategoryChart');
+            if (riskCategoryCtx) {{
+                // Count categories
+                const categoryCounts = {{}};
+                assessmentCategories.forEach(cat => {{
+                    categoryCounts[cat] = (categoryCounts[cat] || 0) + 1;
+                }});
+                
+                const categoryLabels = Object.keys(categoryCounts);
+                const categoryData = Object.values(categoryCounts);
+                const categoryColors = {{
+                    'Low risk': '#28a745',
+                    'At-Risk': '#ffc107',
+                    'Problematic use likely': '#fd7e14',
+                    'High Risk/ addictive pattern': '#dc3545',
+                    'Unknown': '#6c757d'
+                }};
+                
+                new Chart(riskCategoryCtx, {{
+                    type: 'doughnut',
+                    data: {{
+                        labels: categoryLabels,
+                        datasets: [{{
+                            data: categoryData,
+                            backgroundColor: categoryLabels.map(cat => categoryColors[cat] || '#6c757d'),
+                            borderWidth: 3,
+                            borderColor: '#fff'
+                        }}]
                     }},
-                    plugins: {{
-                        legend: {{
-                            display: false
-                        }}
-                    }},
-                    scales: {{
-                        y: {{
-                            beginAtZero: true,
-                            title: {{
-                                display: true,
-                                text: 'Number of People',
-                                font: {{
-                                    size: 14,
-                                    weight: 'bold'
-                                }}
-                            }},
-                            grid: {{
-                                color: 'rgba(0,0,0,0.1)'
-                            }}
-                        }},
-                        x: {{
-                            title: {{
-                                display: true,
-                                text: 'Risk Levels',
-                                font: {{
-                                    size: 14,
-                                    weight: 'bold'
-                                }}
-                            }},
-                            grid: {{
-                                display: false
+                    options: {{
+                        responsive: true,
+                        plugins: {{
+                            legend: {{
+                                position: 'bottom'
                             }}
                         }}
                     }}
-                }}
-            }});
-            ''' if dataset_analysis else '''
-            new Chart(trendCtx, {{
-                type: 'line',
-                data: {{
-                    labels: ['Low Risk', 'At-Risk', 'Problematic', 'High Risk'],
-                    datasets: [{{
-                        label: 'Risk Distribution',
-                        data: [25, 25, 25, 25],
-                        borderColor: '#007bff',
-                        backgroundColor: 'rgba(0, 123, 255, 0.1)',
-                        borderWidth: 3,
-                        fill: true,
-                        tension: 0.4,
-                        pointBackgroundColor: '#007bff',
-                        pointBorderColor: '#fff',
-                        pointBorderWidth: 2,
-                        pointRadius: 6
-                    }}]
-                }},
-                options: {{
-                    responsive: true,
-                    animation: {{
-                        duration: 2000,
-                        easing: 'easeInOutQuart'
-                    }},
-                    plugins: {{
-                        legend: {{
-                            display: false
-                        }}
-                    }},
-                    scales: {{
-                        y: {{
-                            beginAtZero: true,
-                            title: {{
-                                display: true,
-                                text: 'Number of People',
-                                font: {{
-                                    size: 14,
-                                    weight: 'bold'
-                                }}
-                            }},
-                            grid: {{
-                                color: 'rgba(0,0,0,0.1)'
-                            }}
-                        }},
-                        x: {{
-                            title: {{
-                                display: true,
-                                text: 'Risk Levels',
-                                font: {{
-                                    size: 14,
-                                    weight: 'bold'
-                                }}
-                            }},
-                            grid: {{
-                                display: false
-                            }}
-                        }}
-                    }}
-                }}
-            }});
-            '''}
+                }});
+            }}
             
             // Go back function
             function goBack() {{
@@ -1241,6 +1369,79 @@ def ml_info():
 def serve_visualization(filename):
     """Serve visualization images from the ml_model/visualizations directory"""
     return send_from_directory('ml_model/visualizations', filename)
+
+@app.route('/patient-analysis')
+@login_required
+def patient_analysis():
+    """Patient analysis page with visualizations"""
+    doctor_id = session['doctor_id']
+    patients = Patient.query.filter_by(doctor_id=doctor_id).all()
+    
+    # Get all assessments for this doctor's patients
+    all_logs = PatientLog.query.filter_by(doctor_id=doctor_id).all()
+    
+    # Calculate statistics
+    total_patients = len(patients)
+    total_assessments = len(all_logs)
+    avg_assessments_per_patient = round(total_assessments / total_patients, 2) if total_patients > 0 else 0
+    
+    # Risk category distribution
+    risk_counts = {}
+    for log in all_logs:
+        if log.openai_category:
+            risk_counts[log.openai_category] = risk_counts.get(log.openai_category, 0) + 1
+    
+    risk_labels = list(risk_counts.keys()) if risk_counts else []
+    risk_data = list(risk_counts.values()) if risk_counts else []
+    
+    # Time-based data (last 30 days)
+    from collections import defaultdict
+    time_counts = defaultdict(int)
+    for log in all_logs:
+        date_str = log.timestamp.strftime('%Y-%m-%d')
+        time_counts[date_str] += 1
+    
+    time_labels = sorted(time_counts.keys())[-30:]  # Last 30 days
+    time_data = [time_counts.get(d, 0) for d in time_labels]
+    
+    # Gender distribution
+    gender_counts = {}
+    for patient in patients:
+        gender_counts[patient.gender] = gender_counts.get(patient.gender, 0) + 1
+    
+    gender_labels = list(gender_counts.keys())
+    gender_data = list(gender_counts.values())
+    
+    # Age distribution (grouped)
+    age_groups = {'0-18': 0, '19-30': 0, '31-45': 0, '46-60': 0, '60+': 0}
+    for patient in patients:
+        if patient.age <= 18:
+            age_groups['0-18'] += 1
+        elif patient.age <= 30:
+            age_groups['19-30'] += 1
+        elif patient.age <= 45:
+            age_groups['31-45'] += 1
+        elif patient.age <= 60:
+            age_groups['46-60'] += 1
+        else:
+            age_groups['60+'] += 1
+    
+    age_labels = list(age_groups.keys())
+    age_data = list(age_groups.values())
+    
+    return render_template('patient_analysis.html',
+                         patients=patients,
+                         total_patients=total_patients,
+                         total_assessments=total_assessments,
+                         avg_assessments_per_patient=avg_assessments_per_patient,
+                         risk_labels=json.dumps(risk_labels),
+                         risk_data=json.dumps(risk_data),
+                         time_labels=json.dumps(time_labels),
+                         time_data=json.dumps(time_data),
+                         gender_labels=json.dumps(gender_labels),
+                         gender_data=json.dumps(gender_data),
+                         age_labels=json.dumps(age_labels),
+                         age_data=json.dumps(age_data))
 
 if __name__ == '__main__':
     print("Starting Flask application...")

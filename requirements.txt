@@ -19,3 +19,9 @@ Jinja2>=3.0.0
 MarkupSafe>=2.0.0
 itsdangerous>=2.0.0
 click>=8.0.0
+
+# OpenAI API integration
+openai>=1.0.0
+
+# Database
+Flask-SQLAlchemy>=3.0.0

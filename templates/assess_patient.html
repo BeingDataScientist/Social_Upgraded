@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assess Patient</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        .header h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+        .form-container {
+            padding: 40px;
+        }
+        .form-group {
+            margin-bottom: 25px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+        }
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s ease;
+        }
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        .btn {
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+        .btn-secondary {
+            background: #6c757d;
+            margin-left: 10px;
+        }
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+        .patient-info {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .patient-info h3 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .patient-info p {
+            color: #666;
+            margin: 5px 0;
+        }
+        .alert {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .alert-warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📋 Assess Existing Patient</h1>
+        </div>
+        <div class="form-container">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            
+            <form method="POST" action="/assess-patient">
+                <div class="form-group">
+                    <label for="patient_id">Select Patient</label>
+                    <select id="patient_id" name="patient_id" required>
+                        <option value="">Select a patient</option>
+                        {% for patient in patients %}
+                        <option value="{{ patient.pid }}">{{ patient.name }} - Age: {{ patient.age }}, {{ patient.gender }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                {% if selected_patient %}
+                <div class="patient-info">
+                    <h3>Patient Information</h3>
+                    <p><strong>Name:</strong> {{ selected_patient.name }}</p>
+                    <p><strong>Age:</strong> {{ selected_patient.age }}</p>
+                    <p><strong>Gender:</strong> {{ selected_patient.gender }}</p>
+                    <p><strong>Previous History:</strong> {{ selected_patient.previous_history or 'None' }}</p>
+                </div>
+                {% endif %}
+                
+                <button type="submit" class="btn">Start Assessment</button>
+                <a href="/dashboard" class="btn btn-secondary">Back to Dashboard</a>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
+

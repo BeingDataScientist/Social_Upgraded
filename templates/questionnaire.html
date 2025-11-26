@@ -174,6 +174,11 @@
             cursor: pointer;
             transition: all 0.3s ease;
             margin-top: 30px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
         }
 
         .submit-btn:hover {
@@ -186,6 +191,13 @@
             cursor: not-allowed;
             transform: none;
             box-shadow: none;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .processing {
+            pointer-events: none;
+            opacity: 0.7;
         }
 
         .results {
@@ -305,7 +317,7 @@
                         <!-- Question 1 -->
                         <div class="question-group">
                             <div class="question">1. Age (in years):</div>
-                            <input type="number" name="q1" class="text-input" placeholder="Enter your age" min="1" max="100" data-score="0">
+                            <input type="number" name="q1" id="q1" class="text-input" placeholder="Enter your age" min="1" max="100" data-score="0" {% if patient %}value="{{ patient.age }}"{% endif %}>
                         </div>
 
                         <!-- Question 2 -->
@@ -313,17 +325,17 @@
                             <div class="question">2. Gender:</div>
                             <div class="options">
                                 <label class="option">
-                                    <input type="radio" name="q2" value="male" data-score="0">
+                                    <input type="radio" name="q2" value="male" data-score="0" {% if patient and patient.gender == 'male' %}checked{% endif %}>
                                     <span>Male</span>
                                     <span class="score-display">0</span>
                                 </label>
                                 <label class="option">
-                                    <input type="radio" name="q2" value="female" data-score="1">
+                                    <input type="radio" name="q2" value="female" data-score="1" {% if patient and patient.gender == 'female' %}checked{% endif %}>
                                     <span>Female</span>
                                     <span class="score-display">1</span>
                                 </label>
                                 <label class="option">
-                                    <input type="radio" name="q2" value="other" data-score="2">
+                                    <input type="radio" name="q2" value="other" data-score="2" {% if patient and patient.gender == 'other' %}checked{% endif %}>
                                     <span>Other</span>
                                     <span class="score-display">2</span>
                                 </label>
@@ -784,7 +796,11 @@
                 </div>
 
                 <button type="submit" class="submit-btn" id="submitBtn" disabled>
-                    Calculate My Assessment Score
+                    <span id="submitText">Calculate My Assessment Score</span>
+                    <span id="submitLoader" style="display: none;">
+                        <span style="display: inline-block; width: 20px; height: 20px; border: 3px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 1s linear infinite;"></span>
+                        Processing...
+                    </span>
                 </button>
             </form>
 
@@ -837,12 +853,19 @@
             const progress = (answeredQuestions / totalQuestions) * 100;
             progressFill.style.width = progress + '%';
             
+            const submitText = document.getElementById('submitText');
+            const submitLoader = document.getElementById('submitLoader');
+            
             if (answeredQuestions === totalQuestions) {
                 submitBtn.disabled = false;
-                submitBtn.textContent = 'Calculate My Assessment Score';
+                submitText.textContent = 'Calculate My Assessment Score';
+                submitText.style.display = 'inline-block';
+                submitLoader.style.display = 'none';
             } else {
                 submitBtn.disabled = true;
-                submitBtn.textContent = `Answer ${totalQuestions - answeredQuestions} more questions`;
+                submitText.textContent = `Answer ${totalQuestions - answeredQuestions} more questions`;
+                submitText.style.display = 'inline-block';
+                submitLoader.style.display = 'none';
             }
         }
 
@@ -854,6 +877,14 @@
                 alert(`Please answer all ${totalQuestions} questions before submitting.`);
                 return;
             }
+            
+            // Show processing indicator
+            const submitText = document.getElementById('submitText');
+            const submitLoader = document.getElementById('submitLoader');
+            submitBtn.disabled = true;
+            submitText.style.display = 'none';
+            submitLoader.style.display = 'inline-block';
+            form.classList.add('processing');
             
             // Submit to Flask backend
             const formData = new FormData(form);
@@ -868,11 +899,21 @@
                     // Redirect to results page
                     window.location.href = data.redirect_url || '/results';
                 } else {
+                    // Hide processing indicator on error
+                    submitText.style.display = 'inline-block';
+                    submitLoader.style.display = 'none';
+                    submitBtn.disabled = false;
+                    form.classList.remove('processing');
                     alert('Error submitting form: ' + data.error);
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
+                // Hide processing indicator on error
+                submitText.style.display = 'inline-block';
+                submitLoader.style.display = 'none';
+                submitBtn.disabled = false;
+                form.classList.remove('processing');
                 alert('Error submitting form. Please try again.');
             });
         });
@@ -1028,7 +1069,7 @@ ${pythonOutput}
             return sectionMaxScores[section] || 0;
         }
 
-        // Initialize progress
+        // Initialize progress (will automatically count auto-filled fields)
         updateProgress();
     </script>
 </body>

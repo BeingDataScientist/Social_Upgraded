@@ -25,10 +25,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Create necessary directories
-RUN mkdir -p ml_model/artifacts ml_model/reports ml_model/visualizations
+RUN mkdir -p ml_model/artifacts ml_model/reports ml_model/visualizations instance
 
-# Train the ML model during build (if data is available)
-RUN if [ -f "questionnaire_data.csv" ]; then python ml_model/ml_training.py; fi
+# Initialize database (will be created on first run)
+# Note: Database file will be created in /app/instance/health_assessment.db
 
 # Expose port 5000
 EXPOSE 5000
