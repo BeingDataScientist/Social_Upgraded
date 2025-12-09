@@ -1,0 +1,425 @@
+/* 
+ * Psychology, Internet Addiction & Mental Health Themed Background Animations
+ * Subtle, non-distracting animations that enhance the therapeutic atmosphere
+ */
+
+/* Floating Particles - Representing thoughts, digital elements, neural activity */
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0px) translateX(0px) rotate(0deg);
+        opacity: 0.3;
+    }
+    33% {
+        transform: translateY(-30px) translateX(20px) rotate(120deg);
+        opacity: 0.5;
+    }
+    66% {
+        transform: translateY(-60px) translateX(-20px) rotate(240deg);
+        opacity: 0.4;
+    }
+}
+
+@keyframes floatSlow {
+    0%, 100% {
+        transform: translateY(0px) translateX(0px);
+        opacity: 0.2;
+    }
+    50% {
+        transform: translateY(-40px) translateX(30px);
+        opacity: 0.4;
+    }
+}
+
+/* Pulsing Animation - Representing heartbeat, anxiety, awareness */
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 0.4;
+    }
+    50% {
+        transform: scale(1.1);
+        opacity: 0.6;
+    }
+}
+
+@keyframes pulseSlow {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 0.2;
+    }
+    50% {
+        transform: scale(1.15);
+        opacity: 0.35;
+    }
+}
+
+/* Wave Animation - Representing calm, therapy, flow */
+@keyframes wave {
+    0%, 100% {
+        transform: translateX(0) translateY(0);
+    }
+    25% {
+        transform: translateX(10px) translateY(-5px);
+    }
+    50% {
+        transform: translateX(0) translateY(-10px);
+    }
+    75% {
+        transform: translateX(-10px) translateY(-5px);
+    }
+}
+
+/* Neural Network / Brain Activity Pattern */
+@keyframes neuralPulse {
+    0%, 100% {
+        opacity: 0.1;
+        transform: scale(0.8);
+    }
+    50% {
+        opacity: 0.3;
+        transform: scale(1.2);
+    }
+}
+
+/* Digital Network Pattern - Representing internet connectivity */
+@keyframes networkFlow {
+    0% {
+        stroke-dashoffset: 1000;
+        opacity: 0.2;
+    }
+    50% {
+        opacity: 0.5;
+    }
+    100% {
+        stroke-dashoffset: 0;
+        opacity: 0.2;
+    }
+}
+
+/* Breathing Animation - Calming, therapeutic */
+@keyframes breathe {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 0.3;
+    }
+    50% {
+        transform: scale(1.2);
+        opacity: 0.5;
+    }
+}
+
+/* Thought Bubble Animation */
+@keyframes thoughtBubble {
+    0%, 100% {
+        transform: translateY(0) scale(1);
+        opacity: 0.2;
+    }
+    50% {
+        transform: translateY(-20px) scale(1.1);
+        opacity: 0.4;
+    }
+}
+
+/* Background Animation Container */
+.animated-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+/* Floating Particles */
+.particle {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    animation: float 15s infinite ease-in-out;
+}
+
+.particle:nth-child(1) {
+    width: 80px;
+    height: 80px;
+    left: 10%;
+    top: 20%;
+    animation-delay: 0s;
+    background: radial-gradient(circle, rgba(102, 126, 234, 0.3) 0%, transparent 70%);
+}
+
+.particle:nth-child(2) {
+    width: 60px;
+    height: 60px;
+    left: 20%;
+    top: 60%;
+    animation-delay: 2s;
+    animation-duration: 18s;
+    background: radial-gradient(circle, rgba(118, 75, 162, 0.3) 0%, transparent 70%);
+}
+
+.particle:nth-child(3) {
+    width: 100px;
+    height: 100px;
+    left: 70%;
+    top: 30%;
+    animation-delay: 4s;
+    animation-duration: 20s;
+    background: radial-gradient(circle, rgba(79, 172, 254, 0.25) 0%, transparent 70%);
+}
+
+.particle:nth-child(4) {
+    width: 50px;
+    height: 50px;
+    left: 80%;
+    top: 70%;
+    animation-delay: 1s;
+    animation-duration: 16s;
+    background: radial-gradient(circle, rgba(102, 126, 234, 0.2) 0%, transparent 70%);
+}
+
+.particle:nth-child(5) {
+    width: 70px;
+    height: 70px;
+    left: 50%;
+    top: 10%;
+    animation-delay: 3s;
+    animation-duration: 22s;
+    background: radial-gradient(circle, rgba(118, 75, 162, 0.25) 0%, transparent 70%);
+}
+
+.particle:nth-child(6) {
+    width: 90px;
+    height: 90px;
+    left: 30%;
+    top: 80%;
+    animation-delay: 5s;
+    animation-duration: 19s;
+    background: radial-gradient(circle, rgba(79, 172, 254, 0.2) 0%, transparent 70%);
+}
+
+/* Pulsing Circles - Representing awareness, mindfulness */
+.pulse-circle {
+    position: absolute;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    animation: pulse 4s infinite ease-in-out;
+}
+
+.pulse-circle:nth-child(7) {
+    width: 200px;
+    height: 200px;
+    left: 5%;
+    top: 50%;
+    animation-delay: 0s;
+}
+
+.pulse-circle:nth-child(8) {
+    width: 150px;
+    height: 150px;
+    left: 85%;
+    top: 20%;
+    animation-delay: 2s;
+    animation-duration: 5s;
+}
+
+.pulse-circle:nth-child(9) {
+    width: 180px;
+    height: 180px;
+    left: 60%;
+    top: 70%;
+    animation-delay: 1s;
+    animation-duration: 6s;
+}
+
+/* Wave Elements - Calming, therapeutic */
+.wave {
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    border-radius: 50%;
+    border: 3px solid rgba(255, 255, 255, 0.08);
+    animation: wave 8s infinite ease-in-out;
+}
+
+.wave:nth-child(10) {
+    left: 15%;
+    top: 15%;
+    animation-delay: 0s;
+}
+
+.wave:nth-child(11) {
+    left: 75%;
+    top: 60%;
+    animation-delay: 4s;
+    animation-duration: 10s;
+}
+
+/* Neural Network Nodes */
+.neural-node {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 50%;
+    animation: neuralPulse 3s infinite ease-in-out;
+    box-shadow: 0 0 10px rgba(102, 126, 234, 0.3);
+}
+
+.neural-node:nth-child(12) {
+    left: 25%;
+    top: 25%;
+    animation-delay: 0s;
+}
+
+.neural-node:nth-child(13) {
+    left: 45%;
+    top: 35%;
+    animation-delay: 0.5s;
+}
+
+.neural-node:nth-child(14) {
+    left: 65%;
+    top: 45%;
+    animation-delay: 1s;
+}
+
+.neural-node:nth-child(15) {
+    left: 35%;
+    top: 65%;
+    animation-delay: 1.5s;
+}
+
+.neural-node:nth-child(16) {
+    left: 55%;
+    top: 75%;
+    animation-delay: 2s;
+}
+
+/* Thought Bubbles - Representing mental processes */
+.thought-bubble {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.08);
+    animation: thoughtBubble 6s infinite ease-in-out;
+}
+
+.thought-bubble:nth-child(17) {
+    left: 40%;
+    top: 40%;
+    animation-delay: 0s;
+}
+
+.thought-bubble:nth-child(18) {
+    left: 60%;
+    top: 50%;
+    animation-delay: 3s;
+    width: 30px;
+    height: 30px;
+}
+
+/* Breathing Circles - Calming effect */
+.breathe-circle {
+    position: absolute;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    animation: breathe 6s infinite ease-in-out;
+}
+
+.breathe-circle:nth-child(19) {
+    width: 250px;
+    height: 250px;
+    left: 10%;
+    top: 30%;
+    animation-delay: 0s;
+}
+
+.breathe-circle:nth-child(20) {
+    width: 200px;
+    height: 200px;
+    left: 70%;
+    top: 50%;
+    animation-delay: 3s;
+}
+
+/* Digital Network Lines (SVG pattern) */
+.network-line {
+    position: absolute;
+    width: 2px;
+    height: 100px;
+    background: linear-gradient(to bottom, transparent, rgba(255, 255, 255, 0.1), transparent);
+    animation: floatSlow 12s infinite ease-in-out;
+    transform-origin: center;
+}
+
+.network-line:nth-child(21) {
+    left: 20%;
+    top: 10%;
+    transform: rotate(45deg);
+    animation-delay: 0s;
+}
+
+.network-line:nth-child(22) {
+    left: 50%;
+    top: 20%;
+    transform: rotate(-30deg);
+    animation-delay: 2s;
+}
+
+.network-line:nth-child(23) {
+    left: 80%;
+    top: 40%;
+    transform: rotate(60deg);
+    animation-delay: 4s;
+}
+
+/* Subtle Gradient Shift */
+@keyframes gradientShift {
+    0%, 100% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+}
+
+.animated-gradient-bg {
+    background: linear-gradient(-45deg, #667eea, #764ba2, #4facfe, #00f2fe);
+    background-size: 400% 400%;
+    animation: gradientShift 15s ease infinite;
+}
+
+/* Reduce animations for users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    .particle,
+    .pulse-circle,
+    .wave,
+    .neural-node,
+    .thought-bubble,
+    .breathe-circle,
+    .network-line {
+        animation: none;
+        opacity: 0.1;
+    }
+    
+    .animated-gradient-bg {
+        animation: none;
+    }
+}
+
+/* Mobile optimization - fewer particles */
+@media (max-width: 768px) {
+    .particle:nth-child(n+4),
+    .pulse-circle:nth-child(n+8),
+    .wave:nth-child(n+11),
+    .neural-node:nth-child(n+14),
+    .thought-bubble:nth-child(n+18),
+    .breathe-circle:nth-child(n+20),
+    .network-line:nth-child(n+22) {
+        display: none;
+    }
+}
+

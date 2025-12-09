@@ -17,13 +17,9 @@ RUN apt-get update \
 
 # Copy requirements first for better caching
 COPY requirements.txt .
-COPY ml_model/requirements.txt ml_model/requirements.txt
 
-# Install Python dependencies (main app)
+# Install all Python dependencies (consolidated requirements)
 RUN pip install --no-cache-dir -r requirements.txt
-
-# Install ML model dependencies
-RUN pip install --no-cache-dir -r ml_model/requirements.txt
 
 # Copy the entire project
 COPY . .

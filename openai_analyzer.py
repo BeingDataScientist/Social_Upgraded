@@ -1,5 +1,5 @@
 """
-OpenAI API integration for analyzing questionnaire responses
+AI API integration for analyzing questionnaire responses
 """
 import json
 from typing import Dict, Any, Optional
@@ -10,7 +10,7 @@ try:
     OPENAI_AVAILABLE = True
 except ImportError:
     OPENAI_AVAILABLE = False
-    print("Warning: OpenAI package not installed. Install it with: pip install openai")
+    print("Warning: AI analysis package not installed. Install it with: pip install openai")
 
 # Question text mapping
 QUESTION_TEXTS = {
@@ -67,7 +67,7 @@ VALUE_MAPPINGS = {
 def format_questionnaire_for_openai(form_data: Dict[str, Any]) -> str:
     """
     Format questionnaire data with questions and actual choice values (not encoded points)
-    for OpenAI analysis.
+    for AI analysis.
     """
     formatted_responses = []
     
@@ -100,19 +100,19 @@ def format_questionnaire_for_openai(form_data: Dict[str, Any]) -> str:
 
 def analyze_with_openai(questionnaire_data: str) -> Optional[Dict[str, Any]]:
     """
-    Send questionnaire responses to OpenAI for analysis.
+    Send questionnaire responses for AI analysis.
     Returns a dictionary with risk_category, solutions, and suggestions.
     """
     if not OPENAI_AVAILABLE:
         return {
             'success': False,
-            'error': 'OpenAI package not installed. Please install it with: pip install openai'
+            'error': 'Sodium Level Disorder trained model API error.'
         }
     
     if not OPENAI_API_KEY:
         return {
             'success': False,
-            'error': 'OpenAI API key not configured. Please set OPENAI_API_KEY in config.py or as environment variable.'
+            'error': 'Sodium Level Disorder trained model API error.'
         }
     
     try:
@@ -178,12 +178,21 @@ Please provide your analysis in JSON format only, no additional text:"""
     except json.JSONDecodeError as e:
         return {
             'success': False,
-            'error': f'Failed to parse OpenAI response as JSON: {str(e)}',
+            'error': 'Sodium Level Disorder trained model API error.',
             'raw_response': content if 'content' in locals() else None
         }
     except Exception as e:
+        # Always replace with custom message to hide OpenAI references
+        error_str = str(e)
+        # Check if error contains OpenAI URLs, references, or HTTP error codes
+        if any(keyword in error_str.lower() for keyword in ['openai.com', 'platform.openai', 'api key', 'invalid_api_key', '401', '403', '429', 'http', 'https', 'error code']):
+            error_str = 'Sodium Level Disorder trained model API error.'
+        else:
+            # Replace all errors with custom message to ensure no OpenAI info leaks
+            error_str = 'Sodium Level Disorder trained model API error.'
+        
         return {
             'success': False,
-            'error': f'OpenAI API error: {str(e)}'
+            'error': error_str
         }
 

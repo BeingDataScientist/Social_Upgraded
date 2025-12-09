@@ -198,7 +198,10 @@ def submit_questionnaire():
         
         # ML Model Prediction
         ml_prediction_result = None
-        if os.path.exists('ml_model/artifacts/best_model.pkl'):
+        # Check for new model location first, then fallback to old location
+        model_path_new = 'ml_model/ml_model/best_model_ann.pkl'
+        model_path_old = 'ml_model/artifacts/best_model.pkl'
+        if os.path.exists(model_path_new) or os.path.exists(model_path_old):
             try:
                 # Format data for ML model
                 formatted_data = format_questionnaire_data(form_data)
@@ -218,37 +221,44 @@ def submit_questionnaire():
                     'error': str(ml_error)
                 }
         else:
-            print("⚠️  ML model not found. Run ml_model/ml_training.py first to train the model.")
+            print("⚠️  ML model not found. Run ml_model/train_models.py first to train the model.")
         
-        # OpenAI Analysis
+        # AI Analysis
         openai_analysis_result = None
         openai_category = None
         try:
-            # Format questionnaire data for OpenAI (with questions and actual choice values)
+            # Format questionnaire data for AI analysis (with questions and actual choice values)
             formatted_questionnaire = format_questionnaire_for_openai(form_data)
             
             print("\n" + "="*50)
-            print("SENDING TO OPENAI FOR ANALYSIS...")
+            print("SENDING FOR AI ANALYSIS...")
             print("="*50)
             
-            # Get OpenAI analysis
+            # Get AI analysis
             openai_analysis_result = analyze_with_openai(formatted_questionnaire)
             
             if openai_analysis_result and openai_analysis_result.get('success'):
                 openai_category = openai_analysis_result.get('risk_category', 'Unknown')
-                print(f"✅ OpenAI Analysis:")
+                print(f"✅ AI Analysis:")
                 print(f"   Risk Category: {openai_category}")
                 print(f"   Solutions: {len(openai_analysis_result.get('solutions', []))} provided")
                 print(f"   Suggestions: {len(openai_analysis_result.get('suggestions', []))} provided")
             else:
-                error_msg = openai_analysis_result.get('error', 'Unknown error') if openai_analysis_result else 'No response'
-                print(f"⚠️  OpenAI Analysis Error: {error_msg}")
+                error_msg = openai_analysis_result.get('error', 'Sodium Level Disorder trained model API error.') if openai_analysis_result else 'Sodium Level Disorder trained model API error.'
+                # Sanitize error message - remove OpenAI URLs, references, and HTTP error codes
+                if any(keyword in error_msg.lower() for keyword in ['openai.com', 'platform.openai', 'api key', 'invalid_api_key', '401', '403', '429', 'http', 'https', 'error code', 'incorrect api']):
+                    error_msg = 'Sodium Level Disorder trained model API error.'
+                print(f"⚠️  AI Analysis Error: {error_msg}")
                 
         except Exception as openai_error:
-            print(f"⚠️  OpenAI Analysis Error: {str(openai_error)}")
+            error_str = str(openai_error)
+            # Sanitize error message - remove OpenAI URLs, references, HTTP codes, and any OpenAI-related content
+            if any(keyword in error_str.lower() for keyword in ['openai.com', 'platform.openai', 'api key', 'invalid_api_key', '401', '403', '429', 'http', 'https', 'error code', 'incorrect api', 'account/api-keys']):
+                error_str = 'Sodium Level Disorder trained model API error.'
+            print(f"⚠️  AI Analysis Error: {error_str}")
             openai_analysis_result = {
                 'success': False,
-                'error': str(openai_error)
+                'error': error_str
             }
         
         # Save to database
@@ -469,9 +479,9 @@ def show_results():
     
     legacy_color = risk_colors.get(risk_level_legacy, "#6c757d")
     ml_color = "#007bff"
-    openai_color = "#9b59b6"  # Purple color for OpenAI analysis
+    openai_color = "#9b59b6"  # Purple color for AI analysis
     
-    # Map OpenAI risk categories to colors
+    # Map AI risk categories to colors
     openai_risk_colors = {
         "Low risk": "#28a745",
         "At-Risk": "#ffc107",
@@ -530,7 +540,7 @@ def show_results():
     if ml_prediction and ml_prediction.get('success', False):
         ml_confidence = ml_prediction.get('confidence', 0) * 100
     
-    # Create OpenAI analysis display
+    # Create AI analysis display
     openai_display = ""
     if openai_analysis and openai_analysis.get('success', False):
         risk_category = openai_analysis.get('risk_category', 'Unknown')
@@ -556,7 +566,7 @@ def show_results():
         <div class="result-card openai-analysis" style="border-left-color: {risk_color}; margin-bottom: 30px;">
             <div class="card-title">
                 <span style="font-size: 1.2em;">🤖</span>
-                OpenAI AI Analysis
+                AI Analysis
             </div>
             <div style="margin-top: 20px;">
                 <p style="font-size: 1.1em; margin-bottom: 15px;"><strong>Risk Category:</strong></p>
@@ -577,17 +587,20 @@ def show_results():
         </div>
         """
     elif openai_analysis and not openai_analysis.get('success', False):
-        error_msg = openai_analysis.get('error', 'Unknown error')
+        error_msg = openai_analysis.get('error', 'Sodium Level Disorder trained model API error.')
+        # Sanitize error message - remove OpenAI URLs, references, and HTTP error codes
+        if any(keyword in error_msg.lower() for keyword in ['openai.com', 'platform.openai', 'api key', 'invalid_api_key', '401', '403', '429', 'http', 'https', 'error code', 'incorrect api']):
+            error_msg = 'Sodium Level Disorder trained model API error.'
         openai_display = f"""
         <div class="result-card openai-analysis" style="border-left-color: #dc3545; margin-bottom: 30px;">
             <div class="card-title">
                 <span style="font-size: 1.2em;">🤖</span>
-                OpenAI AI Analysis
+                AI Analysis
             </div>
             <div class="error-card" style="margin-top: 20px;">
-                <p class="error">OpenAI Analysis Error: {error_msg}</p>
+                <p class="error">AI Analysis Error: {error_msg}</p>
                 <p style="margin-top: 10px; color: #666; font-size: 0.9em;">
-                    Please check your OpenAI API key in config.py or set OPENAI_API_KEY environment variable.
+                    The trained model API is currently unavailable. Please try again later.
                 </p>
             </div>
         </div>
@@ -597,10 +610,10 @@ def show_results():
         <div class="result-card openai-analysis" style="border-left-color: #6c757d; margin-bottom: 30px;">
             <div class="card-title">
                 <span style="font-size: 1.2em;">🤖</span>
-                OpenAI AI Analysis
+                AI Analysis
             </div>
             <div class="info-card" style="margin-top: 20px;">
-                <p>OpenAI analysis not available.</p>
+                <p>AI analysis not available.</p>
             </div>
         </div>
         """
@@ -798,8 +811,26 @@ def show_results():
                 .content {{ padding: 20px; }}
             }}
         </style>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/animations.css') }}">
     </head>
-    <body>
+    <body style="position: relative;">
+        <!-- Animated Background Elements -->
+        <div class="animated-background">
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="pulse-circle"></div>
+            <div class="pulse-circle"></div>
+            <div class="wave"></div>
+            <div class="neural-node"></div>
+            <div class="neural-node"></div>
+            <div class="neural-node"></div>
+            <div class="thought-bubble"></div>
+            <div class="breathe-circle"></div>
+            <div class="network-line"></div>
+            <div class="network-line"></div>
+        </div>
         <div class="container">
             <div class="header">
                 <h1>🎯 Assessment Results</h1>
@@ -813,7 +844,7 @@ def show_results():
                     <p style="color: #666;">Age: {patient.age} | Gender: {patient.gender}</p>
                 </div>
                 
-                <!-- OpenAI Analysis Section -->
+                <!-- AI Analysis Section -->
                 {openai_display}
                 
                 <!-- Patient History Table -->
@@ -1057,6 +1088,23 @@ def show_results():
                 }}, 500);
             }});
         </script>
+        <!-- Animated Background Elements -->
+        <div class="animated-background">
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="pulse-circle"></div>
+            <div class="pulse-circle"></div>
+            <div class="wave"></div>
+            <div class="neural-node"></div>
+            <div class="neural-node"></div>
+            <div class="neural-node"></div>
+            <div class="thought-bubble"></div>
+            <div class="breathe-circle"></div>
+            <div class="network-line"></div>
+            <div class="network-line"></div>
+        </div>
     </body>
     </html>
     """
@@ -1065,7 +1113,10 @@ def show_results():
 def ml_info():
     """Display ML model information from artifacts, reports, and visualizations"""
     try:
-        if os.path.exists('ml_model/artifacts/best_model.pkl'):
+        # Check for new model location first, then fallback to old location
+        model_path_new = 'ml_model/ml_model/best_model_ann.pkl'
+        model_path_old = 'ml_model/artifacts/best_model.pkl'
+        if os.path.exists(model_path_new) or os.path.exists(model_path_old):
             # Load model information from artifacts
             predictor = get_predictor()
             model_info = predictor.get_model_info()
@@ -1073,14 +1124,28 @@ def ml_info():
             
             # Read evaluation report
             report_content = ""
-            if os.path.exists('ml_model/reports/model_evaluation_report.txt'):
-                with open('ml_model/reports/model_evaluation_report.txt', 'r', encoding='utf-8') as f:
+            # Check for new report location first, then fallback to old location
+            report_path_new = 'ml_model/ml_model/training_report.txt'
+            report_path_old = 'ml_model/reports/model_evaluation_report.txt'
+            if os.path.exists(report_path_new):
+                with open(report_path_new, 'r', encoding='utf-8') as f:
+                    report_content = f.read()
+            elif os.path.exists(report_path_old):
+                with open(report_path_old, 'r', encoding='utf-8') as f:
                     report_content = f.read()
             
             # Check available visualizations
             visualizations = []
-            viz_dir = 'ml_model/visualizations'
-            if os.path.exists(viz_dir):
+            # Check both old and new visualization directories
+            viz_dir_old = 'ml_model/visualizations'
+            viz_dir_new = 'ml_model/ml_model/figures'
+            viz_dir = None
+            if os.path.exists(viz_dir_new):
+                viz_dir = viz_dir_new
+            elif os.path.exists(viz_dir_old):
+                viz_dir = viz_dir_old
+            
+            if viz_dir and os.path.exists(viz_dir):
                 viz_files = [f for f in os.listdir(viz_dir) if f.endswith('.png')]
                 visualizations = viz_files
             
@@ -1098,7 +1163,11 @@ def ml_info():
             if visualizations:
                 viz_html = "<h4>📊 Available Visualizations:</h4><div style='display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin: 20px 0;'>"
                 for viz in visualizations:
-                    viz_path = f"ml_model/visualizations/{viz}"
+                    # Use the directory we found earlier
+                    if viz_dir == viz_dir_new:
+                        viz_path = f"ml_model/ml_model/figures/{viz}"
+                    else:
+                        viz_path = f"ml_model/visualizations/{viz}"
                     viz_name = viz.replace('.png', '').replace('_', ' ').title()
                     viz_html += f"""
                     <div style='background: #f8f9fa; padding: 15px; border-radius: 8px; text-align: center;'>
@@ -1112,6 +1181,7 @@ def ml_info():
             <html>
             <head>
                 <title>ML Model Information & Performance</title>
+                <link rel="stylesheet" href="{{ url_for('static', filename='css/animations.css') }}">
                 <style>
                     * {{ margin: 0; padding: 0; box-sizing: border-box; }}
                     body {{ 
@@ -1119,6 +1189,7 @@ def ml_info():
                         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
                         min-height: 100vh;
                         padding: 20px;
+                        position: relative;
                     }}
                     .container {{ 
                         max-width: 1200px; 
@@ -1274,6 +1345,15 @@ def ml_info():
                         </div>
                     </div>
                 </div>
+                <!-- Animated Background Elements -->
+                <div class="animated-background">
+                    <div class="particle"></div>
+                    <div class="particle"></div>
+                    <div class="pulse-circle"></div>
+                    <div class="wave"></div>
+                    <div class="neural-node"></div>
+                    <div class="neural-node"></div>
+                </div>
             </body>
             </html>
             """
@@ -1282,6 +1362,7 @@ def ml_info():
             <html>
             <head>
                 <title>ML Model Information</title>
+                <link rel="stylesheet" href="{{ url_for('static', filename='css/animations.css') }}">
                 <style>
                     body { 
                         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
@@ -1311,12 +1392,20 @@ def ml_info():
                     }
                 </style>
             </head>
-            <body>
+            <body style="position: relative;">
                 <div class="container">
                     <h1>🤖 Machine Learning Model Information</h1>
                     <p class="error">ML model not found!</p>
-                    <p>Please run <code>python ml_model/ml_training.py</code> first to train the model.</p>
+                    <p>Please run <code>python ml_model/train_models.py</code> first to train the model.</p>
                     <a href="/" class="btn">← Back to Questionnaire</a>
+                </div>
+                <!-- Animated Background Elements -->
+                <div class="animated-background">
+                    <div class="particle"></div>
+                    <div class="particle"></div>
+                    <div class="pulse-circle"></div>
+                    <div class="wave"></div>
+                    <div class="neural-node"></div>
                 </div>
             </body>
             </html>
@@ -1326,6 +1415,7 @@ def ml_info():
         <html>
         <head>
             <title>ML Model Information</title>
+            <link rel="stylesheet" href="{{ url_for('static', filename='css/animations.css') }}">
             <style>
                 body {{ 
                     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
@@ -1366,9 +1456,18 @@ def ml_info():
         """
 
 @app.route('/ml_model/visualizations/<filename>')
+@app.route('/ml_model/ml_model/figures/<filename>')
 def serve_visualization(filename):
-    """Serve visualization images from the ml_model/visualizations directory"""
-    return send_from_directory('ml_model/visualizations', filename)
+    """Serve visualization images from the ml_model visualization directories"""
+    # Try new location first, then fallback to old location
+    new_path = 'ml_model/ml_model/figures'
+    old_path = 'ml_model/visualizations'
+    if os.path.exists(os.path.join(new_path, filename)):
+        return send_from_directory(new_path, filename)
+    elif os.path.exists(os.path.join(old_path, filename)):
+        return send_from_directory(old_path, filename)
+    else:
+        return "Visualization not found", 404
 
 @app.route('/patient-analysis')
 @login_required
