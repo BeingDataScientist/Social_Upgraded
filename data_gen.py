@@ -494,9 +494,9 @@ def main():
     # Print sample outputs
     generator.print_sample_output(3)
     
-    # Generate balanced dataset with 125 records per category (500 total)
-    print("\nGenerating balanced dataset with 500 records (125 per category)...")
-    dataset = generator.generate_balanced_dataset(125)
+    # Generate balanced dataset with 1250 records per category (5000 total)
+    print("\nGenerating balanced dataset with 5000 records (1250 per category)...")
+    dataset = generator.generate_balanced_dataset(1250)
     
     # Save to CSV (core values only) - overwrites each time
     csv_filename = "questionnaire_data.csv"

@@ -1,0 +1,25 @@
+{
+  "model_type": "ANN (MLPClassifier)",
+  "model_library": "scikit-learn",
+  "input_features": 22,
+  "output_classes": 4,
+  "class_names": [
+    "At-risk (brief advice/monitor)",
+    "High risk / addictive pattern (consider referral)",
+    "Low risk",
+    "Problematic use likely (structured assessment)"
+  ],
+  "training_date": "2025-12-09T22:38:45.095578",
+  "scaler_type": "StandardScaler",
+  "architecture": {
+    "hidden_layers": [
+      128,
+      64,
+      32
+    ],
+    "activation": "relu",
+    "solver": "adam",
+    "alpha": 0.001,
+    "learning_rate": 0.001
+  }
+}

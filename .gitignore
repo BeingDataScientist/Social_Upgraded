@@ -25,6 +25,7 @@ venv/
 env/
 ENV/
 .venv
+ml_model/venv/
 
 # IDE
 .vscode/
@@ -58,6 +59,9 @@ health_assessment.db
 
 # ML Model cache (keep artifacts but ignore cache)
 ml_model/__pycache__/
+
+# TensorFlow leftovers
+ml_model/2.12.0
 
 # Data files (optional - uncomment if you don't want to commit data)
 # questionnaire_data.csv
