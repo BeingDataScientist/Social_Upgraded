@@ -91,11 +91,78 @@ def logout():
 @app.route('/dashboard')
 @login_required
 def dashboard():
-    """Doctor dashboard"""
+    """Doctor dashboard with patient analysis"""
     doctor = Doctor.query.get(session['doctor_id'])
+    doctor_id = session['doctor_id']
+    patients = Patient.query.filter_by(doctor_id=doctor_id).all()
+    
+    # Get all assessments for this doctor's patients
+    all_logs = PatientLog.query.filter_by(doctor_id=doctor_id).all()
+    
+    # Calculate statistics
+    total_patients = len(patients)
+    total_assessments = len(all_logs)
+    avg_assessments_per_patient = round(total_assessments / total_patients, 2) if total_patients > 0 else 0
+    
+    # Risk category distribution
+    risk_counts = {}
+    for log in all_logs:
+        if log.openai_category:
+            risk_counts[log.openai_category] = risk_counts.get(log.openai_category, 0) + 1
+    
+    risk_labels = list(risk_counts.keys()) if risk_counts else []
+    risk_data = list(risk_counts.values()) if risk_counts else []
+    
+    # Time-based data (last 30 days)
+    from collections import defaultdict
+    time_counts = defaultdict(int)
+    for log in all_logs:
+        date_str = log.timestamp.strftime('%Y-%m-%d')
+        time_counts[date_str] += 1
+    
+    time_labels = sorted(time_counts.keys())[-30:]  # Last 30 days
+    time_data = [time_counts.get(d, 0) for d in time_labels]
+    
+    # Gender distribution
+    gender_counts = {}
+    for patient in patients:
+        gender_counts[patient.gender] = gender_counts.get(patient.gender, 0) + 1
+    
+    gender_labels = list(gender_counts.keys())
+    gender_data = list(gender_counts.values())
+    
+    # Age distribution (grouped)
+    age_groups = {'0-18': 0, '19-30': 0, '31-45': 0, '46-60': 0, '60+': 0}
+    for patient in patients:
+        if patient.age <= 18:
+            age_groups['0-18'] += 1
+        elif patient.age <= 30:
+            age_groups['19-30'] += 1
+        elif patient.age <= 45:
+            age_groups['31-45'] += 1
+        elif patient.age <= 60:
+            age_groups['46-60'] += 1
+        else:
+            age_groups['60+'] += 1
+    
+    age_labels = list(age_groups.keys())
+    age_data = list(age_groups.values())
+    
     return render_template('dashboard.html', 
                          doctor_name=doctor.name,
-                         doctor_profession=doctor.profession)
+                         doctor_profession=doctor.profession,
+                         patients=patients,
+                         total_patients=total_patients,
+                         total_assessments=total_assessments,
+                         avg_assessments_per_patient=avg_assessments_per_patient,
+                         risk_labels=json.dumps(risk_labels),
+                         risk_data=json.dumps(risk_data),
+                         time_labels=json.dumps(time_labels),
+                         time_data=json.dumps(time_data),
+                         gender_labels=json.dumps(gender_labels),
+                         gender_data=json.dumps(gender_data),
+                         age_labels=json.dumps(age_labels),
+                         age_data=json.dumps(age_data))
 
 @app.route('/add-patient', methods=['GET', 'POST'])
 @login_required
@@ -135,6 +202,17 @@ def assess_patient():
             return redirect(url_for('questionnaire'))
         else:
             flash('Please select a patient', 'error')
+    elif request.method == 'GET':
+        # Handle patient_id from query parameter (e.g., from individual patient page)
+        patient_id = request.args.get('patient_id')
+        if patient_id:
+            # Verify patient belongs to this doctor (patient_id is pid which is a string UUID)
+            patient = Patient.query.filter_by(pid=patient_id, doctor_id=doctor_id).first()
+            if patient:
+                session['current_patient_id'] = patient_id
+                return redirect(url_for('questionnaire'))
+            else:
+                flash('Patient not found', 'error')
     
     return render_template('assess_patient.html', patients=patients)
 
@@ -565,8 +643,8 @@ def show_results():
         openai_display = f"""
         <div class="result-card openai-analysis" style="border-left-color: {risk_color}; margin-bottom: 30px;">
             <div class="card-title">
-                <span style="font-size: 1.2em;">🤖</span>
-                AI Analysis
+                <span style="font-size: 1.2em;">📝</span>
+                Advisory Notes
             </div>
             <div style="margin-top: 20px;">
                 <p style="font-size: 1.1em; margin-bottom: 15px;"><strong>Risk Category:</strong></p>
@@ -594,11 +672,11 @@ def show_results():
         openai_display = f"""
         <div class="result-card openai-analysis" style="border-left-color: #dc3545; margin-bottom: 30px;">
             <div class="card-title">
-                <span style="font-size: 1.2em;">🤖</span>
-                AI Analysis
+                <span style="font-size: 1.2em;">📝</span>
+                Advisory Notes
             </div>
             <div class="error-card" style="margin-top: 20px;">
-                <p class="error">AI Analysis Error: {error_msg}</p>
+                <p class="error">Advisory Notes Error: {error_msg}</p>
                 <p style="margin-top: 10px; color: #666; font-size: 0.9em;">
                     The trained model API is currently unavailable. Please try again later.
                 </p>
@@ -609,11 +687,11 @@ def show_results():
         openai_display = """
         <div class="result-card openai-analysis" style="border-left-color: #6c757d; margin-bottom: 30px;">
             <div class="card-title">
-                <span style="font-size: 1.2em;">🤖</span>
-                AI Analysis
+                <span style="font-size: 1.2em;">📝</span>
+                Advisory Notes
             </div>
             <div class="info-card" style="margin-top: 20px;">
-                <p>AI analysis not available.</p>
+                <p>Advisory notes not available.</p>
             </div>
         </div>
         """
@@ -855,7 +933,6 @@ def show_results():
                             <thead>
                                 <tr style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
                                     <th style="padding: 15px; text-align: left; border-bottom: 2px solid #ddd;">Date</th>
-                                    <th style="padding: 15px; text-align: left; border-bottom: 2px solid #ddd;">Score</th>
                                     <th style="padding: 15px; text-align: left; border-bottom: 2px solid #ddd;">Risk Category</th>
                                 </tr>
                             </thead>
@@ -863,14 +940,13 @@ def show_results():
                                 {' '.join([f'''
                                 <tr style="border-bottom: 1px solid #eee;">
                                     <td style="padding: 12px;">{assessment.timestamp.strftime('%Y-%m-%d %H:%M')}</td>
-                                    <td style="padding: 12px;"><strong>{assessment.total_score if assessment.total_score else 'N/A'}</strong> / {max_score}</td>
                                     <td style="padding: 12px;">
                                         <span style="padding: 5px 10px; border-radius: 5px; background: {openai_risk_colors.get(assessment.openai_category, '#6c757d') if assessment.openai_category else '#6c757d'}; color: white; font-weight: 600;">
                                             {assessment.openai_category if assessment.openai_category else 'N/A'}
                                         </span>
                                     </td>
                                 </tr>
-                                ''' for assessment in all_assessments]) if all_assessments else '<tr><td colspan="3" style="padding: 20px; text-align: center; color: #666;">No previous assessments found</td></tr>'}
+                                ''' for assessment in all_assessments]) if all_assessments else '<tr><td colspan="2" style="padding: 20px; text-align: center; color: #666;">No previous assessments found</td></tr>'}
                             </tbody>
                         </table>
                     </div>
@@ -899,13 +975,6 @@ def show_results():
                 <div class="action-buttons">
                     <a href="/assess-patient" class="btn btn-primary">🔄 Assess Another Patient</a>
                     <a href="/dashboard" class="btn btn-secondary">← Back to Dashboard</a>
-                </div>
-                
-                
-                <!-- Additional Info -->
-                <div class="ml-info">
-                    <h3>📋 Additional Information</h3>
-                    <p><a href="/ml-info">View ML Model Information & Performance</a></p>
                 </div>
             </div>
         </div>
@@ -1541,6 +1610,69 @@ def patient_analysis():
                          gender_data=json.dumps(gender_data),
                          age_labels=json.dumps(age_labels),
                          age_data=json.dumps(age_data))
+
+@app.route('/patient/<patient_id>/analysis')
+@login_required
+def individual_patient_analysis(patient_id):
+    """Individual patient analysis page with previous assessments"""
+    doctor_id = session['doctor_id']
+    
+    # Get patient and verify ownership (patient_id is pid which is a string UUID)
+    patient = Patient.query.filter_by(pid=patient_id, doctor_id=doctor_id).first()
+    if not patient:
+        flash('Patient not found', 'error')
+        return redirect(url_for('dashboard'))
+    
+    # Get all previous assessments for this patient
+    all_assessments = PatientLog.query.filter_by(
+        patient_id=patient_id,
+        doctor_id=doctor_id
+    ).order_by(PatientLog.timestamp.desc()).all()
+    
+    # Prepare data for charts
+    assessment_dates = []
+    assessment_scores = []
+    assessment_categories = []
+    
+    for assessment in all_assessments:
+        assessment_dates.append(assessment.timestamp.strftime('%Y-%m-%d'))
+        assessment_scores.append(assessment.total_score if assessment.total_score else 0)
+        assessment_categories.append(assessment.openai_category if assessment.openai_category else 'Unknown')
+    
+    # Reverse to show chronological order (oldest to newest)
+    assessment_dates = list(reversed(assessment_dates))
+    assessment_scores = list(reversed(assessment_scores))
+    assessment_categories = list(reversed(assessment_categories))
+    
+    # Calculate performance trend (improving/declining)
+    performance_trend = []
+    if len(assessment_scores) > 1:
+        for i in range(len(assessment_scores)):
+            if i == 0:
+                performance_trend.append(0)
+            else:
+                diff = assessment_scores[i] - assessment_scores[i-1]
+                performance_trend.append(diff)
+    else:
+        performance_trend = [0] * len(assessment_scores)
+    
+    # Risk category colors
+    openai_risk_colors = {
+        'Low Risk': '#28a745',
+        'Moderate Risk': '#ffc107',
+        'High Risk': '#fd7e14',
+        'Very High Risk': '#dc3545'
+    }
+    
+    return render_template('individual_patient_analysis.html',
+                         patient=patient,
+                         all_assessments=all_assessments,
+                         assessment_dates=json.dumps(assessment_dates),
+                         assessment_scores=json.dumps(assessment_scores),
+                         assessment_categories=json.dumps(assessment_categories),
+                         performance_trend=json.dumps(performance_trend),
+                         openai_risk_colors=openai_risk_colors,
+                         max_score=68)
 
 if __name__ == '__main__':
     print("Starting Flask application...")

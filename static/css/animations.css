@@ -410,6 +410,113 @@
     }
 }
 
+/* Medical-themed additional animations */
+@keyframes heartbeat {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 0.3;
+    }
+    25% {
+        transform: scale(1.1);
+        opacity: 0.5;
+    }
+    50% {
+        transform: scale(1);
+        opacity: 0.3;
+    }
+    75% {
+        transform: scale(1.1);
+        opacity: 0.5;
+    }
+}
+
+@keyframes medicalPulse {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 0.2;
+        box-shadow: 0 0 0 0 rgba(8, 131, 149, 0.4);
+    }
+    50% {
+        transform: scale(1.2);
+        opacity: 0.4;
+        box-shadow: 0 0 0 20px rgba(8, 131, 149, 0);
+    }
+}
+
+@keyframes stethoscope {
+    0%, 100% {
+        transform: translateY(0) rotate(0deg);
+    }
+    25% {
+        transform: translateY(-10px) rotate(5deg);
+    }
+    75% {
+        transform: translateY(-10px) rotate(-5deg);
+    }
+}
+
+@keyframes medicalWave {
+    0% {
+        transform: translateX(-100%) scaleY(1);
+        opacity: 0.3;
+    }
+    50% {
+        transform: translateX(0) scaleY(1.2);
+        opacity: 0.5;
+    }
+    100% {
+        transform: translateX(100%) scaleY(1);
+        opacity: 0.3;
+    }
+}
+
+/* Additional medical-themed elements */
+.medical-pulse {
+    position: absolute;
+    width: 15px;
+    height: 15px;
+    background: rgba(8, 131, 149, 0.4);
+    border-radius: 50%;
+    animation: medicalPulse 3s infinite ease-in-out;
+}
+
+.medical-pulse:nth-child(24) {
+    left: 15%;
+    top: 25%;
+    animation-delay: 0s;
+}
+
+.medical-pulse:nth-child(25) {
+    left: 85%;
+    top: 75%;
+    animation-delay: 1.5s;
+}
+
+.medical-pulse:nth-child(26) {
+    left: 50%;
+    top: 50%;
+    animation-delay: 3s;
+}
+
+/* Enhanced particle colors for medical theme */
+.particle:nth-child(1),
+.particle:nth-child(2),
+.particle:nth-child(3) {
+    background: radial-gradient(circle, rgba(8, 131, 149, 0.3) 0%, transparent 70%);
+}
+
+.particle:nth-child(4),
+.particle:nth-child(5),
+.particle:nth-child(6) {
+    background: radial-gradient(circle, rgba(5, 191, 219, 0.25) 0%, transparent 70%);
+}
+
+/* Enhanced neural nodes for medical theme */
+.neural-node {
+    background: rgba(8, 131, 149, 0.2);
+    box-shadow: 0 0 15px rgba(8, 131, 149, 0.4);
+}
+
 /* Mobile optimization - fewer particles */
 @media (max-width: 768px) {
     .particle:nth-child(n+4),
@@ -418,7 +525,8 @@
     .neural-node:nth-child(n+14),
     .thought-bubble:nth-child(n+18),
     .breathe-circle:nth-child(n+20),
-    .network-line:nth-child(n+22) {
+    .network-line:nth-child(n+22),
+    .medical-pulse:nth-child(n+24) {
         display: none;
     }
 }

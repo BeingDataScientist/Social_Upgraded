@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ patient.name }} - Patient Analysis</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/animations.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+        }
+        
+        /* Animated background overlay */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: linear-gradient(-45deg, #667eea, #764ba2, #4facfe, #00f2fe);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+            opacity: 0.3;
+        }
+        
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+        .header .patient-info {
+            flex: 1;
+        }
+        .header .patient-info p {
+            opacity: 0.9;
+            margin: 5px 0;
+        }
+        .start-assessment-btn {
+            background: #28a745;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+            margin-left: 20px;
+        }
+        .start-assessment-btn:hover {
+            background: #218838;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.3);
+        }
+        .back-btn {
+            background: #6c757d;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+        .back-btn:hover {
+            background: #5a6268;
+        }
+        .content {
+            padding: 40px;
+        }
+        .section {
+            margin-bottom: 40px;
+        }
+        .section h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+        .assessment-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .assessment-table thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .assessment-table th {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 2px solid #ddd;
+        }
+        .assessment-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #eee;
+        }
+        .assessment-table tbody tr:hover {
+            background: #f8f9fa;
+        }
+        .risk-badge {
+            padding: 5px 15px;
+            border-radius: 20px;
+            color: white;
+            font-weight: 600;
+            display: inline-block;
+        }
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+        .chart-box {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+        }
+        .chart-box h3 {
+            color: #333;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        .no-assessments {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+        .no-assessments h3 {
+            font-size: 1.5em;
+            margin-bottom: 15px;
+        }
+        .no-assessments p {
+            font-size: 1.1em;
+            margin-bottom: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="patient-info">
+                <h1>👤 {{ patient.name }}</h1>
+                <p><strong>PID:</strong> {{ patient.pid }} | <strong>Age:</strong> {{ patient.age }} | <strong>Gender:</strong> {{ patient.gender }}</p>
+            </div>
+            <a href="/assess-patient?patient_id={{ patient.pid }}" class="start-assessment-btn">📋 Start Assessment</a>
+        </div>
+        <div class="content">
+            {% if all_assessments %}
+            <!-- Previous Assessments Table -->
+            <div class="section">
+                <h2>📋 Previous Assessment History</h2>
+                <div style="overflow-x: auto;">
+                    <table class="assessment-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Risk Category</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for assessment in all_assessments %}
+                            <tr>
+                                <td>{{ assessment.timestamp.strftime('%Y-%m-%d %H:%M') }}</td>
+                                <td>
+                                    <span class="risk-badge" style="background: {{ openai_risk_colors.get(assessment.openai_category, '#6c757d') if assessment.openai_category else '#6c757d' }};">
+                                        {{ assessment.openai_category if assessment.openai_category else 'N/A' }}
+                                    </span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Patient Assessment Trends -->
+            <div class="section">
+                <h2>📊 Patient Assessment Trends</h2>
+                <div class="charts-grid">
+                    <div class="chart-box">
+                        <h3>Score Trend Over Time</h3>
+                        <canvas id="scoreTrendChart" width="400" height="300"></canvas>
+                    </div>
+                    <div class="chart-box">
+                        <h3>Performance Improvement Trend</h3>
+                        <canvas id="performanceTrendChart" width="400" height="300"></canvas>
+                    </div>
+                    <div class="chart-box">
+                        <h3>Risk Category Distribution</h3>
+                        <canvas id="riskCategoryChart" width="400" height="300"></canvas>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <!-- No Assessments -->
+            <div class="no-assessments">
+                <h3>No Assessments Yet</h3>
+                <p>This patient hasn't completed any assessments yet.</p>
+                <a href="/assess-patient?patient_id={{ patient.pid }}" class="start-assessment-btn">📋 Start First Assessment</a>
+            </div>
+            {% endif %}
+            
+            <a href="/dashboard" class="back-btn">← Back to Dashboard</a>
+        </div>
+    </div>
+    
+    {% if all_assessments %}
+    <script>
+        // Chart data
+        const assessmentDates = {{ assessment_dates|safe }};
+        const assessmentScores = {{ assessment_scores|safe }};
+        const assessmentCategories = {{ assessment_categories|safe }};
+        const performanceTrend = {{ performance_trend|safe }};
+        
+        // Chart 1: Score Trend Over Time
+        const scoreTrendCtx = document.getElementById('scoreTrendChart');
+        if (scoreTrendCtx) {
+            new Chart(scoreTrendCtx.getContext('2d'), {
+                type: 'line',
+                data: {
+                    labels: assessmentDates,
+                    datasets: [{
+                        label: 'Assessment Score',
+                        data: assessmentScores,
+                        borderColor: '#667eea',
+                        backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4,
+                        pointBackgroundColor: '#667eea',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        pointRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Chart 2: Performance Improvement Trend
+        const performanceTrendCtx = document.getElementById('performanceTrendChart');
+        if (performanceTrendCtx) {
+            new Chart(performanceTrendCtx.getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: assessmentDates,
+                    datasets: [{
+                        label: 'Score Change',
+                        data: performanceTrend,
+                        backgroundColor: function(context) {
+                            const value = context.parsed.y;
+                            return value >= 0 ? 'rgba(40, 167, 69, 0.7)' : 'rgba(220, 53, 69, 0.7)';
+                        },
+                        borderColor: function(context) {
+                            const value = context.parsed.y;
+                            return value >= 0 ? '#28a745' : '#dc3545';
+                        },
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Chart 3: Risk Category Distribution
+        const riskCategoryCtx = document.getElementById('riskCategoryChart');
+        if (riskCategoryCtx) {
+            // Count risk categories
+            const categoryCounts = {};
+            assessmentCategories.forEach(cat => {
+                categoryCounts[cat] = (categoryCounts[cat] || 0) + 1;
+            });
+            
+            new Chart(riskCategoryCtx.getContext('2d'), {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(categoryCounts),
+                    datasets: [{
+                        data: Object.values(categoryCounts),
+                        backgroundColor: ['#28a745', '#ffc107', '#fd7e14', '#dc3545', '#6c757d'],
+                        borderWidth: 3,
+                        borderColor: '#fff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+    {% endif %}
+    
+    <!-- Animated Background Elements -->
+    <div class="animated-background">
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="pulse-circle"></div>
+        <div class="pulse-circle"></div>
+        <div class="wave"></div>
+        <div class="neural-node"></div>
+        <div class="neural-node"></div>
+        <div class="neural-node"></div>
+        <div class="thought-bubble"></div>
+        <div class="breathe-circle"></div>
+        <div class="network-line"></div>
+        <div class="network-line"></div>
+    </div>
+</body>
+</html>
+

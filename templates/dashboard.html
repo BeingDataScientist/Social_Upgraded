@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Doctor Dashboard - Digital Media & Mental Health Assessment</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/animations.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         * {
             margin: 0;
@@ -13,13 +15,14 @@
         }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #0a4d68 0%, #088395 50%, #05bfdb 100%);
             min-height: 100vh;
             padding: 20px;
             position: relative;
+            overflow-x: hidden;
         }
         
-        /* Animated background overlay */
+        /* Enhanced Medical Background with Animations */
         body::before {
             content: '';
             position: fixed;
@@ -27,97 +30,479 @@
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: -1;
-            background: linear-gradient(-45deg, #667eea, #764ba2, #4facfe, #00f2fe);
+            z-index: -2;
+            background: linear-gradient(-45deg, #0a4d68, #088395, #05bfdb, #00d9ff);
             background-size: 400% 400%;
-            animation: gradientShift 15s ease infinite;
-            opacity: 0.3;
+            animation: gradientShift 20s ease infinite;
+            opacity: 0.4;
         }
         
         @keyframes gradientShift {
             0%, 100% { background-position: 0% 50%; }
             50% { background-position: 100% 50%; }
         }
+        
+        /* Medical Pattern Overlay */
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background-image: 
+                radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.03) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.03) 0%, transparent 50%),
+                radial-gradient(circle at 40% 20%, rgba(255, 255, 255, 0.03) 0%, transparent 50%);
+            animation: patternMove 30s ease infinite;
+        }
+        
+        @keyframes patternMove {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(20px, 20px) scale(1.1); }
+        }
+        
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
         }
+        
+        /* Medical Professional Header */
         .header {
-            background: white;
-            border-radius: 15px;
-            padding: 30px;
+            background: linear-gradient(135deg, #ffffff 0%, #f0f9ff 100%);
+            border-radius: 20px;
+            padding: 30px 40px;
             margin-bottom: 30px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            box-shadow: 0 10px 40px rgba(10, 77, 104, 0.15);
             display: flex;
             justify-content: space-between;
             align-items: center;
+            border-left: 6px solid #088395;
+            position: relative;
+            overflow: hidden;
         }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(8, 131, 149, 0.1) 0%, transparent 70%);
+            border-radius: 50%;
+            animation: pulse 4s ease infinite;
+        }
+        
         .header h1 {
-            color: #333;
-            font-size: 2em;
+            color: #0a4d68;
+            font-size: 2.2em;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            position: relative;
+            z-index: 1;
         }
+        
+        .header h1 i {
+            font-size: 1.2em;
+            color: #088395;
+            animation: heartbeat 2s ease infinite;
+        }
+        
+        @keyframes heartbeat {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        
         .header .user-info {
             text-align: right;
+            position: relative;
+            z-index: 1;
         }
+        
         .header .user-info p {
-            color: #666;
+            color: #0a4d68;
             margin: 5px 0;
+            font-weight: 500;
         }
+        
+        .header .user-info .profession {
+            color: #088395;
+            font-size: 0.95em;
+        }
+        
         .logout-btn {
-            background: #dc3545;
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 10px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+        }
+        
+        .logout-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(220, 53, 69, 0.4);
+        }
+        
+        /* Analysis Section - Medical Card Style */
+        .analysis-section {
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            border-radius: 25px;
+            box-shadow: 0 20px 60px rgba(10, 77, 104, 0.2);
+            overflow: hidden;
+            margin-bottom: 30px;
+            border: 1px solid rgba(8, 131, 149, 0.1);
+        }
+        
+        .analysis-header {
+            background: linear-gradient(135deg, #0a4d68 0%, #088395 50%, #05bfdb 100%);
+            color: white;
+            padding: 30px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .analysis-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="2" fill="rgba(255,255,255,0.1)"/></svg>');
+            opacity: 0.3;
+            animation: patternMove 20s linear infinite;
+        }
+        
+        .analysis-header h2 {
+            font-size: 2em;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            position: relative;
+            z-index: 1;
+            font-weight: 700;
+        }
+        
+        .analysis-header h2 i {
+            font-size: 1.1em;
+            animation: rotate 10s linear infinite;
+        }
+        
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .new-patient-btn {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.05em;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 20px rgba(40, 167, 69, 0.3);
+            position: relative;
+            z-index: 1;
+        }
+        
+        .new-patient-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(40, 167, 69, 0.4);
+        }
+        
+        .new-patient-btn i {
+            font-size: 1.2em;
+            animation: bounce 2s ease infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+        
+        .analysis-content {
+            padding: 40px;
+        }
+        
+        /* Medical Stat Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, #0a4d68 0%, #088395 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(10, 77, 104, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+            border-radius: 50%;
+            animation: pulse 4s ease infinite;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(10, 77, 104, 0.4);
+        }
+        
+        .stat-card .icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+            display: block;
+            position: relative;
+            z-index: 1;
+            animation: float 3s ease infinite;
+        }
+        
+        .stat-card h3 {
+            font-size: 2.8em;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 1;
+            font-weight: 700;
+        }
+        
+        .stat-card p {
+            font-size: 1.1em;
+            opacity: 0.95;
+            position: relative;
+            z-index: 1;
+            font-weight: 500;
+        }
+        
+        /* Patient Section */
+        .patient-section {
+            margin-bottom: 40px;
+        }
+        
+        .patient-section h3 {
+            color: #0a4d68;
+            margin-bottom: 25px;
+            font-size: 1.8em;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 700;
+        }
+        
+        .patient-section h3 i {
+            color: #088395;
+            font-size: 1.2em;
+        }
+        
+        .patient-cards-container {
+            display: flex;
+            overflow-x: auto;
+            gap: 25px;
+            padding: 15px 5px;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        .patient-cards-container::-webkit-scrollbar {
+            height: 10px;
+        }
+        
+        .patient-cards-container::-webkit-scrollbar-track {
+            background: #e0f2f1;
+            border-radius: 10px;
+        }
+        
+        .patient-cards-container::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #088395 0%, #05bfdb 100%);
+            border-radius: 10px;
+        }
+        
+        .patient-cards-container::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #0a4d68 0%, #088395 100%);
+        }
+        
+        .patient-card {
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            padding: 25px;
+            border-radius: 20px;
+            border-left: 6px solid #088395;
+            min-width: 300px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(10, 77, 104, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .patient-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100px;
+            height: 100px;
+            background: radial-gradient(circle, rgba(8, 131, 149, 0.05) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+        
+        .patient-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 15px 40px rgba(10, 77, 104, 0.2);
+            border-left-color: #05bfdb;
+        }
+        
+        .patient-card .patient-icon {
+            font-size: 2.5em;
+            color: #088395;
+            margin-bottom: 15px;
+            display: block;
+        }
+        
+        .patient-card h4 {
+            color: #0a4d68;
+            margin-bottom: 15px;
+            font-size: 1.4em;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .patient-card p {
+            color: #64748b;
+            margin: 10px 0;
+            font-size: 0.95em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .patient-card p i {
+            color: #088395;
+            width: 18px;
+        }
+        
+        .patient-card .assessment-count {
+            background: linear-gradient(135deg, #088395 0%, #05bfdb 100%);
             color: white;
             padding: 10px 20px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            text-decoration: none;
-            display: inline-block;
-            margin-top: 10px;
+            border-radius: 25px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 15px;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(8, 131, 149, 0.3);
         }
-        .logout-btn:hover {
-            background: #c82333;
+        
+        /* Charts Section */
+        .section {
+            margin-top: 40px;
         }
-        .options-grid {
+        
+        .section h2 {
+            color: #0a4d68;
+            margin-bottom: 25px;
+            font-size: 2em;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 700;
+        }
+        
+        .section h2 i {
+            color: #088395;
+            font-size: 1.1em;
+        }
+        
+        .charts-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
             gap: 30px;
+            margin-top: 30px;
         }
-        .option-card {
-            background: white;
-            border-radius: 15px;
-            padding: 40px;
-            text-align: center;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            cursor: pointer;
-            text-decoration: none;
-            color: inherit;
+        
+        .chart-box {
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 8px 25px rgba(10, 77, 104, 0.1);
+            border: 1px solid rgba(8, 131, 149, 0.1);
+            transition: all 0.3s ease;
         }
-        .option-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        
+        .chart-box:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 35px rgba(10, 77, 104, 0.15);
         }
-        .option-card .icon {
-            font-size: 4em;
+        
+        .chart-box h3 {
+            color: #0a4d68;
             margin-bottom: 20px;
+            text-align: center;
+            font-size: 1.3em;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
         }
-        .option-card h2 {
-            color: #333;
-            margin-bottom: 15px;
-            font-size: 1.5em;
+        
+        .chart-box h3 i {
+            color: #088395;
         }
-        .option-card p {
-            color: #666;
-            line-height: 1.6;
+        
+        .no-patients {
+            text-align: center;
+            padding: 60px 20px;
+            color: #64748b;
         }
-        .option-card.add-patient {
-            border-top: 5px solid #28a745;
+        
+        .no-patients i {
+            font-size: 4em;
+            color: #088395;
+            margin-bottom: 20px;
+            opacity: 0.5;
         }
-        .option-card.assess-patient {
-            border-top: 5px solid #007bff;
-        }
-        .option-card.patient-analysis {
-            border-top: 5px solid #ffc107;
+        
+        .no-patients p {
+            font-size: 1.2em;
         }
     </style>
 </head>
@@ -125,35 +510,223 @@
     <div class="container">
         <div class="header">
             <div>
-                <h1>👨‍⚕️ Doctor Dashboard</h1>
+                <h1><i class="fas fa-user-doctor"></i> Doctor Dashboard</h1>
             </div>
             <div class="user-info">
-                <p><strong>Welcome, {{ doctor_name }}</strong></p>
-                <p>{{ doctor_profession }}</p>
-                <a href="/logout" class="logout-btn">Logout</a>
+                <p><strong><i class="fas fa-user"></i> Welcome, {{ doctor_name }}</strong></p>
+                <p class="profession"><i class="fas fa-briefcase-medical"></i> {{ doctor_profession }}</p>
+                <a href="/logout" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>
             </div>
         </div>
         
-        <div class="options-grid">
-            <a href="/add-patient" class="option-card add-patient">
-                <div class="icon">➕</div>
-                <h2>Add New Patient</h2>
-                <p>Register a new patient in the system</p>
-            </a>
-            
-            <a href="/assess-patient" class="option-card assess-patient">
-                <div class="icon">📋</div>
-                <h2>Assess Existing Patient</h2>
-                <p>Conduct assessment for an existing patient</p>
-            </a>
-            
-            <a href="/patient-analysis" class="option-card patient-analysis">
-                <div class="icon">📊</div>
-                <h2>Patients Analysis</h2>
-                <p>View analysis and visualizations of all patients</p>
-            </a>
+        <!-- Patient Analysis Section -->
+        <div class="analysis-section">
+            <div class="analysis-header">
+                <h2><i class="fas fa-chart-line"></i> Patients Analysis</h2>
+                <a href="/add-patient" class="new-patient-btn"><i class="fas fa-user-plus"></i> New Patient</a>
+            </div>
+            <div class="analysis-content">
+                <!-- Statistics -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <i class="fas fa-users icon"></i>
+                        <h3>{{ total_patients }}</h3>
+                        <p>Total Patients</p>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-clipboard-list icon"></i>
+                        <h3>{{ total_assessments }}</h3>
+                        <p>Total Assessments</p>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-chart-bar icon"></i>
+                        <h3>{{ avg_assessments_per_patient }}</h3>
+                        <p>Avg Assessments/Patient</p>
+                    </div>
+                </div>
+                
+                <!-- Patient List - Horizontal Scrollable Cards -->
+                <div class="patient-section">
+                    <h3><i class="fas fa-user-injured"></i> Patient List</h3>
+                    <div class="patient-cards-container">
+                        {% for patient in patients %}
+                        <div class="patient-card" onclick="window.location.href='/patient/{{ patient.pid }}/analysis'">
+                            <i class="fas fa-user-circle patient-icon"></i>
+                            <h4><i class="fas fa-id-card"></i> {{ patient.name }}</h4>
+                            <p><i class="fas fa-fingerprint"></i> <strong>PID:</strong> {{ patient.pid }}</p>
+                            <p><i class="fas fa-birthday-cake"></i> <strong>Age:</strong> {{ patient.age }}</p>
+                            <p><i class="fas fa-venus-mars"></i> <strong>Gender:</strong> {{ patient.gender }}</p>
+                            <span class="assessment-count"><i class="fas fa-file-medical"></i> {{ patient.assessments|length }} Assessment(s)</span>
+                        </div>
+                        {% endfor %}
+                        {% if not patients %}
+                        <div class="no-patients">
+                            <i class="fas fa-user-slash"></i>
+                            <p>No patients found. Click "New Patient" to add one.</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- Visualizations -->
+                <div class="section">
+                    <h2><i class="fas fa-chart-pie"></i> Visualizations</h2>
+                    <div class="charts-grid">
+                        <div class="chart-box">
+                            <h3><i class="fas fa-exclamation-triangle"></i> Risk Category Distribution</h3>
+                            <canvas id="riskChart"></canvas>
+                        </div>
+                        <div class="chart-box">
+                            <h3><i class="fas fa-clock"></i> Assessments Over Time</h3>
+                            <canvas id="timeChart"></canvas>
+                        </div>
+                        <div class="chart-box">
+                            <h3><i class="fas fa-venus-mars"></i> Gender Distribution</h3>
+                            <canvas id="genderChart"></canvas>
+                        </div>
+                        <div class="chart-box">
+                            <h3><i class="fas fa-birthday-cake"></i> Age Distribution</h3>
+                            <canvas id="ageChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
+    </div>
+    
+    <script>
+        // Risk Category Distribution
+        const riskCtx = document.getElementById('riskChart');
+        if (riskCtx) {
+            new Chart(riskCtx.getContext('2d'), {
+                type: 'doughnut',
+                data: {
+                    labels: {{ risk_labels|safe }},
+                    datasets: [{
+                        data: {{ risk_data|safe }},
+                        backgroundColor: ['#28a745', '#ffc107', '#fd7e14', '#dc3545'],
+                        borderWidth: 3,
+                        borderColor: '#fff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Assessments Over Time
+        const timeCtx = document.getElementById('timeChart');
+        if (timeCtx) {
+            new Chart(timeCtx.getContext('2d'), {
+                type: 'line',
+                data: {
+                    labels: {{ time_labels|safe }},
+                    datasets: [{
+                        label: 'Assessments',
+                        data: {{ time_data|safe }},
+                        borderColor: '#088395',
+                        backgroundColor: 'rgba(8, 131, 149, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Gender Distribution
+        const genderCtx = document.getElementById('genderChart');
+        if (genderCtx) {
+            new Chart(genderCtx.getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: {{ gender_labels|safe }},
+                    datasets: [{
+                        label: 'Patients',
+                        data: {{ gender_data|safe }},
+                        backgroundColor: ['#088395', '#05bfdb', '#0a4d68'],
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Age Distribution
+        const ageCtx = document.getElementById('ageChart');
+        if (ageCtx) {
+            new Chart(ageCtx.getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: {{ age_labels|safe }},
+                    datasets: [{
+                        label: 'Patients',
+                        data: {{ age_data|safe }},
+                        backgroundColor: '#088395',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+    
+    <!-- Enhanced Animated Background Elements -->
+    <div class="animated-background">
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="pulse-circle"></div>
+        <div class="pulse-circle"></div>
+        <div class="pulse-circle"></div>
+        <div class="wave"></div>
+        <div class="wave"></div>
+        <div class="neural-node"></div>
+        <div class="neural-node"></div>
+        <div class="neural-node"></div>
+        <div class="neural-node"></div>
+        <div class="neural-node"></div>
+        <div class="thought-bubble"></div>
+        <div class="thought-bubble"></div>
+        <div class="breathe-circle"></div>
+        <div class="breathe-circle"></div>
+        <div class="network-line"></div>
+        <div class="network-line"></div>
+        <div class="network-line"></div>
+        <div class="medical-pulse"></div>
+        <div class="medical-pulse"></div>
+        <div class="medical-pulse"></div>
     </div>
 </body>
 </html>
-
