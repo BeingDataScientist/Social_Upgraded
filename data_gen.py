@@ -32,7 +32,16 @@ class QuestionnaireDataGenerator:
             'Q19': ['yes', 'no'],  # Professional diagnosis
             'Q20': ['yes', 'no'],  # Family complaints
             'Q21': ['yes', 'no'],  # Relationship impact
-            'Q22': ['yes', 'no']   # Social isolation
+            'Q22': ['yes', 'no'],  # Social isolation
+            # Parents Section - 8 questions with 0-3 scale (Not at all, Mild, Moderate, Severe)
+            'P1': [0, 1, 2, 3],  # Excessive time on internet/mobile
+            'P2': [0, 1, 2, 3],  # Unable to stop internet use
+            'P3': [0, 1, 2, 3],  # Irritable/restless when restricted
+            'P4': [0, 1, 2, 3],  # Academic decline
+            'P5': [0, 1, 2, 3],  # Sleep interference
+            'P6': [0, 1, 2, 3],  # Family conflicts
+            'P7': [0, 1, 2, 3],  # Neglect routines
+            'P8': [0, 1, 2, 3]   # Unable to control usage
         }
         
         # Define scoring for each question
@@ -58,7 +67,16 @@ class QuestionnaireDataGenerator:
             'Q19': {'yes': 4, 'no': 1},
             'Q20': {'yes': 3, 'no': 1},
             'Q21': {'yes': 4, 'no': 1},
-            'Q22': {'yes': 4, 'no': 1}
+            'Q22': {'yes': 4, 'no': 1},
+            # Parents Section - direct mapping (0-3 scale)
+            'P1': {0: 0, 1: 1, 2: 2, 3: 3},  # Excessive time
+            'P2': {0: 0, 1: 1, 2: 2, 3: 3},  # Unable to stop
+            'P3': {0: 0, 1: 1, 2: 2, 3: 3},  # Irritable/restless
+            'P4': {0: 0, 1: 1, 2: 2, 3: 3},  # Academic decline
+            'P5': {0: 0, 1: 1, 2: 2, 3: 3},  # Sleep interference
+            'P6': {0: 0, 1: 1, 2: 2, 3: 3},  # Family conflicts
+            'P7': {0: 0, 1: 1, 2: 2, 3: 3},  # Neglect routines
+            'P8': {0: 0, 1: 1, 2: 2, 3: 3}   # Unable to control
         }
         
         # Define realistic probability distributions for more realistic data
@@ -81,7 +99,16 @@ class QuestionnaireDataGenerator:
             'Q19': {'yes': 0.15, 'no': 0.85},  # Professional diagnosis
             'Q20': {'yes': 0.3, 'no': 0.7},  # Family complaints
             'Q21': {'yes': 0.25, 'no': 0.75},  # Relationship impact
-            'Q22': {'yes': 0.2, 'no': 0.8}   # Social isolation
+            'Q22': {'yes': 0.2, 'no': 0.8},  # Social isolation
+            # Parents Section - probability weights (0-3 scale)
+            'P1': {0: 0.15, 1: 0.3, 2: 0.35, 3: 0.2},  # Excessive time
+            'P2': {0: 0.2, 1: 0.3, 2: 0.3, 3: 0.2},  # Unable to stop
+            'P3': {0: 0.25, 1: 0.3, 2: 0.3, 3: 0.15},  # Irritable/restless
+            'P4': {0: 0.2, 1: 0.3, 2: 0.35, 3: 0.15},  # Academic decline
+            'P5': {0: 0.15, 1: 0.3, 2: 0.35, 3: 0.2},  # Sleep interference
+            'P6': {0: 0.3, 1: 0.3, 2: 0.25, 3: 0.15},  # Family conflicts
+            'P7': {0: 0.25, 1: 0.3, 2: 0.3, 3: 0.15},  # Neglect routines
+            'P8': {0: 0.2, 1: 0.3, 2: 0.3, 3: 0.2}   # Unable to control
         }
 
     def generate_single_response(self):
@@ -99,6 +126,20 @@ class QuestionnaireDataGenerator:
                 occupation = random.choice(options['options'])
                 response[question] = occupation
                 scores[question] = 0  # Occupation has no scoring
+                
+            elif question.startswith('P'):  # Parent questions (P1-P8) - 0-3 scale
+                if question in self.probability_weights:
+                    # Use weighted random selection for more realistic data
+                    choices = list(options)
+                    weights = [self.probability_weights[question].get(choice, 1.0) for choice in choices]
+                    selected = random.choices(choices, weights=weights)[0]
+                else:
+                    # Use uniform random selection
+                    selected = random.choice(options)
+                
+                response[question] = selected
+                # For parent questions, score equals the value (0-3)
+                scores[question] = selected
                 
             else:  # All other questions
                 if question in self.probability_weights:
@@ -124,8 +165,9 @@ class QuestionnaireDataGenerator:
         return response, scores
 
     def calculate_total_score(self, scores):
-        """Calculate total score from individual question scores (excluding Q1, Q4)"""
+        """Calculate total score from individual question scores (excluding Q1, Q4, including P1-P8)"""
         # Exclude Q1 (age) and Q4 (occupation) from total score calculation
+        # Include all other questions (Q2-Q3, Q5-Q22) and parent questions (P1-P8)
         excluded_questions = ['Q1', 'Q4']
         filtered_scores = {k: v for k, v in scores.items() if k not in excluded_questions}
         return sum(filtered_scores.values())
@@ -157,9 +199,9 @@ class QuestionnaireDataGenerator:
             record = {
                 'record_id': i + 1,
                 'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-                'total_score': total_score,
-                'max_score': 68,  # Updated max score (excluding Q1, Q4)
-                'risk_level': risk_level,
+                        'total_score': total_score,
+                        'max_score': 92,  # Updated max score (68 from Q1-Q22 + 24 from P1-P8, excluding Q1, Q4)
+                        'risk_level': risk_level,
                 **response,  # All Q1-Q22 responses
                 **{f'score_{k}': v for k, v in scores.items()}  # All individual scores
             }
@@ -182,7 +224,7 @@ class QuestionnaireDataGenerator:
             {"name": "Low risk", "min_score": 0, "max_score": 10, "color": "🟢"},
             {"name": "At-risk (brief advice/monitor)", "min_score": 11, "max_score": 20, "color": "🟡"},
             {"name": "Problematic use likely (structured assessment)", "min_score": 21, "max_score": 29, "color": "🟠"},
-            {"name": "High risk / addictive pattern (consider referral)", "min_score": 30, "max_score": 68, "color": "🔴"}
+            {"name": "High risk / addictive pattern (consider referral)", "min_score": 30, "max_score": 92, "color": "🔴"}
         ]
         
         print(f"🚀 Starting parallel generation of {records_per_category} records per category...")
@@ -229,7 +271,7 @@ class QuestionnaireDataGenerator:
                         'record_id': current_record_id,
                         'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
                         'total_score': total_score,
-                        'max_score': 68,
+                        'max_score': 92,  # Updated max score (68 from Q1-Q22 + 24 from P1-P8, excluding Q1, Q4)
                         'risk_level': risk_level,
                         **response,  # All Q1-Q22 responses
                         **{f'score_{k}': v for k, v in scores.items()}  # All individual scores
@@ -315,11 +357,11 @@ class QuestionnaireDataGenerator:
         response['Q4'] = random.choice(occupations)
         scores['Q4'] = 0
         
-        # Calculate target score for remaining questions (excluding Q1 and Q4)
+        # Calculate target score for remaining questions (excluding Q1 and Q4, including P1-P8)
         target_score = random.randint(min_score, max_score)
         
-        # Get all questions that contribute to score (excluding Q1 and Q4)
-        score_questions = [f'Q{i}' for i in range(2, 23) if i != 4]
+        # Get all questions that contribute to score (excluding Q1 and Q4, including P1-P8)
+        score_questions = [f'Q{i}' for i in range(2, 23) if i != 4] + [f'P{i}' for i in range(1, 9)]
         
         # Distribute the target score across these questions
         remaining_score = target_score
@@ -344,7 +386,7 @@ class QuestionnaireDataGenerator:
             else:
                 score_questions.remove(q)
         
-        # Generate responses based on target scores
+        # Generate responses based on target scores for Q questions
         for q_num in range(2, 23):
             if q_num == 4:  # Skip Q4 (occupation)
                 continue
@@ -355,11 +397,22 @@ class QuestionnaireDataGenerator:
             # Generate response that gives this score
             response[q_key], scores[q_key] = self.generate_response_for_score(q_key, target_q_score)
         
+        # Generate responses for parent questions (P1-P8)
+        for p_num in range(1, 9):
+            p_key = f'P{p_num}'
+            target_p_score = question_scores.get(p_key, 0)
+            
+            # For parent questions, response equals score (0-3)
+            response[p_key] = target_p_score
+            scores[p_key] = target_p_score
+        
         return response, scores
     
     def get_min_score_for_question(self, question):
         """Get minimum possible score for a question"""
-        if question in ['Q2', 'Q3', 'Q5', 'Q6']:  # Section A questions
+        if question.startswith('P'):  # Parent questions (P1-P8) - 0-3 scale
+            return 0
+        elif question in ['Q2', 'Q3', 'Q5', 'Q6']:  # Section A questions
             return 0
         elif question in ['Q7', 'Q8', 'Q9', 'Q10', 'Q11', 'Q12', 'Q13', 'Q14', 'Q15', 'Q16', 'Q17', 'Q18', 'Q19', 'Q20', 'Q21', 'Q22']:  # Other sections
             return 0
@@ -367,7 +420,9 @@ class QuestionnaireDataGenerator:
     
     def get_max_score_for_question(self, question):
         """Get maximum possible score for a question"""
-        if question in ['Q2', 'Q3', 'Q5', 'Q6']:  # Section A questions
+        if question.startswith('P'):  # Parent questions (P1-P8) - 0-3 scale
+            return 3
+        elif question in ['Q2', 'Q3', 'Q5', 'Q6']:  # Section A questions
             return 2
         elif question in ['Q7', 'Q8', 'Q9', 'Q10', 'Q11', 'Q12', 'Q13', 'Q14', 'Q15', 'Q16', 'Q17', 'Q18', 'Q19', 'Q20', 'Q21', 'Q22']:  # Other sections
             return 4
@@ -375,7 +430,10 @@ class QuestionnaireDataGenerator:
     
     def generate_response_for_score(self, question, target_score):
         """Generate a response that gives the target score for a question"""
-        if question == 'Q2':  # Gender
+        if question.startswith('P'):  # Parent questions (P1-P8) - 0-3 scale
+            # For parent questions, response value equals score
+            return target_score, target_score
+        elif question == 'Q2':  # Gender
             options = ['Male', 'Female', 'Other']
             scores_map = {'Male': 0, 'Female': 1, 'Other': 2}
             for option, score in scores_map.items():
@@ -436,6 +494,11 @@ class QuestionnaireDataGenerator:
                     question_key = f'Q{i}'
                     score_key = f'score_{question_key}'
                     simplified_record[question_key] = record[score_key]
+                # Add parent question scores (P1-P8)
+                for i in range(1, 9):
+                    question_key = f'P{i}'
+                    score_key = f'score_{question_key}'
+                    simplified_record[question_key] = record[score_key]
                 simplified_dataset.append(simplified_record)
             
             # Get fieldnames from simplified record
@@ -475,10 +538,11 @@ class QuestionnaireDataGenerator:
             risk_level = self.determine_risk_level(total_score)
             
             # Create Python Flask terminal style output
-            python_output = f"{{Q1: {response['Q1']}, Q2: {scores['Q2']}, Q3: {scores['Q3']}, Q4: {scores['Q4']}, Q5: {scores['Q5']}, Q6: {scores['Q6']}, Q7: {scores['Q7']}, Q8: {scores['Q8']}, Q9: {scores['Q9']}, Q10: {scores['Q10']}, Q11: {scores['Q11']}, Q12: {scores['Q12']}, Q13: {scores['Q13']}, Q14: {scores['Q14']}, Q15: {scores['Q15']}, Q16: {scores['Q16']}, Q17: {scores['Q17']}, Q18: {scores['Q18']}, Q19: {scores['Q19']}, Q20: {scores['Q20']}, Q21: {scores['Q21']}, Q22: {scores['Q22']}}}"
+            parent_scores = ', '.join([f"P{i}: {scores.get(f'P{i}', 0)}" for i in range(1, 9)])
+            python_output = f"{{Q1: {response['Q1']}, Q2: {scores['Q2']}, Q3: {scores['Q3']}, Q4: {scores['Q4']}, Q5: {scores['Q5']}, Q6: {scores['Q6']}, Q7: {scores['Q7']}, Q8: {scores['Q8']}, Q9: {scores['Q9']}, Q10: {scores['Q10']}, Q11: {scores['Q11']}, Q12: {scores['Q12']}, Q13: {scores['Q13']}, Q14: {scores['Q14']}, Q15: {scores['Q15']}, Q16: {scores['Q16']}, Q17: {scores['Q17']}, Q18: {scores['Q18']}, Q19: {scores['Q19']}, Q20: {scores['Q20']}, Q21: {scores['Q21']}, Q22: {scores['Q22']}, {parent_scores}}}"
             
             print(f"\nSample {i+1}:")
-            print(f"Total Score: {total_score}/68")
+            print(f"Total Score: {total_score}/92")
             print(f"Risk Level: {risk_level}")
             print(f"Python Output: {python_output}")
         
@@ -511,7 +575,7 @@ def main():
     risk_levels = [record['risk_level'] for record in dataset]
     
     print(f"Total Records: {len(dataset)}")
-    print(f"Average Score: {sum(total_scores)/len(total_scores):.2f}/68")
+    print(f"Average Score: {sum(total_scores)/len(total_scores):.2f}/92")
     print(f"Min Score: {min(total_scores)}")
     print(f"Max Score: {max(total_scores)}")
     print(f"\nRisk Level Distribution:")

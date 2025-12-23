@@ -49,9 +49,12 @@ class PatientLog(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     patient_id = db.Column(db.String(36), db.ForeignKey('patients.pid'), nullable=False)
     doctor_id = db.Column(db.Integer, db.ForeignKey('doctors.id'), nullable=False)
-    responses = db.Column(db.Text, nullable=False)  # JSON string of questionnaire responses
+    # JSON string of questionnaire responses
+    # Contains: Q1-Q22 (main questionnaire) and P1-P8 (Parents Section with 0-3 scale)
+    # Format: {"Q1": value, "Q2": value, ..., "Q22": value, "P1": value, ..., "P8": value}
+    responses = db.Column(db.Text, nullable=False)
     openai_category = db.Column(db.String(100), nullable=True)  # OpenAI returned risk category
-    total_score = db.Column(db.Integer, nullable=True)
+    total_score = db.Column(db.Integer, nullable=True)  # Total score (max 92: 68 from Q1-Q22 + 24 from P1-P8)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
     
     # Relationships

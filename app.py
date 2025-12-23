@@ -248,6 +248,7 @@ def submit_questionnaire():
         
         # Create the Python Flask terminal style output
         python_output = {}
+        # Process Q1-Q22 questions
         for i in range(1, 23):  # Questions 1-22
             question_key = f'q{i}'
             if question_key in form_data:
@@ -261,6 +262,18 @@ def submit_questionnaire():
                     python_output[f'Q{i}'] = value
             else:
                 python_output[f'Q{i}'] = 0
+        
+        # Process P1-P8 parent questions
+        for i in range(1, 9):  # Parent questions 1-8
+            question_key = f'p{i}'
+            if question_key in form_data:
+                value = form_data[question_key]
+                try:
+                    python_output[f'P{i}'] = int(value)
+                except ValueError:
+                    python_output[f'P{i}'] = 0
+            else:
+                python_output[f'P{i}'] = 0
         
         # Print to Flask terminal
         print("\n" + "="*50)

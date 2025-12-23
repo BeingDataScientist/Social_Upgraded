@@ -54,6 +54,9 @@ ml_model/*.json
 .env
 .env.local
 
+# Configuration files with sensitive data
+config.py
+
 # Test files
 test_*.py
 *_test.py
