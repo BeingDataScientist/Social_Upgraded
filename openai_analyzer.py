@@ -106,13 +106,13 @@ def analyze_with_openai(questionnaire_data: str) -> Optional[Dict[str, Any]]:
     if not OPENAI_AVAILABLE:
         return {
             'success': False,
-            'error': 'Sodium Level Disorder trained model API error.'
+            'error': 'Model connection error.'
         }
     
     if not OPENAI_API_KEY:
         return {
             'success': False,
-            'error': 'Sodium Level Disorder trained model API error.'
+            'error': 'Model connection error.'
         }
     
     try:
@@ -178,7 +178,7 @@ Please provide your analysis in JSON format only, no additional text:"""
     except json.JSONDecodeError as e:
         return {
             'success': False,
-            'error': 'Sodium Level Disorder trained model API error.',
+            'error': 'Model connection error.',
             'raw_response': content if 'content' in locals() else None
         }
     except Exception as e:
@@ -186,10 +186,10 @@ Please provide your analysis in JSON format only, no additional text:"""
         error_str = str(e)
         # Check if error contains OpenAI URLs, references, or HTTP error codes
         if any(keyword in error_str.lower() for keyword in ['openai.com', 'platform.openai', 'api key', 'invalid_api_key', '401', '403', '429', 'http', 'https', 'error code']):
-            error_str = 'Sodium Level Disorder trained model API error.'
+            error_str = 'Model connection error.'
         else:
             # Replace all errors with custom message to ensure no OpenAI info leaks
-            error_str = 'Sodium Level Disorder trained model API error.'
+            error_str = 'Model connection error.'
         
         return {
             'success': False,

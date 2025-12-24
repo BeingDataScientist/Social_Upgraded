@@ -335,17 +335,17 @@ def submit_questionnaire():
                 print(f"   Solutions: {len(openai_analysis_result.get('solutions', []))} provided")
                 print(f"   Suggestions: {len(openai_analysis_result.get('suggestions', []))} provided")
             else:
-                error_msg = openai_analysis_result.get('error', 'Sodium Level Disorder trained model API error.') if openai_analysis_result else 'Sodium Level Disorder trained model API error.'
+                error_msg = openai_analysis_result.get('error', 'Model connection error.') if openai_analysis_result else 'Model connection error.'
                 # Sanitize error message - remove OpenAI URLs, references, and HTTP error codes
                 if any(keyword in error_msg.lower() for keyword in ['openai.com', 'platform.openai', 'api key', 'invalid_api_key', '401', '403', '429', 'http', 'https', 'error code', 'incorrect api']):
-                    error_msg = 'Sodium Level Disorder trained model API error.'
+                    error_msg = 'Model connection error.'
                 print(f"⚠️  AI Analysis Error: {error_msg}")
                 
         except Exception as openai_error:
             error_str = str(openai_error)
             # Sanitize error message - remove OpenAI URLs, references, HTTP codes, and any OpenAI-related content
             if any(keyword in error_str.lower() for keyword in ['openai.com', 'platform.openai', 'api key', 'invalid_api_key', '401', '403', '429', 'http', 'https', 'error code', 'incorrect api', 'account/api-keys']):
-                error_str = 'Sodium Level Disorder trained model API error.'
+                error_str = 'Model connection error.'
             print(f"⚠️  AI Analysis Error: {error_str}")
             openai_analysis_result = {
                 'success': False,
@@ -678,10 +678,10 @@ def show_results():
         </div>
         """
     elif openai_analysis and not openai_analysis.get('success', False):
-        error_msg = openai_analysis.get('error', 'Sodium Level Disorder trained model API error.')
+        error_msg = openai_analysis.get('error', 'Model connection error.')
         # Sanitize error message - remove OpenAI URLs, references, and HTTP error codes
         if any(keyword in error_msg.lower() for keyword in ['openai.com', 'platform.openai', 'api key', 'invalid_api_key', '401', '403', '429', 'http', 'https', 'error code', 'incorrect api']):
-            error_msg = 'Sodium Level Disorder trained model API error.'
+            error_msg = 'Model connection error.'
         openai_display = f"""
         <div class="result-card openai-analysis" style="border-left-color: #dc3545; margin-bottom: 30px;">
             <div class="card-title">
