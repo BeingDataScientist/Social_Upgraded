@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Submitting Assessment</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .box {
+            background: white;
+            padding: 50px;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+            text-align: center;
+            max-width: 480px;
+        }
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #e9ecef;
+            border-top-color: #667eea;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 25px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        h2 { color: #2c3e50; margin-bottom: 12px; font-size: 1.5em; }
+        p { color: #6c757d; }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <div class="spinner"></div>
+        <h2>Submitting your assessment...</h2>
+        <p>Please wait while we process your responses.</p>
+    </div>
+    <script>
+        (function() {
+            var data = {{ data | tojson }};
+            var formData = new FormData();
+            for (var key in data) {
+                if (data.hasOwnProperty(key) && data[key] !== null && data[key] !== undefined) {
+                    formData.append(key, data[key]);
+                }
+            }
+            fetch('{{ url_for("submit_questionnaire") }}', {
+                method: 'POST',
+                body: formData,
+                credentials: 'same-origin'
+            })
+            .then(function(r) { return r.json(); })
+            .then(function(res) {
+                if (res.success && res.redirect_url) {
+                    window.location.href = res.redirect_url;
+                } else {
+                    document.querySelector('.box').innerHTML = '<h2>Error</h2><p>' + (res.error || 'Submission failed.') + '</p><a href="{{ url_for("questionnaire") }}">Start over</a>';
+                }
+            })
+            .catch(function() {
+                document.querySelector('.box').innerHTML = '<h2>Error</h2><p>Could not submit. Please try again.</p><a href="{{ url_for("questionnaire") }}">Start over</a>';
+            });
+        })();
+    </script>
+</body>
+</html>

@@ -1,9 +1,10 @@
 from flask import Flask, render_template, request, jsonify, session, redirect, url_for, send_from_directory, flash
+from collections import defaultdict
 import json
 import os
 import pandas as pd
 import numpy as np
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 from ml_model.ml_predictor import predict_risk_level, format_questionnaire_data, get_predictor
 from openai_analyzer import format_questionnaire_for_openai, analyze_with_openai
 from database import db, Doctor, Patient, PatientLog, init_db
@@ -114,7 +115,6 @@ def dashboard():
     risk_data = list(risk_counts.values()) if risk_counts else []
     
     # Time-based data (last 30 days)
-    from collections import defaultdict
     time_counts = defaultdict(int)
     for log in all_logs:
         date_str = log.timestamp.strftime('%Y-%m-%d')
@@ -131,22 +131,43 @@ def dashboard():
     gender_labels = list(gender_counts.keys())
     gender_data = list(gender_counts.values())
     
-    # Age distribution (grouped)
-    age_groups = {'0-18': 0, '19-30': 0, '31-45': 0, '46-60': 0, '60+': 0}
-    for patient in patients:
-        if patient.age <= 18:
-            age_groups['0-18'] += 1
-        elif patient.age <= 30:
-            age_groups['19-30'] += 1
-        elif patient.age <= 45:
-            age_groups['31-45'] += 1
-        elif patient.age <= 60:
-            age_groups['46-60'] += 1
-        else:
-            age_groups['60+'] += 1
+    # Assessments per patient (1, 2, 3, 4+)
+    assessments_per_patient = defaultdict(int)
+    for p in patients:
+        n = len(p.assessments)
+        key = str(n) if n <= 3 else '4+'
+        assessments_per_patient[key] += 1
+    ap_labels = ['1', '2', '3', '4+']
+    ap_data = [assessments_per_patient.get(k, 0) for k in ap_labels]
     
-    age_labels = list(age_groups.keys())
-    age_data = list(age_groups.values())
+    # Score distribution (0-23, 24-46, 47-69, 70-92)
+    score_buckets = {'0-23': 0, '24-46': 0, '47-69': 0, '70-92': 0}
+    for log in all_logs:
+        s = log.total_score if log.total_score is not None else 0
+        if s <= 23:
+            score_buckets['0-23'] += 1
+        elif s <= 46:
+            score_buckets['24-46'] += 1
+        elif s <= 69:
+            score_buckets['47-69'] += 1
+        else:
+            score_buckets['70-92'] += 1
+    score_labels = list(score_buckets.keys())
+    score_data = list(score_buckets.values())
+    
+    # Risk trend by week (last 8 weeks)
+    risk_categories = ['Low risk', 'At-Risk', 'Problematic use likely', 'High Risk/ addictive pattern']
+    week_labels = []
+    week_data = {cat: [] for cat in risk_categories}
+    today = date.today()
+    for i in range(7, -1, -1):
+        week_start = today - timedelta(days=today.weekday() + 7 * (i + 1))
+        week_end = week_start + timedelta(days=6)
+        week_labels.append(week_start.strftime('%d %b'))
+        for cat in risk_categories:
+            count = sum(1 for log in all_logs if log.openai_category == cat
+                       and week_start <= log.timestamp.date() <= week_end)
+            week_data[cat].append(count)
     
     return render_template('dashboard.html', 
                          doctor_name=doctor.name,
@@ -161,8 +182,13 @@ def dashboard():
                          time_data=json.dumps(time_data),
                          gender_labels=json.dumps(gender_labels),
                          gender_data=json.dumps(gender_data),
-                         age_labels=json.dumps(age_labels),
-                         age_data=json.dumps(age_data))
+                         ap_labels=json.dumps(ap_labels),
+                         ap_data=json.dumps(ap_data),
+                         score_labels=json.dumps(score_labels),
+                         score_data=json.dumps(score_data),
+                         week_labels=json.dumps(week_labels),
+                         week_data=json.dumps(week_data),
+                         risk_categories=json.dumps(risk_categories))
 
 @app.route('/add-patient', methods=['GET', 'POST'])
 @login_required
@@ -219,17 +245,129 @@ def assess_patient():
 @app.route('/questionnaire')
 @login_required
 def questionnaire():
-    """Serve the questionnaire page"""
+    """Start questionnaire - redirect to Section A (step 1)"""
     if 'current_patient_id' not in session:
         flash('Please select a patient first', 'error')
         return redirect(url_for('assess_patient'))
-    
-    patient = Patient.query.get(session['current_patient_id'])
+    patient = Patient.query.filter_by(pid=session['current_patient_id']).first()
     if not patient:
         flash('Patient not found', 'error')
         return redirect(url_for('assess_patient'))
-    
-    return render_template('questionnaire.html', patient=patient)
+    session['questionnaire_data'] = {}
+    return redirect(url_for('questionnaire_step', step=1))
+
+
+def _validate_step(step, form_data):
+    """Validate required fields for a step. Returns (True, None) or (False, error_message)."""
+    if step == 1:  # Section A: q1 (age 10-18), q2, q3, q4, q5, q6
+        try:
+            age = int(form_data.get('q1') or 0)
+            if age < 10 or age > 18:
+                return False, 'Please select Age between 10 and 18.'
+        except (ValueError, TypeError):
+            return False, 'Please select Age.'
+        if not form_data.get('q2'):
+            return False, 'Please select Gender.'
+        if not form_data.get('q3'):
+            return False, 'Please select Educational Status.'
+        if form_data.get('q3') == 'other' and not (form_data.get('q3_other') or '').strip():
+            return False, 'Please specify Educational Status (Other).'
+        if not (form_data.get('q4') or '').strip():
+            return False, 'Please enter Parents Occupation.'
+        if not form_data.get('q5'):
+            return False, 'Please select Type of Family.'
+        if not form_data.get('q6'):
+            return False, 'Please select Socio-economic Background.'
+    elif step == 2:  # Section B: q7, q8, q9, q10
+        for q in ['q7', 'q8', 'q9', 'q10']:
+            if not form_data.get(q):
+                return False, 'Please answer all questions in this section.'
+        if form_data.get('q8') == 'other' and not (form_data.get('q8_other') or '').strip():
+            return False, 'Please specify primary online activity (Other).'
+    elif step == 3:  # Section C: q11-q15
+        for q in ['q11', 'q12', 'q13', 'q14', 'q15']:
+            if not form_data.get(q):
+                return False, 'Please answer all questions in this section.'
+    elif step == 4:  # Section D: q16-q19
+        for q in ['q16', 'q17', 'q18', 'q19']:
+            if not form_data.get(q):
+                return False, 'Please answer all questions in this section.'
+    elif step == 5:  # Section E: q20, q21, q22
+        for q in ['q20', 'q21', 'q22']:
+            if not form_data.get(q):
+                return False, 'Please answer all questions in this section.'
+    elif step == 6:  # Parents: p1-p8
+        for q in ['p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7', 'p8']:
+            if form_data.get(q) is None or form_data.get(q) == '':
+                return False, 'Please answer all questions in this section.'
+    return True, None
+
+
+@app.route('/questionnaire/step/<int:step>', methods=['GET', 'POST'])
+@login_required
+def questionnaire_step(step):
+    """Show or process one questionnaire section (1-6: A, B, C, D, E, Parents)."""
+    if step < 1 or step > 6:
+        return redirect(url_for('questionnaire'))
+    if 'current_patient_id' not in session:
+        flash('Please select a patient first', 'error')
+        return redirect(url_for('assess_patient'))
+    patient = Patient.query.filter_by(pid=session['current_patient_id']).first()
+    if not patient:
+        flash('Patient not found', 'error')
+        return redirect(url_for('assess_patient'))
+
+    if request.method == 'POST':
+        form_data = request.form.to_dict()
+        valid, err = _validate_step(step, form_data)
+        if not valid:
+            flash(err or 'Please complete all required fields.', 'error')
+            session['questionnaire_step_error_data'] = form_data
+            return redirect(url_for('questionnaire_step', step=step))
+        data = session.get('questionnaire_data') or {}
+        data.update(form_data)
+        session['questionnaire_data'] = data
+        if step < 6:
+            return redirect(url_for('questionnaire_step', step=step + 1))
+        return redirect(url_for('questionnaire_complete'))
+
+    section_titles = {
+        1: 'Section A: Demographics & Family Background',
+        2: 'Section B: Digital Media & Internet Use',
+        3: 'Section C: Behavioral & Emotional Indicators',
+        4: 'Section D: Mental Health & Well-being',
+        5: 'Section E: Family & Social Impact',
+        6: 'Parents Section'
+    }
+    error_data = session.pop('questionnaire_step_error_data', None) or {}
+    saved = session.get('questionnaire_data') or {}
+    step_fields = {
+        1: ['q1', 'q2', 'q3', 'q4', 'q5', 'q6', 'q3_other'],
+        2: ['q7', 'q8', 'q9', 'q10', 'q8_other'],
+        3: ['q11', 'q12', 'q13', 'q14', 'q15'],
+        4: ['q16', 'q17', 'q18', 'q19'],
+        5: ['q20', 'q21', 'q22'],
+        6: ['p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7', 'p8']
+    }
+    return render_template(
+        'questionnaire_step.html',
+        step=step,
+        section_title=section_titles[step],
+        patient=patient,
+        saved=saved,
+        error_data=error_data,
+        step_fields=step_fields[step]
+    )
+
+
+@app.route('/questionnaire/complete')
+@login_required
+def questionnaire_complete():
+    """Page that auto-submits collected questionnaire data to /submit."""
+    if 'current_patient_id' not in session or not session.get('questionnaire_data'):
+        flash('No questionnaire data. Please start the assessment.', 'error')
+        return redirect(url_for('questionnaire'))
+    return render_template('questionnaire_complete.html', data=session['questionnaire_data'])
 
 @app.route('/submit', methods=['POST'])
 @login_required
@@ -1576,7 +1714,6 @@ def patient_analysis():
     risk_data = list(risk_counts.values()) if risk_counts else []
     
     # Time-based data (last 30 days)
-    from collections import defaultdict
     time_counts = defaultdict(int)
     for log in all_logs:
         date_str = log.timestamp.strftime('%Y-%m-%d')
@@ -1593,22 +1730,43 @@ def patient_analysis():
     gender_labels = list(gender_counts.keys())
     gender_data = list(gender_counts.values())
     
-    # Age distribution (grouped)
-    age_groups = {'0-18': 0, '19-30': 0, '31-45': 0, '46-60': 0, '60+': 0}
-    for patient in patients:
-        if patient.age <= 18:
-            age_groups['0-18'] += 1
-        elif patient.age <= 30:
-            age_groups['19-30'] += 1
-        elif patient.age <= 45:
-            age_groups['31-45'] += 1
-        elif patient.age <= 60:
-            age_groups['46-60'] += 1
-        else:
-            age_groups['60+'] += 1
+    # Assessments per patient (1, 2, 3, 4+)
+    assessments_per_patient = defaultdict(int)
+    for p in patients:
+        n = len(p.assessments)
+        key = str(n) if n <= 3 else '4+'
+        assessments_per_patient[key] += 1
+    ap_labels = ['1', '2', '3', '4+']
+    ap_data = [assessments_per_patient.get(k, 0) for k in ap_labels]
     
-    age_labels = list(age_groups.keys())
-    age_data = list(age_groups.values())
+    # Score distribution (0-23, 24-46, 47-69, 70-92)
+    score_buckets = {'0-23': 0, '24-46': 0, '47-69': 0, '70-92': 0}
+    for log in all_logs:
+        s = log.total_score if log.total_score is not None else 0
+        if s <= 23:
+            score_buckets['0-23'] += 1
+        elif s <= 46:
+            score_buckets['24-46'] += 1
+        elif s <= 69:
+            score_buckets['47-69'] += 1
+        else:
+            score_buckets['70-92'] += 1
+    score_labels = list(score_buckets.keys())
+    score_data = list(score_buckets.values())
+    
+    # Risk trend by week (last 8 weeks)
+    risk_categories = ['Low risk', 'At-Risk', 'Problematic use likely', 'High Risk/ addictive pattern']
+    week_labels = []
+    week_data = {cat: [] for cat in risk_categories}
+    today = date.today()
+    for i in range(7, -1, -1):
+        week_start = today - timedelta(days=today.weekday() + 7 * (i + 1))
+        week_end = week_start + timedelta(days=6)
+        week_labels.append(week_start.strftime('%d %b'))
+        for cat in risk_categories:
+            count = sum(1 for log in all_logs if log.openai_category == cat
+                       and week_start <= log.timestamp.date() <= week_end)
+            week_data[cat].append(count)
     
     return render_template('patient_analysis.html',
                          patients=patients,
@@ -1621,8 +1779,13 @@ def patient_analysis():
                          time_data=json.dumps(time_data),
                          gender_labels=json.dumps(gender_labels),
                          gender_data=json.dumps(gender_data),
-                         age_labels=json.dumps(age_labels),
-                         age_data=json.dumps(age_data))
+                         ap_labels=json.dumps(ap_labels),
+                         ap_data=json.dumps(ap_data),
+                         score_labels=json.dumps(score_labels),
+                         score_data=json.dumps(score_data),
+                         week_labels=json.dumps(week_labels),
+                         week_data=json.dumps(week_data),
+                         risk_categories=json.dumps(risk_categories))
 
 @app.route('/patient/<patient_id>/analysis')
 @login_required

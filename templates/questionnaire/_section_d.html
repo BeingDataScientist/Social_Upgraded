@@ -1,0 +1,32 @@
+<!-- Section D: Mental Health & Well-being -->
+<div class="question-group">
+    <div class="question">16. In general, how would you describe your mental health?</div>
+    <div class="options">
+        <label class="option"><input type="radio" name="q16" value="excellent" required {% if form.get('q16') == 'excellent' %}checked{% endif %}> <span>Excellent</span> <span class="score-display">1 pt</span></label>
+        <label class="option"><input type="radio" name="q16" value="very_good" {% if form.get('q16') == 'very_good' %}checked{% endif %}> <span>Very good</span> <span class="score-display">2 pts</span></label>
+        <label class="option"><input type="radio" name="q16" value="good" {% if form.get('q16') == 'good' %}checked{% endif %}> <span>Good</span> <span class="score-display">3 pts</span></label>
+        <label class="option"><input type="radio" name="q16" value="fair" {% if form.get('q16') == 'fair' %}checked{% endif %}> <span>Fair</span> <span class="score-display">4 pts</span></label>
+        <label class="option"><input type="radio" name="q16" value="poor" {% if form.get('q16') == 'poor' %}checked{% endif %}> <span>Poor</span> <span class="score-display">5 pts</span></label>
+    </div>
+</div>
+<div class="question-group">
+    <div class="question">17. During the past 12 months, have you seriously thought about suicide?</div>
+    <div class="options">
+        <label class="option"><input type="radio" name="q17" value="yes" required {% if form.get('q17') == 'yes' %}checked{% endif %}> <span>Yes</span> <span class="score-display">5 pts</span></label>
+        <label class="option"><input type="radio" name="q17" value="no" {% if form.get('q17') == 'no' %}checked{% endif %}> <span>No</span> <span class="score-display">1 pt</span></label>
+    </div>
+</div>
+<div class="question-group">
+    <div class="question">18. Have you ever attempted suicide in your lifetime?</div>
+    <div class="options">
+        <label class="option"><input type="radio" name="q18" value="yes" required {% if form.get('q18') == 'yes' %}checked{% endif %}> <span>Yes</span> <span class="score-display">5 pts</span></label>
+        <label class="option"><input type="radio" name="q18" value="no" {% if form.get('q18') == 'no' %}checked{% endif %}> <span>No</span> <span class="score-display">1 pt</span></label>
+    </div>
+</div>
+<div class="question-group">
+    <div class="question">19. Have you been told by a health professional that you may be at risk of depression, anxiety, or an eating disorder?</div>
+    <div class="options">
+        <label class="option"><input type="radio" name="q19" value="yes" required {% if form.get('q19') == 'yes' %}checked{% endif %}> <span>Yes</span> <span class="score-display">4 pts</span></label>
+        <label class="option"><input type="radio" name="q19" value="no" {% if form.get('q19') == 'no' %}checked{% endif %}> <span>No</span> <span class="score-display">1 pt</span></label>
+    </div>
+</div>

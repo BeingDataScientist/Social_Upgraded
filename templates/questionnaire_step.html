@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ section_title }} - Assessment</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/animations.css') }}">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1;
+            background: linear-gradient(-45deg, #667eea, #764ba2, #4facfe, #00f2fe);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+            opacity: 0.3;
+        }
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 25px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .header h1 { font-size: 1.8em; font-weight: 600; }
+        .header .step-badge {
+            background: rgba(255,255,255,0.2);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.95em;
+        }
+        .form-container { padding: 40px; }
+        .section {
+            border: 2px solid #e9ecef;
+            border-radius: 15px;
+            overflow: hidden;
+            margin-bottom: 25px;
+        }
+        .section-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 18px 20px;
+            font-size: 1.3em;
+            font-weight: 600;
+        }
+        .section-content { padding: 30px; }
+        .question-group {
+            margin-bottom: 25px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 5px solid #4facfe;
+        }
+        .question { font-size: 1.1em; font-weight: 600; margin-bottom: 15px; color: #2c3e50; }
+        .options { display: flex; flex-direction: column; gap: 10px; }
+        .option {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .option:hover { border-color: #4facfe; background: #f0f8ff; }
+        .option input[type="radio"] { margin-right: 12px; transform: scale(1.1); }
+        .option.selected { border-color: #4facfe; background: #e3f2fd; }
+        .score-display {
+            position: absolute;
+            right: 12px;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 0.9em;
+            font-weight: 700;
+        }
+        .text-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 1em;
+            margin-top: 10px;
+        }
+        .text-input:focus {
+            outline: none;
+            border-color: #4facfe;
+            box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.1);
+        }
+        select.text-input { cursor: pointer; }
+        .btn-row { display: flex; gap: 15px; margin-top: 30px; flex-wrap: wrap; }
+        .submit-btn {
+            padding: 16px 32px;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .submit-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(79, 172, 254, 0.4); }
+        .back-btn {
+            padding: 16px 32px;
+            background: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .back-btn:hover { background: #5a6268; color: white; }
+        .flash-error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #f5c6cb;
+        }
+        .progress-steps {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .progress-steps span {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            background: #e9ecef;
+            color: #6c757d;
+        }
+        .progress-steps span.done { background: #d4edda; color: #155724; }
+        .progress-steps span.current { background: #667eea; color: white; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Digital Media & Mental Health Assessment</h1>
+            <span class="step-badge">Step {{ step }} of 6</span>
+        </div>
+        <div class="form-container">
+            <div class="progress-steps">
+                {% for s in range(1, 7) %}
+                <span class="{% if s < step %}done{% elif s == step %}current{% endif %}">
+                    {% if s == 1 %}A{% elif s == 2 %}B{% elif s == 3 %}C{% elif s == 4 %}D{% elif s == 5 %}E{% else %}Parents{% endif %}
+                </span>
+                {% endfor %}
+            </div>
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, msg in messages %}
+                    <div class="flash-error">{{ msg }}</div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            <form method="POST" action="{{ url_for('questionnaire_step', step=step) }}" id="stepForm">
+                {% for key, value in saved.items() %}
+                    {% if key not in step_fields %}
+                    <input type="hidden" name="{{ key }}" value="{{ value }}">
+                    {% endif %}
+                {% endfor %}
+                <div class="section">
+                    <div class="section-header">{{ section_title }}</div>
+                    <div class="section-content">
+                        {% set form = error_data if error_data else saved %}
+                        {% if step == 1 %}
+                            {% include 'questionnaire/_section_a.html' %}
+                        {% elif step == 2 %}
+                            {% include 'questionnaire/_section_b.html' %}
+                        {% elif step == 3 %}
+                            {% include 'questionnaire/_section_c.html' %}
+                        {% elif step == 4 %}
+                            {% include 'questionnaire/_section_d.html' %}
+                        {% elif step == 5 %}
+                            {% include 'questionnaire/_section_e.html' %}
+                        {% else %}
+                            {% include 'questionnaire/_section_parents.html' %}
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="btn-row">
+                    {% if step > 1 %}
+                    <a href="{{ url_for('questionnaire_step', step=step - 1) }}" class="back-btn">← Back</a>
+                    {% endif %}
+                    <button type="submit" class="submit-btn">
+                        {% if step == 6 %}Submit Assessment{% else %}Next: {% if step == 5 %}Parents Section{% else %}Section {{ ['B','C','D','E'][step - 1] }}{% endif %} →{% endif %}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

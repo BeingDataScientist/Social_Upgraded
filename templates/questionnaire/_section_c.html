@@ -1,0 +1,39 @@
+<!-- Section C: Behavioral & Emotional Indicators -->
+<div class="question-group">
+    <div class="question">11. Do you feel restless/irritated when you can't get online or play?</div>
+    <div class="options">
+        <label class="option"><input type="radio" name="q11" value="never" required {% if form.get('q11') == 'never' %}checked{% endif %}> <span>Never</span> <span class="score-display">1 pt</span></label>
+        <label class="option"><input type="radio" name="q11" value="rarely" {% if form.get('q11') == 'rarely' %}checked{% endif %}> <span>Rarely</span> <span class="score-display">2 pts</span></label>
+        <label class="option"><input type="radio" name="q11" value="sometimes" {% if form.get('q11') == 'sometimes' %}checked{% endif %}> <span>Sometimes</span> <span class="score-display">3 pts</span></label>
+        <label class="option"><input type="radio" name="q11" value="often" {% if form.get('q11') == 'often' %}checked{% endif %}> <span>Often</span> <span class="score-display">4 pts</span></label>
+        <label class="option"><input type="radio" name="q11" value="always" {% if form.get('q11') == 'always' %}checked{% endif %}> <span>Always</span> <span class="score-display">5 pts</span></label>
+    </div>
+</div>
+<div class="question-group">
+    <div class="question">12. Have you tried to reduce your online/gaming time but failed?</div>
+    <div class="options">
+        <label class="option"><input type="radio" name="q12" value="yes" required {% if form.get('q12') == 'yes' %}checked{% endif %}> <span>Yes</span> <span class="score-display">4 pts</span></label>
+        <label class="option"><input type="radio" name="q12" value="no" {% if form.get('q12') == 'no' %}checked{% endif %}> <span>No</span> <span class="score-display">1 pt</span></label>
+    </div>
+</div>
+<div class="question-group">
+    <div class="question">13. Do you hide or lie about how much time you're online/gaming?</div>
+    <div class="options">
+        <label class="option"><input type="radio" name="q13" value="yes" required {% if form.get('q13') == 'yes' %}checked{% endif %}> <span>Yes</span> <span class="score-display">4 pts</span></label>
+        <label class="option"><input type="radio" name="q13" value="no" {% if form.get('q13') == 'no' %}checked{% endif %}> <span>No</span> <span class="score-display">1 pt</span></label>
+    </div>
+</div>
+<div class="question-group">
+    <div class="question">14. Has your academic/work performance suffered due to excessive internet/gaming use?</div>
+    <div class="options">
+        <label class="option"><input type="radio" name="q14" value="yes" required {% if form.get('q14') == 'yes' %}checked{% endif %}> <span>Yes</span> <span class="score-display">4 pts</span></label>
+        <label class="option"><input type="radio" name="q14" value="no" {% if form.get('q14') == 'no' %}checked{% endif %}> <span>No</span> <span class="score-display">1 pt</span></label>
+    </div>
+</div>
+<div class="question-group">
+    <div class="question">15. Do you prefer being online rather than spending time with family/friends offline?</div>
+    <div class="options">
+        <label class="option"><input type="radio" name="q15" value="yes" required {% if form.get('q15') == 'yes' %}checked{% endif %}> <span>Yes</span> <span class="score-display">4 pts</span></label>
+        <label class="option"><input type="radio" name="q15" value="no" {% if form.get('q15') == 'no' %}checked{% endif %}> <span>No</span> <span class="score-display">1 pt</span></label>
+    </div>
+</div>

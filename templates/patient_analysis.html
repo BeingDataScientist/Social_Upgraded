@@ -204,8 +204,16 @@
                         <canvas id="genderChart"></canvas>
                     </div>
                     <div class="chart-box">
-                        <h3>Age Distribution</h3>
-                        <canvas id="ageChart"></canvas>
+                        <h3>Assessments per Patient</h3>
+                        <canvas id="apChart"></canvas>
+                    </div>
+                    <div class="chart-box">
+                        <h3>Score Distribution</h3>
+                        <canvas id="scoreChart"></canvas>
+                    </div>
+                    <div class="chart-box">
+                        <h3>Risk Trend by Week</h3>
+                        <canvas id="weekChart"></canvas>
                     </div>
                 </div>
             </div>
@@ -287,25 +295,65 @@
             }
         });
         
-        // Age Distribution
-        const ageCtx = document.getElementById('ageChart').getContext('2d');
-        new Chart(ageCtx, {
+        // Assessments per Patient
+        const apCtx = document.getElementById('apChart').getContext('2d');
+        new Chart(apCtx, {
             type: 'bar',
             data: {
-                labels: {{ age_labels|safe }},
+                labels: {{ ap_labels|safe }},
                 datasets: [{
                     label: 'Patients',
-                    data: {{ age_data|safe }},
-                    backgroundColor: '#667eea',
+                    data: {{ ap_data|safe }},
+                    backgroundColor: ['#667eea', '#764ba2', '#9b59b6', '#e74c3c'],
                     borderWidth: 2
                 }]
             },
             options: {
                 responsive: true,
                 scales: {
-                    y: {
-                        beginAtZero: true
-                    }
+                    y: { beginAtZero: true }
+                }
+            }
+        });
+        // Score Distribution
+        const scoreCtx = document.getElementById('scoreChart').getContext('2d');
+        new Chart(scoreCtx, {
+            type: 'doughnut',
+            data: {
+                labels: {{ score_labels|safe }},
+                datasets: [{
+                    data: {{ score_data|safe }},
+                    backgroundColor: ['#28a745', '#ffc107', '#fd7e14', '#dc3545'],
+                    borderWidth: 3,
+                    borderColor: '#fff'
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { position: 'bottom' } }
+            }
+        });
+        // Risk Trend by Week
+        const weekCtx = document.getElementById('weekChart').getContext('2d');
+        const weekData = {{ week_data|safe }};
+        const riskCats = {{ risk_categories|safe }};
+        const colors = ['#28a745', '#ffc107', '#fd7e14', '#dc3545'];
+        new Chart(weekCtx, {
+            type: 'bar',
+            data: {
+                labels: {{ week_labels|safe }},
+                datasets: riskCats.map((cat, i) => ({
+                    label: cat,
+                    data: weekData[cat] || [],
+                    backgroundColor: colors[i % colors.length],
+                    borderWidth: 2
+                }))
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    x: { stacked: true },
+                    y: { stacked: true, beginAtZero: true }
                 }
             }
         });

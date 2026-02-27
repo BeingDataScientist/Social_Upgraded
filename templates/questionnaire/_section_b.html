@@ -1,0 +1,37 @@
+<!-- Section B: Digital Media & Internet Use -->
+<div class="question-group">
+    <div class="question">7. On average, how many hours per day do you spend online (excluding academic/work-related use)?</div>
+    <div class="options">
+        <label class="option"><input type="radio" name="q7" value="less_2" required {% if form.get('q7') == 'less_2' %}checked{% endif %}> <span>Less than 2 hours</span> <span class="score-display">1 pt</span></label>
+        <label class="option"><input type="radio" name="q7" value="2_4" {% if form.get('q7') == '2_4' %}checked{% endif %}> <span>2–4 hours</span> <span class="score-display">2 pts</span></label>
+        <label class="option"><input type="radio" name="q7" value="4_6" {% if form.get('q7') == '4_6' %}checked{% endif %}> <span>4–6 hours</span> <span class="score-display">3 pts</span></label>
+        <label class="option"><input type="radio" name="q7" value="more_6" {% if form.get('q7') == 'more_6' %}checked{% endif %}> <span>More than 6 hours</span> <span class="score-display">4 pts</span></label>
+    </div>
+</div>
+<div class="question-group">
+    <div class="question">8. What is your primary online activity?</div>
+    <div class="options">
+        <label class="option"><input type="radio" name="q8" value="social_media" required {% if form.get('q8') == 'social_media' %}checked{% endif %}> <span>Social Media (Instagram, Facebook, etc.)</span> <span class="score-display">3 pts</span></label>
+        <label class="option"><input type="radio" name="q8" value="gaming" {% if form.get('q8') == 'gaming' %}checked{% endif %}> <span>Online Gaming</span> <span class="score-display">4 pts</span></label>
+        <label class="option"><input type="radio" name="q8" value="streaming" {% if form.get('q8') == 'streaming' %}checked{% endif %}> <span>Streaming/Entertainment (YouTube, OTT, etc.)</span> <span class="score-display">2 pts</span></label>
+        <label class="option"><input type="radio" name="q8" value="education" {% if form.get('q8') == 'education' %}checked{% endif %}> <span>Information/Education</span> <span class="score-display">1 pt</span></label>
+        <label class="option"><input type="radio" name="q8" value="other" {% if form.get('q8') == 'other' %}checked{% endif %}> <span>Other: <input type="text" name="q8_other" class="text-input" placeholder="Specify" value="{{ form.get('q8_other') or '' }}" style="width: 200px; display: inline-block; margin-left: 10px;"></span> <span class="score-display">2 pts</span></label>
+    </div>
+</div>
+<div class="question-group">
+    <div class="question">9. How often do you stay online longer than intended?</div>
+    <div class="options">
+        <label class="option"><input type="radio" name="q9" value="never" required {% if form.get('q9') == 'never' %}checked{% endif %}> <span>Never</span> <span class="score-display">1 pt</span></label>
+        <label class="option"><input type="radio" name="q9" value="rarely" {% if form.get('q9') == 'rarely' %}checked{% endif %}> <span>Rarely</span> <span class="score-display">2 pts</span></label>
+        <label class="option"><input type="radio" name="q9" value="sometimes" {% if form.get('q9') == 'sometimes' %}checked{% endif %}> <span>Sometimes</span> <span class="score-display">3 pts</span></label>
+        <label class="option"><input type="radio" name="q9" value="often" {% if form.get('q9') == 'often' %}checked{% endif %}> <span>Often</span> <span class="score-display">4 pts</span></label>
+        <label class="option"><input type="radio" name="q9" value="always" {% if form.get('q9') == 'always' %}checked{% endif %}> <span>Always</span> <span class="score-display">5 pts</span></label>
+    </div>
+</div>
+<div class="question-group">
+    <div class="question">10. Have you ever neglected sleep, meals, or responsibilities due to internet/gaming/smartphone use?</div>
+    <div class="options">
+        <label class="option"><input type="radio" name="q10" value="yes" required {% if form.get('q10') == 'yes' %}checked{% endif %}> <span>Yes</span> <span class="score-display">4 pts</span></label>
+        <label class="option"><input type="radio" name="q10" value="no" {% if form.get('q10') == 'no' %}checked{% endif %}> <span>No</span> <span class="score-display">1 pt</span></label>
+    </div>
+</div>

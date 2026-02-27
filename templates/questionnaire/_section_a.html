@@ -1,0 +1,53 @@
+<!-- Section A: Demographics & Family Background -->
+<div class="question-group">
+    <div class="question">1. Age (in years):</div>
+    <select name="q1" id="q1" class="text-input" required>
+        <option value="">-- Select age --</option>
+        {% for a in range(10, 19) %}
+        <option value="{{ a }}" {% if (form.get('q1')|string == a|string) or (patient and patient.age == a) %}selected{% endif %}>{{ a }}</option>
+        {% endfor %}
+    </select>
+</div>
+<div class="question-group">
+    <div class="question">2. Gender:</div>
+    <div class="options">
+        <label class="option"><input type="radio" name="q2" value="male" required {% if form.get('q2') == 'male' or (patient and patient.gender == 'male') %}checked{% endif %}> <span>Male</span> <span class="score-display">0</span></label>
+        <label class="option"><input type="radio" name="q2" value="female" {% if form.get('q2') == 'female' or (patient and patient.gender == 'female') %}checked{% endif %}> <span>Female</span> <span class="score-display">1</span></label>
+        <label class="option"><input type="radio" name="q2" value="other" {% if form.get('q2') == 'other' or (patient and patient.gender == 'other') %}checked{% endif %}> <span>Other</span> <span class="score-display">2</span></label>
+    </div>
+</div>
+<div class="question-group">
+    <div class="question">3. Educational Status:</div>
+    <div class="options">
+        <label class="option"><input type="radio" name="q3" value="8th" required {% if form.get('q3') == '8th' %}checked{% endif %}> <span>8th standard</span> <span class="score-display">0</span></label>
+        <label class="option"><input type="radio" name="q3" value="9th" {% if form.get('q3') == '9th' %}checked{% endif %}> <span>9th standard</span> <span class="score-display">1</span></label>
+        <label class="option"><input type="radio" name="q3" value="10th" {% if form.get('q3') == '10th' %}checked{% endif %}> <span>10th standard</span> <span class="score-display">2</span></label>
+        <label class="option"><input type="radio" name="q3" value="other" {% if form.get('q3') == 'other' %}checked{% endif %}> <span>Other: <input type="text" name="q3_other" class="text-input" placeholder="Specify" value="{{ form.get('q3_other') or '' }}" style="width: 200px; display: inline-block; margin-left: 10px;"></span> <span class="score-display">3</span></label>
+    </div>
+</div>
+<div class="question-group">
+    <div class="question">4. Parents Occupation (if applicable):</div>
+    <select name="q4" id="q4" class="text-input" required>
+        <option value="">-- Select occupation --</option>
+        <option value="Entrepreneur" {% if form.get('q4') == 'Entrepreneur' %}selected{% endif %}>Entrepreneur</option>
+        <option value="Private job" {% if form.get('q4') == 'Private job' %}selected{% endif %}>Private job</option>
+        <option value="Government job" {% if form.get('q4') == 'Government job' %}selected{% endif %}>Government job</option>
+        <option value="IT industry" {% if form.get('q4') == 'IT industry' %}selected{% endif %}>IT industry</option>
+    </select>
+</div>
+<div class="question-group">
+    <div class="question">5. Type of Family:</div>
+    <div class="options">
+        <label class="option"><input type="radio" name="q5" value="nuclear" required {% if form.get('q5') == 'nuclear' %}checked{% endif %}> <span>Nuclear</span> <span class="score-display">0</span></label>
+        <label class="option"><input type="radio" name="q5" value="joint" {% if form.get('q5') == 'joint' %}checked{% endif %}> <span>Joint</span> <span class="score-display">1</span></label>
+        <label class="option"><input type="radio" name="q5" value="other" {% if form.get('q5') == 'other' %}checked{% endif %}> <span>Other</span> <span class="score-display">2</span></label>
+    </div>
+</div>
+<div class="question-group">
+    <div class="question">6. Socio-economic Background:</div>
+    <div class="options">
+        <label class="option"><input type="radio" name="q6" value="low" required {% if form.get('q6') == 'low' %}checked{% endif %}> <span>Low</span> <span class="score-display">0</span></label>
+        <label class="option"><input type="radio" name="q6" value="middle" {% if form.get('q6') == 'middle' %}checked{% endif %}> <span>Middle</span> <span class="score-display">1</span></label>
+        <label class="option"><input type="radio" name="q6" value="high" {% if form.get('q6') == 'high' %}checked{% endif %}> <span>High</span> <span class="score-display">2</span></label>
+    </div>
+</div>
