@@ -1,0 +1,77 @@
+        # --- 1) Combined confusion matrices ---
+        fig, axes = plt.subplots(nrows, ncols, figsize=(5.2 * ncols, 4.4 * nrows))
+        axes_flat = np.atleast_1d(axes).ravel()
+        for idx, name in enumerate(names):
+            cm = confusion_matrix(self.y_test, self.results[name]['test_pred'])
+            ax = axes_flat[idx]
+            sns.heatmap(
+                cm, annot=True, fmt='d', cmap='Blues', ax=ax,
+                xticklabels=class_labels, yticklabels=class_labels,
+                cbar_kws={'shrink': 0.82},
+            )
+            ax.set_title(name, fontsize=11, fontweight='bold')
+            ax.set_xlabel('Predicted')
+            ax.set_ylabel('Actual')
+            plt.setp(ax.get_xticklabels(), rotation=35, ha='right', fontsize=7)
+            plt.setp(ax.get_yticklabels(), rotation=0, fontsize=7)
+        for j in range(n, len(axes_flat)):
+            axes_flat[j].axis('off')
+        fig.suptitle('Confusion matrices — test set (all models)', fontsize=14, fontweight='bold', y=1.02)
+        plt.tight_layout()
+        plt.savefig(os.path.join(fig_dir, '01_combined_confusion_matrices.png'), dpi=300, bbox_inches='tight')
+        plt.close()
+
+        # --- 2) Classification metrics (precision, recall, F1) for all models ---
+        n_classes = len(self.label_encoder.classes_)
+        prec = np.zeros((n, n_classes))
+        rec = np.zeros((n, n_classes))
+        f1m = np.zeros((n, n_classes))
+        for i, name in enumerate(names):
+            pred = self.results[name]['test_pred']
+            p, r, f, _ = precision_recall_fscore_support(
+                self.y_test, pred, average=None, zero_division=0,
+            )
+            prec[i, : len(p)] = p
+            rec[i, : len(r)] = r
+            f1m[i, : len(f)] = f
+        
+        fig, axes = plt.subplots(1, 3, figsize=(16, max(4.0, 0.45 * n + 1.5)))
+        titles_data = [('Precision (per class)', prec), ('Recall (per class)', rec), ('F1-score (per class)', f1m)]
+        for ax, (title, data) in zip(axes, titles_data):
+            sns.heatmap(
+                data, annot=True, fmt='.2f', cmap='YlOrRd', vmin=0, vmax=1, ax=ax,
+                xticklabels=class_labels, yticklabels=names,
+                cbar_kws={'shrink': 0.75, 'label': 'Score'},
+            )
+            ax.set_title(title, fontsize=12, fontweight='bold')
+            plt.setp(ax.get_xticklabels(), rotation=35, ha='right', fontsize=8)
+            ax.set_ylabel('Model')
+        fig.suptitle('Classification metrics by model and class (test set)', fontsize=14, fontweight='bold', y=1.03)
+        plt.tight_layout()
+        plt.savefig(os.path.join(fig_dir, '02_classification_metrics_all_models.png'), dpi=300, bbox_inches='tight')
+        plt.close()
+
+        # --- 3) Micro-averaged multiclass ROC — all models ---
+        classes = np.arange(len(self.label_encoder.classes_))
+        y_bin = label_binarize(self.y_test, classes=classes)
+        fig, ax = plt.subplots(figsize=(10, 8))
+        palette = sns.color_palette('husl', max(n, 6))
+        for idx, name in enumerate(names):
+            proba = self.results[name]['test_proba']
+            if proba is None:
+                continue
+            fpr, tpr, _ = roc_curve(y_bin.ravel(), proba.ravel())
+            micro_auc = auc(fpr, tpr)
+            ax.plot(fpr, tpr, lw=2, color=palette[idx % len(palette)],
+                    label=f'{name} (micro-AUC = {micro_auc:.3f})')
+        ax.plot([0, 1], [0, 1], 'k--', lw=1.5, alpha=0.6, label='Chance')
+        ax.set_xlim([0.0, 1.0])
+        ax.set_ylim([0.0, 1.05])
+        ax.set_xlabel('False positive rate', fontsize=12)
+        ax.set_ylabel('True positive rate', fontsize=12)
+        ax.set_title('ROC curves — all models (micro-averaged, multiclass)', fontsize=13, fontweight='bold')
+        ax.legend(loc='lower right', fontsize=9)
+        ax.grid(alpha=0.3)
+        plt.tight_layout()
+        plt.savefig(os.path.join(fig_dir, '03_combined_roc_curves.png'), dpi=300, bbox_inches='tight')
+        plt.close()
