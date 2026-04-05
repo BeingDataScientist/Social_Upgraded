@@ -1,7 +1,7 @@
 ================================================================================
 IAD RISK ASSESSMENT - MACHINE LEARNING MODEL TRAINING
 ================================================================================
-Start Time: 2025-12-09 22:37:26
+Start Time: 2026-04-05 22:51:00
 
 ================================================================================
 STEP 1: DATA LOADING AND INSPECTION
@@ -12,40 +12,40 @@ Columns: ['record_id', 'total_score', 'risk_level', 'Q1', 'Q2', 'Q3', 'Q4', 'Q5'
 No missing values found.
 
 Data types:
-record_id       int64
-total_score     int64
-risk_level     object
-Q1              int64
-Q2              int64
-Q3              int64
-Q4              int64
-Q5              int64
-Q6              int64
-Q7              int64
-Q8              int64
-Q9              int64
-Q10             int64
-Q11             int64
-Q12             int64
-Q13             int64
-Q14             int64
-Q15             int64
-Q16             int64
-Q17             int64
-Q18             int64
-Q19             int64
-Q20             int64
-Q21             int64
-Q22             int64
+record_id      int64
+total_score    int64
+risk_level       str
+Q1             int64
+Q2             int64
+Q3             int64
+Q4             int64
+Q5             int64
+Q6             int64
+Q7             int64
+Q8             int64
+Q9             int64
+Q10            int64
+Q11            int64
+Q12            int64
+Q13            int64
+Q14            int64
+Q15            int64
+Q16            int64
+Q17            int64
+Q18            int64
+Q19            int64
+Q20            int64
+Q21            int64
+Q22            int64
 dtype: object
 
 First few rows:
-   record_id  total_score risk_level  Q1  Q2  Q3  Q4  Q5  Q6  Q7  Q8  ...  Q12  Q13  Q14  Q15  Q16  Q17  Q18  Q19  Q20  Q21  Q22
-0          1            8   Low risk  37   2   0   0   0   0   0   0  ...    0    0    0    0    4    0    0    0    0    0    2
-1          2            1   Low risk  60   0   0   0   0   0   0   0  ...    0    0    0    0    0    0    0    0    0    0    0
-2          4            1   Low risk  62   0   0   0   0   0   0   0  ...    0    0    0    0    0    0    0    1    0    0    0
-3          8            8   Low risk  19   0   0   0   0   0   0   0  ...    0    0    0    0    0    0    0    4    0    0    0
-4         12            0   Low risk  49   0   0   0   0   0   0   0  ...    0    0    0    0    0    0    0    0    0    0    0
+   record_id  total_score risk_level  Q1  Q2  Q3  ...  Q17  Q18  Q19  Q20  Q21  Q22
+0          1            8   Low risk  37   2   0  ...    0    0    0    0    0    2
+1          2            1   Low risk  60   0   0  ...    0    0    0    0    0    0
+2          4            1   Low risk  62   0   0  ...    0    0    1    0    0    0
+3          8            8   Low risk  19   0   0  ...    0    0    4    0    0    0
+4         12            0   Low risk  49   0   0  ...    0    0    0    0    0    0
 
 [5 rows x 25 columns]
 
@@ -54,15 +54,15 @@ STEP 2: EXPLORATORY DATA ANALYSIS
 ================================================================================
 
 Descriptive Statistics for Q1-Q22:
-                Q1           Q2           Q3      Q4  ...         Q19          Q20          Q21          Q22
-count  5000.000000  5000.000000  5000.000000  5000.0  ...  5000.00000  5000.000000  5000.000000  5000.000000
-mean     41.456200     0.662000     0.691200     0.0  ...     1.30040     1.312200     1.330400     1.310200
-std      13.781831     0.934629     0.944045     0.0  ...     1.83729     1.842881     1.848004     1.841047
-min      18.000000     0.000000     0.000000     0.0  ...     0.00000     0.000000     0.000000     0.000000
-25%      30.000000     0.000000     0.000000     0.0  ...     0.00000     0.000000     0.000000     0.000000
-50%      41.000000     0.000000     0.000000     0.0  ...     0.00000     0.000000     0.000000     0.000000
-75%      53.000000     2.000000     2.000000     0.0  ...     4.00000     4.000000     4.000000     4.000000
-max      65.000000     2.000000     2.000000     0.0  ...     4.00000     4.000000     4.000000     4.000000
+                Q1           Q2  ...          Q21          Q22
+count  5000.000000  5000.000000  ...  5000.000000  5000.000000
+mean     41.456200     0.662000  ...     1.330400     1.310200
+std      13.781831     0.934629  ...     1.848004     1.841047
+min      18.000000     0.000000  ...     0.000000     0.000000
+25%      30.000000     0.000000  ...     0.000000     0.000000
+50%      41.000000     0.000000  ...     0.000000     0.000000
+75%      53.000000     2.000000  ...     4.000000     4.000000
+max      65.000000     2.000000  ...     4.000000     4.000000
 
 [8 rows x 22 columns]
 
@@ -90,7 +90,7 @@ Min: 0
 Max: 68
 IQR: 18.50
 
-Exploratory analysis visualizations saved.
+Exploratory analysis (statistics logged; no figures — training uses 3 combined plots only).
 
 ================================================================================
 STEP 3: RELIABILITY AND VALIDATION ANALYSIS
@@ -127,9 +127,9 @@ Q2: r=0.3876, p=0.0000
 Exploratory Factor Analysis (EFA):
 KMO Test: nan
 KMO Interpretation: Unacceptable
-Bartlett's Test: χ²=nan, p=nan
+Bartlett's Test: chi2=nan, p=nan
 Bartlett's test is not significant - data may not be suitable for factor analysis
-Error in Factor Analysis: array must not contain infs or NaNs
+Error in Factor Analysis: check_array() got an unexpected keyword argument 'force_all_finite'. Did you mean 'ensure_all_finite'?
 
 ================================================================================
 STEP 4: CORRELATION ANALYSIS
@@ -394,6 +394,8 @@ ROC AUC (macro): 0.8955
 Cohen's Kappa: 0.5827
 Log Loss: 2.5775
 
+Saved 3 training figures: 01_combined_confusion_matrices.png, 02_classification_metrics_all_models.png, 03_combined_roc_curves.png
+
 ================================================================================
 CROSS-VALIDATION ANALYSIS
 ================================================================================
@@ -440,31 +442,31 @@ McNemar's Test (on test set):
 ANN vs Logistic Regression:
   b (ANN correct, Logistic Regression wrong): 0
   c (ANN wrong, Logistic Regression correct): 30
-  χ²: 28.0333
+  chi2: 28.0333
   p-value: 0.0000
 
 ANN vs SVM:
   b (ANN correct, SVM wrong): 21
   c (ANN wrong, SVM correct): 16
-  χ²: 0.4324
+  chi2: 0.4324
   p-value: 0.5108
 
 ANN vs Random Forest:
   b (ANN correct, Random Forest wrong): 112
   c (ANN wrong, Random Forest correct): 14
-  χ²: 74.6746
+  chi2: 74.6746
   p-value: 0.0000
 
 ANN vs Gradient Boosting:
   b (ANN correct, Gradient Boosting wrong): 110
   c (ANN wrong, Gradient Boosting correct): 20
-  χ²: 60.9308
+  chi2: 60.9308
   p-value: 0.0000
 
 ANN vs KNN:
   b (ANN correct, KNN wrong): 289
   c (ANN wrong, KNN correct): 16
-  χ²: 242.5705
+  chi2: 242.5705
   p-value: 0.0000
 
 ================================================================================

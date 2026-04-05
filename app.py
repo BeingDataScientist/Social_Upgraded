@@ -4,7 +4,7 @@ import json
 import os
 import pandas as pd
 import numpy as np
-from datetime import datetime, date, timedelta
+from datetime import datetime
 from ml_model.ml_predictor import predict_risk_level, format_questionnaire_data, get_predictor
 from openai_analyzer import format_questionnaire_for_openai, analyze_with_openai
 from database import db, Doctor, Patient, PatientLog, init_db
@@ -114,14 +114,45 @@ def dashboard():
     risk_labels = list(risk_counts.keys()) if risk_counts else []
     risk_data = list(risk_counts.values()) if risk_counts else []
     
-    # Time-based data (last 30 days)
-    time_counts = defaultdict(int)
+    # Risk category counts by patient gender (stacked bar — no dates)
+    patient_genders = {p.pid: p.gender for p in patients}
+    risk_categories_order = [
+        'Low risk', 'At-Risk', 'Problematic use likely', 'High Risk/ addictive pattern'
+    ]
+    seen_cats = {log.openai_category for log in all_logs if log.openai_category}
+    risk_cats_stack = [c for c in risk_categories_order if c in seen_cats] + sorted(
+        seen_cats - set(risk_categories_order)
+    )
+    gender_order = ['male', 'female', 'other']
+    gender_axis = [g for g in gender_order if any(p.gender == g for p in patients)]
+    if not gender_axis and patients:
+        gender_axis = sorted({p.gender for p in patients})
+    gender_risk_matrix = defaultdict(lambda: defaultdict(int))
     for log in all_logs:
-        date_str = log.timestamp.strftime('%Y-%m-%d')
-        time_counts[date_str] += 1
+        if not log.openai_category:
+            continue
+        g = patient_genders.get(log.patient_id, 'unknown')
+        gender_risk_matrix[g][log.openai_category] += 1
+    if not gender_axis:
+        gender_axis = ['unknown'] if gender_risk_matrix else ['—']
+    gender_display = {'male': 'Male', 'female': 'Female', 'other': 'Other', 'unknown': 'Unknown'}
+    gender_axis_labels = [gender_display.get(g, g.replace('_', ' ').title()) for g in gender_axis]
+    gender_risk_stack_data = {
+        cat: [gender_risk_matrix[g].get(cat, 0) for g in gender_axis] for cat in risk_cats_stack
+    }
     
-    time_labels = sorted(time_counts.keys())[-30:]  # Last 30 days
-    time_data = [time_counts.get(d, 0) for d in time_labels]
+    # Average total score by risk category (no dates)
+    scores_by_risk = defaultdict(list)
+    for log in all_logs:
+        if log.openai_category and log.total_score is not None:
+            scores_by_risk[log.openai_category].append(log.total_score)
+    avg_risk_labels = sorted(
+        scores_by_risk.keys(),
+        key=lambda k: (risk_categories_order.index(k) if k in risk_categories_order else 99, k)
+    )
+    avg_risk_values = [
+        round(sum(scores_by_risk[k]) / len(scores_by_risk[k]), 1) for k in avg_risk_labels
+    ]
     
     # Gender distribution
     gender_counts = {}
@@ -155,20 +186,6 @@ def dashboard():
     score_labels = list(score_buckets.keys())
     score_data = list(score_buckets.values())
     
-    # Risk trend by week (last 8 weeks)
-    risk_categories = ['Low risk', 'At-Risk', 'Problematic use likely', 'High Risk/ addictive pattern']
-    week_labels = []
-    week_data = {cat: [] for cat in risk_categories}
-    today = date.today()
-    for i in range(7, -1, -1):
-        week_start = today - timedelta(days=today.weekday() + 7 * (i + 1))
-        week_end = week_start + timedelta(days=6)
-        week_labels.append(week_start.strftime('%d %b'))
-        for cat in risk_categories:
-            count = sum(1 for log in all_logs if log.openai_category == cat
-                       and week_start <= log.timestamp.date() <= week_end)
-            week_data[cat].append(count)
-    
     return render_template('dashboard.html', 
                          doctor_name=doctor.name,
                          doctor_profession=doctor.profession,
@@ -178,17 +195,17 @@ def dashboard():
                          avg_assessments_per_patient=avg_assessments_per_patient,
                          risk_labels=json.dumps(risk_labels),
                          risk_data=json.dumps(risk_data),
-                         time_labels=json.dumps(time_labels),
-                         time_data=json.dumps(time_data),
                          gender_labels=json.dumps(gender_labels),
                          gender_data=json.dumps(gender_data),
                          ap_labels=json.dumps(ap_labels),
                          ap_data=json.dumps(ap_data),
                          score_labels=json.dumps(score_labels),
                          score_data=json.dumps(score_data),
-                         week_labels=json.dumps(week_labels),
-                         week_data=json.dumps(week_data),
-                         risk_categories=json.dumps(risk_categories))
+                         gender_axis_labels=json.dumps(gender_axis_labels),
+                         gender_risk_stack_data=json.dumps(gender_risk_stack_data),
+                         risk_cats_stack=json.dumps(risk_cats_stack),
+                         avg_risk_labels=json.dumps(avg_risk_labels),
+                         avg_risk_values=json.dumps(avg_risk_values))
 
 @app.route('/add-patient', methods=['GET', 'POST'])
 @login_required
@@ -1713,14 +1730,45 @@ def patient_analysis():
     risk_labels = list(risk_counts.keys()) if risk_counts else []
     risk_data = list(risk_counts.values()) if risk_counts else []
     
-    # Time-based data (last 30 days)
-    time_counts = defaultdict(int)
+    # Risk category counts by patient gender (stacked bar — no dates)
+    patient_genders = {p.pid: p.gender for p in patients}
+    risk_categories_order = [
+        'Low risk', 'At-Risk', 'Problematic use likely', 'High Risk/ addictive pattern'
+    ]
+    seen_cats = {log.openai_category for log in all_logs if log.openai_category}
+    risk_cats_stack = [c for c in risk_categories_order if c in seen_cats] + sorted(
+        seen_cats - set(risk_categories_order)
+    )
+    gender_order = ['male', 'female', 'other']
+    gender_axis = [g for g in gender_order if any(p.gender == g for p in patients)]
+    if not gender_axis and patients:
+        gender_axis = sorted({p.gender for p in patients})
+    gender_risk_matrix = defaultdict(lambda: defaultdict(int))
     for log in all_logs:
-        date_str = log.timestamp.strftime('%Y-%m-%d')
-        time_counts[date_str] += 1
+        if not log.openai_category:
+            continue
+        g = patient_genders.get(log.patient_id, 'unknown')
+        gender_risk_matrix[g][log.openai_category] += 1
+    if not gender_axis:
+        gender_axis = ['unknown'] if gender_risk_matrix else ['—']
+    gender_display = {'male': 'Male', 'female': 'Female', 'other': 'Other', 'unknown': 'Unknown'}
+    gender_axis_labels = [gender_display.get(g, g.replace('_', ' ').title()) for g in gender_axis]
+    gender_risk_stack_data = {
+        cat: [gender_risk_matrix[g].get(cat, 0) for g in gender_axis] for cat in risk_cats_stack
+    }
     
-    time_labels = sorted(time_counts.keys())[-30:]  # Last 30 days
-    time_data = [time_counts.get(d, 0) for d in time_labels]
+    # Average total score by risk category (no dates)
+    scores_by_risk = defaultdict(list)
+    for log in all_logs:
+        if log.openai_category and log.total_score is not None:
+            scores_by_risk[log.openai_category].append(log.total_score)
+    avg_risk_labels = sorted(
+        scores_by_risk.keys(),
+        key=lambda k: (risk_categories_order.index(k) if k in risk_categories_order else 99, k)
+    )
+    avg_risk_values = [
+        round(sum(scores_by_risk[k]) / len(scores_by_risk[k]), 1) for k in avg_risk_labels
+    ]
     
     # Gender distribution
     gender_counts = {}
@@ -1754,20 +1802,6 @@ def patient_analysis():
     score_labels = list(score_buckets.keys())
     score_data = list(score_buckets.values())
     
-    # Risk trend by week (last 8 weeks)
-    risk_categories = ['Low risk', 'At-Risk', 'Problematic use likely', 'High Risk/ addictive pattern']
-    week_labels = []
-    week_data = {cat: [] for cat in risk_categories}
-    today = date.today()
-    for i in range(7, -1, -1):
-        week_start = today - timedelta(days=today.weekday() + 7 * (i + 1))
-        week_end = week_start + timedelta(days=6)
-        week_labels.append(week_start.strftime('%d %b'))
-        for cat in risk_categories:
-            count = sum(1 for log in all_logs if log.openai_category == cat
-                       and week_start <= log.timestamp.date() <= week_end)
-            week_data[cat].append(count)
-    
     return render_template('patient_analysis.html',
                          patients=patients,
                          total_patients=total_patients,
@@ -1775,17 +1809,17 @@ def patient_analysis():
                          avg_assessments_per_patient=avg_assessments_per_patient,
                          risk_labels=json.dumps(risk_labels),
                          risk_data=json.dumps(risk_data),
-                         time_labels=json.dumps(time_labels),
-                         time_data=json.dumps(time_data),
                          gender_labels=json.dumps(gender_labels),
                          gender_data=json.dumps(gender_data),
                          ap_labels=json.dumps(ap_labels),
                          ap_data=json.dumps(ap_data),
                          score_labels=json.dumps(score_labels),
                          score_data=json.dumps(score_data),
-                         week_labels=json.dumps(week_labels),
-                         week_data=json.dumps(week_data),
-                         risk_categories=json.dumps(risk_categories))
+                         gender_axis_labels=json.dumps(gender_axis_labels),
+                         gender_risk_stack_data=json.dumps(gender_risk_stack_data),
+                         risk_cats_stack=json.dumps(risk_cats_stack),
+                         avg_risk_labels=json.dumps(avg_risk_labels),
+                         avg_risk_values=json.dumps(avg_risk_values))
 
 @app.route('/patient/<patient_id>/analysis')
 @login_required

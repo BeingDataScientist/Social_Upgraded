@@ -5,7 +5,7 @@ for Internet Addiction Disorder (IAD) Risk Assessment
 This script implements:
 - Complete statistical analysis pipeline
 - ANN (priority) + 5 other ML algorithms
-- Comprehensive visualizations
+- Three combined training visualizations (confusion matrices, classification metrics, ROC)
 - Detailed statistical report
 """
 
@@ -16,9 +16,9 @@ matplotlib.use('Agg')  # Non-interactive backend
 import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.model_selection import train_test_split, StratifiedKFold, cross_val_score, GridSearchCV
-from sklearn.preprocessing import StandardScaler, LabelEncoder, MinMaxScaler
+from sklearn.preprocessing import StandardScaler, LabelEncoder, MinMaxScaler, label_binarize
 from sklearn.metrics import (confusion_matrix, classification_report, accuracy_score, 
-                             precision_recall_fscore_support, roc_auc_score, roc_curve,
+                             precision_recall_fscore_support, roc_auc_score, roc_curve, auc,
                              cohen_kappa_score, log_loss, brier_score_loss)
 from sklearn.inspection import permutation_importance
 from sklearn.linear_model import LogisticRegression
@@ -139,62 +139,7 @@ class IADModelTrainer:
         self.log(f"Max: {self.df['total_score'].max()}")
         self.log(f"IQR: {self.df['total_score'].quantile(0.75) - self.df['total_score'].quantile(0.25):.2f}")
         
-        # Visualizations
-        fig, axes = plt.subplots(2, 2, figsize=(15, 12))
-        
-        # Risk level distribution
-        risk_dist.plot(kind='bar', ax=axes[0, 0], color='steelblue')
-        axes[0, 0].set_title('Risk Level Distribution', fontsize=14, fontweight='bold')
-        axes[0, 0].set_xlabel('Risk Level')
-        axes[0, 0].set_ylabel('Count')
-        axes[0, 0].tick_params(axis='x', rotation=45)
-        
-        # Total score histogram
-        axes[0, 1].hist(self.df['total_score'], bins=30, color='coral', edgecolor='black')
-        axes[0, 1].set_title('Total Score Distribution', fontsize=14, fontweight='bold')
-        axes[0, 1].set_xlabel('Total Score')
-        axes[0, 1].set_ylabel('Frequency')
-        axes[0, 1].axvline(self.df['total_score'].mean(), color='red', linestyle='--', label=f'Mean: {self.df["total_score"].mean():.2f}')
-        axes[0, 1].legend()
-        
-        # Total score by risk level (boxplot)
-        risk_order = ['Low risk', 'At-risk (brief advice/monitor)', 
-                     'Problematic use likely (structured assessment)',
-                     'High risk / addictive pattern (consider referral)']
-        df_ordered = self.df.copy()
-        df_ordered['risk_level'] = pd.Categorical(df_ordered['risk_level'], categories=risk_order, ordered=True)
-        sns.boxplot(data=df_ordered, x='risk_level', y='total_score', ax=axes[1, 0])
-        axes[1, 0].set_title('Total Score by Risk Level', fontsize=14, fontweight='bold')
-        axes[1, 0].set_xlabel('Risk Level')
-        axes[1, 0].set_ylabel('Total Score')
-        axes[1, 0].tick_params(axis='x', rotation=45)
-        
-        # Violin plot
-        sns.violinplot(data=df_ordered, x='risk_level', y='total_score', ax=axes[1, 1])
-        axes[1, 1].set_title('Total Score Distribution by Risk Level (Violin Plot)', fontsize=14, fontweight='bold')
-        axes[1, 1].set_xlabel('Risk Level')
-        axes[1, 1].set_ylabel('Total Score')
-        axes[1, 1].tick_params(axis='x', rotation=45)
-        
-        plt.tight_layout()
-        plt.savefig(os.path.join(self.output_dir, 'figures', '01_exploratory_analysis.png'), dpi=300, bbox_inches='tight')
-        plt.close()
-        
-        # Question-level statistics
-        fig, axes = plt.subplots(4, 6, figsize=(24, 16))
-        axes = axes.flatten()
-        
-        for i, q in enumerate(numeric_cols):
-            axes[i].hist(self.df[q], bins=20, color='skyblue', edgecolor='black', alpha=0.7)
-            axes[i].set_title(f'{q} Distribution', fontsize=10, fontweight='bold')
-            axes[i].set_xlabel('Score')
-            axes[i].set_ylabel('Frequency')
-        
-        plt.tight_layout()
-        plt.savefig(os.path.join(self.output_dir, 'figures', '02_question_distributions.png'), dpi=300, bbox_inches='tight')
-        plt.close()
-        
-        self.log("\nExploratory analysis visualizations saved.")
+        self.log("\nExploratory analysis (statistics logged; no figures - training uses 3 combined plots only).")
         
     def _calculate_cronbach_alpha_manual(self, data):
         """Manual calculation of Cronbach's Alpha"""
@@ -267,21 +212,6 @@ class IADModelTrainer:
         for item, stats in sorted(item_total_corr.items(), key=lambda x: x[1]['correlation'], reverse=True):
             self.log(f"{item}: r={stats['correlation']:.4f}, p={stats['p_value']:.4f}")
         
-        # Visualize item-total correlations
-        fig, ax = plt.subplots(figsize=(12, 6))
-        items = list(item_total_corr.keys())
-        correlations = [item_total_corr[item]['correlation'] for item in items]
-        colors = ['green' if c >= 0.3 else 'orange' if c >= 0.2 else 'red' for c in correlations]
-        
-        ax.barh(items, correlations, color=colors)
-        ax.axvline(0.3, color='red', linestyle='--', label='Minimum acceptable (0.3)')
-        ax.set_xlabel('Item-Total Correlation')
-        ax.set_title('Item-Total Correlations', fontsize=14, fontweight='bold')
-        ax.legend()
-        plt.tight_layout()
-        plt.savefig(os.path.join(self.output_dir, 'figures', '03_item_total_correlations.png'), dpi=300, bbox_inches='tight')
-        plt.close()
-        
         # Factor Analysis (EFA)
         self.log("\nExploratory Factor Analysis (EFA):")
         
@@ -305,7 +235,7 @@ class IADModelTrainer:
                 self.log(f"KMO Interpretation: {kmo_interpretation}")
                 
                 bartlett_chi2, bartlett_p = calculate_bartlett_sphericity(reliability_data)
-                self.log(f"Bartlett's Test: χ²={bartlett_chi2:.4f}, p={bartlett_p:.4f}")
+                self.log(f"Bartlett's Test: chi2={bartlett_chi2:.4f}, p={bartlett_p:.4f}")
                 
                 if bartlett_p < 0.05:
                     self.log("Bartlett's test is significant - data suitable for factor analysis")
@@ -321,33 +251,11 @@ class IADModelTrainer:
                 self.log(f"\nEigenvalues: {eigenvalues[:10]}")
                 self.log(f"Factors with eigenvalue > 1: {sum(eigenvalues > 1)}")
                 
-                # Scree plot
-                fig, ax = plt.subplots(figsize=(10, 6))
-                ax.plot(range(1, len(eigenvalues) + 1), eigenvalues, 'bo-')
-                ax.axhline(1, color='red', linestyle='--', label='Eigenvalue = 1')
-                ax.set_xlabel('Factor Number')
-                ax.set_ylabel('Eigenvalue')
-                ax.set_title('Scree Plot', fontsize=14, fontweight='bold')
-                ax.legend()
-                ax.grid(True)
-                plt.tight_layout()
-                plt.savefig(os.path.join(self.output_dir, 'figures', '04_scree_plot.png'), dpi=300, bbox_inches='tight')
-                plt.close()
-                
                 # Factor loadings
                 loadings = fa.loadings_
                 loadings_df = pd.DataFrame(loadings, index=reliability_data.columns, 
                                          columns=[f'Factor {i+1}' for i in range(4)])
                 self.log(f"\nFactor Loadings:\n{loadings_df}")
-                
-                # Visualize factor loadings
-                fig, ax = plt.subplots(figsize=(12, 8))
-                sns.heatmap(loadings_df, annot=True, fmt='.3f', cmap='RdYlBu_r', center=0, 
-                           vmin=-1, vmax=1, ax=ax, cbar_kws={'label': 'Loading'})
-                ax.set_title('Factor Loadings Heatmap', fontsize=14, fontweight='bold')
-                plt.tight_layout()
-                plt.savefig(os.path.join(self.output_dir, 'figures', '05_factor_loadings.png'), dpi=300, bbox_inches='tight')
-                plt.close()
                 
                 # Variance explained
                 variance_explained = fa.get_eigenvalues()[1]
@@ -369,15 +277,6 @@ class IADModelTrainer:
         
         numeric_cols = [f'Q{i}' for i in range(1, 23)]
         corr_matrix = self.df[numeric_cols].corr()
-        
-        # Visualize correlation matrix
-        fig, ax = plt.subplots(figsize=(16, 14))
-        sns.heatmap(corr_matrix, annot=False, fmt='.2f', cmap='coolwarm', center=0,
-                   square=True, linewidths=0.5, cbar_kws={'shrink': 0.8}, ax=ax)
-        ax.set_title('Question Correlation Matrix', fontsize=16, fontweight='bold')
-        plt.tight_layout()
-        plt.savefig(os.path.join(self.output_dir, 'figures', '06_correlation_matrix.png'), dpi=300, bbox_inches='tight')
-        plt.close()
         
         # Find high correlations (potential multicollinearity)
         high_corr_pairs = []
@@ -500,50 +399,6 @@ class IADModelTrainer:
             train_accs = [accuracy_score(y_train_ann, model.predict(X_train_ann))]
             val_accs = [accuracy_score(y_val_ann, model.predict(X_val_ann))]
         
-        # Plot training history (if we have data)
-        if len(train_losses) > 0 or len(train_accs) > 0:
-            fig, axes = plt.subplots(1, 2, figsize=(15, 5))
-            
-            if len(train_losses) > 0:
-                axes[0].plot(train_losses, label='Training Loss', color='blue')
-                if len(val_losses) > 0:
-                    axes[0].plot(val_losses, label='Validation Loss', color='red')
-                axes[0].set_title('Model Loss', fontsize=14, fontweight='bold')
-                axes[0].set_xlabel('Iteration')
-                axes[0].set_ylabel('Loss')
-                axes[0].legend()
-                axes[0].grid(True)
-            else:
-                axes[0].text(0.5, 0.5, 'Loss curve not available', 
-                           ha='center', va='center', transform=axes[0].transAxes)
-                axes[0].set_title('Model Loss', fontsize=14, fontweight='bold')
-            
-            if len(train_accs) > 0:
-                axes[1].plot(train_accs, label='Training Accuracy', color='blue')
-                if len(val_accs) > 0:
-                    axes[1].plot(val_accs, label='Validation Accuracy', color='red')
-                axes[1].set_title('Model Accuracy', fontsize=14, fontweight='bold')
-                axes[1].set_xlabel('Iteration')
-                axes[1].set_ylabel('Accuracy')
-                axes[1].legend()
-                axes[1].grid(True)
-            else:
-                # Calculate final accuracies
-                train_pred_final = model.predict(self.X_train_scaled)
-                test_pred_final = model.predict(self.X_test_scaled)
-                train_acc_final = accuracy_score(self.y_train, train_pred_final)
-                test_acc_final = accuracy_score(self.y_test, test_pred_final)
-                
-                axes[1].bar(['Training', 'Test'], [train_acc_final, test_acc_final], 
-                           color=['blue', 'green'], alpha=0.7)
-                axes[1].set_title('Model Accuracy', fontsize=14, fontweight='bold')
-                axes[1].set_ylabel('Accuracy')
-                axes[1].set_ylim([0, 1])
-            
-            plt.tight_layout()
-            plt.savefig(os.path.join(self.output_dir, 'figures', '07_ann_training_history.png'), dpi=300, bbox_inches='tight')
-            plt.close()
-        
         # Evaluate on full training and test sets
         train_pred = model.predict(self.X_train_scaled)
         train_proba = model.predict_proba(self.X_train_scaled)
@@ -583,7 +438,7 @@ class IADModelTrainer:
         self.log("="*80)
         
         models_to_train = {
-            'Logistic Regression': LogisticRegression(max_iter=1000, random_state=42, multi_class='multinomial'),
+            'Logistic Regression': LogisticRegression(max_iter=1000, random_state=42),
             'SVM': SVC(probability=True, random_state=42),
             'Random Forest': RandomForestClassifier(n_estimators=100, random_state=42),
             'Gradient Boosting': GradientBoostingClassifier(n_estimators=100, random_state=42),
@@ -640,9 +495,6 @@ class IADModelTrainer:
             test_pred = self.results[name]['test_pred']
             
             # Classification report
-            report = classification_report(self.y_test, test_pred, 
-                                          target_names=self.label_encoder.classes_,
-                                          output_dict=True)
             report_str = classification_report(self.y_test, test_pred, 
                                                target_names=self.label_encoder.classes_)
             self.log(f"\nClassification Report:\n{report_str}")
@@ -650,19 +502,6 @@ class IADModelTrainer:
             # Confusion matrix
             cm = confusion_matrix(self.y_test, test_pred)
             self.log(f"\nConfusion Matrix:\n{cm}")
-            
-            # Visualize confusion matrix
-            fig, ax = plt.subplots(figsize=(10, 8))
-            sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', ax=ax,
-                       xticklabels=self.label_encoder.classes_,
-                       yticklabels=self.label_encoder.classes_)
-            ax.set_title(f'Confusion Matrix - {name}', fontsize=14, fontweight='bold')
-            ax.set_xlabel('Predicted')
-            ax.set_ylabel('Actual')
-            plt.tight_layout()
-            plt.savefig(os.path.join(self.output_dir, 'figures', f'08_cm_{name.replace(" ", "_")}.png'), 
-                       dpi=300, bbox_inches='tight')
-            plt.close()
             
             # Metrics
             accuracy = accuracy_score(self.y_test, test_pred)
@@ -690,10 +529,6 @@ class IADModelTrainer:
             else:
                 logloss = None
             
-            # ROC curves for multi-class (one-vs-rest)
-            if self.results[name]['test_proba'] is not None and roc_auc is not None:
-                self._plot_roc_curves(name, self.results[name]['test_proba'])
-            
             metrics = {
                 'accuracy': accuracy,
                 'macro_precision': macro_precision,
@@ -720,78 +555,119 @@ class IADModelTrainer:
             if logloss:
                 self.log(f"Log Loss: {logloss:.4f}")
         
-        # Comparison visualization
-        self._plot_model_comparison(all_metrics)
+        self._save_three_combined_training_figures(all_metrics)
         
         return all_metrics
     
-    def _plot_roc_curves(self, model_name, y_proba):
-        """Plot ROC curves for multi-class classification (one-vs-rest)"""
-        from sklearn.preprocessing import label_binarize
-        from sklearn.metrics import roc_curve, auc
+    def _short_class_labels(self, max_len=22):
+        """Abbreviate long risk-level names for plot axes."""
+        return [
+            (c if len(str(c)) <= max_len else str(c)[: max_len - 1] + '…')
+            for c in self.label_encoder.classes_
+        ]
+    
+    def _save_three_combined_training_figures(self, all_metrics):
+        """
+        Exactly three training figures:
+        1) Confusion matrices — all algorithms in one grid
+        2) Classification metrics — precision / recall / F1 per class for all models
+        3) ROC — micro-averaged multiclass ROC, all models on one axes
+        """
+        fig_dir = os.path.join(self.output_dir, 'figures')
+        os.makedirs(fig_dir, exist_ok=True)
+        for f in os.listdir(fig_dir):
+            if f.lower().endswith('.png'):
+                try:
+                    os.remove(os.path.join(fig_dir, f))
+                except OSError:
+                    pass
         
-        # Binarize the output
-        y_test_bin = label_binarize(self.y_test, classes=np.unique(self.y_test))
-        n_classes = y_test_bin.shape[1]
+        names = list(self.models.keys())
+        n = len(names)
+        ncols = 3
+        nrows = int(np.ceil(n / ncols))
+        class_labels = self._short_class_labels()
         
-        # Compute ROC curve and ROC area for each class
-        fpr = dict()
-        tpr = dict()
-        roc_auc = dict()
+        # --- 1) Combined confusion matrices ---
+        fig, axes = plt.subplots(nrows, ncols, figsize=(5.2 * ncols, 4.4 * nrows))
+        axes_flat = np.atleast_1d(axes).ravel()
+        for idx, name in enumerate(names):
+            cm = confusion_matrix(self.y_test, self.results[name]['test_pred'])
+            ax = axes_flat[idx]
+            sns.heatmap(
+                cm, annot=True, fmt='d', cmap='Blues', ax=ax,
+                xticklabels=class_labels, yticklabels=class_labels,
+                cbar_kws={'shrink': 0.82},
+            )
+            ax.set_title(name, fontsize=11, fontweight='bold')
+            ax.set_xlabel('Predicted')
+            ax.set_ylabel('Actual')
+            plt.setp(ax.get_xticklabels(), rotation=35, ha='right', fontsize=7)
+            plt.setp(ax.get_yticklabels(), rotation=0, fontsize=7)
+        for j in range(n, len(axes_flat)):
+            axes_flat[j].axis('off')
+        fig.suptitle('Confusion matrices — test set (all models)', fontsize=14, fontweight='bold', y=1.02)
+        plt.tight_layout()
+        plt.savefig(os.path.join(fig_dir, '01_combined_confusion_matrices.png'), dpi=300, bbox_inches='tight')
+        plt.close()
         
-        for i in range(n_classes):
-            fpr[i], tpr[i], _ = roc_curve(y_test_bin[:, i], y_proba[:, i])
-            roc_auc[i] = auc(fpr[i], tpr[i])
+        # --- 2) Classification metrics (precision, recall, F1) for all models ---
+        n_classes = len(self.label_encoder.classes_)
+        prec = np.zeros((n, n_classes))
+        rec = np.zeros((n, n_classes))
+        f1m = np.zeros((n, n_classes))
+        for i, name in enumerate(names):
+            pred = self.results[name]['test_pred']
+            p, r, f, _ = precision_recall_fscore_support(
+                self.y_test, pred, average=None, zero_division=0,
+            )
+            prec[i, : len(p)] = p
+            rec[i, : len(r)] = r
+            f1m[i, : len(f)] = f
         
-        # Plot all ROC curves
+        fig, axes = plt.subplots(1, 3, figsize=(16, max(4.0, 0.45 * n + 1.5)))
+        titles_data = [('Precision (per class)', prec), ('Recall (per class)', rec), ('F1-score (per class)', f1m)]
+        for ax, (title, data) in zip(axes, titles_data):
+            sns.heatmap(
+                data, annot=True, fmt='.2f', cmap='YlOrRd', vmin=0, vmax=1, ax=ax,
+                xticklabels=class_labels, yticklabels=names,
+                cbar_kws={'shrink': 0.75, 'label': 'Score'},
+            )
+            ax.set_title(title, fontsize=12, fontweight='bold')
+            plt.setp(ax.get_xticklabels(), rotation=35, ha='right', fontsize=8)
+            ax.set_ylabel('Model')
+        fig.suptitle('Classification metrics by model and class (test set)', fontsize=14, fontweight='bold', y=1.03)
+        plt.tight_layout()
+        plt.savefig(os.path.join(fig_dir, '02_classification_metrics_all_models.png'), dpi=300, bbox_inches='tight')
+        plt.close()
+        
+        # --- 3) Micro-averaged multiclass ROC — all models ---
+        classes = np.arange(len(self.label_encoder.classes_))
+        y_bin = label_binarize(self.y_test, classes=classes)
         fig, ax = plt.subplots(figsize=(10, 8))
-        colors = ['blue', 'red', 'green', 'orange', 'purple', 'brown']
-        
-        for i in range(n_classes):
-            ax.plot(fpr[i], tpr[i], color=colors[i % len(colors)], lw=2,
-                   label=f'{self.label_encoder.classes_[i]} (AUC = {roc_auc[i]:.2f})')
-        
-        ax.plot([0, 1], [0, 1], 'k--', lw=2, label='Random')
+        palette = sns.color_palette('husl', max(n, 6))
+        for idx, name in enumerate(names):
+            proba = self.results[name]['test_proba']
+            if proba is None:
+                continue
+            fpr, tpr, _ = roc_curve(y_bin.ravel(), proba.ravel())
+            micro_auc = auc(fpr, tpr)
+            ax.plot(fpr, tpr, lw=2, color=palette[idx % len(palette)],
+                    label=f'{name} (micro-AUC = {micro_auc:.3f})')
+        ax.plot([0, 1], [0, 1], 'k--', lw=1.5, alpha=0.6, label='Chance')
         ax.set_xlim([0.0, 1.0])
         ax.set_ylim([0.0, 1.05])
-        ax.set_xlabel('False Positive Rate', fontsize=12)
-        ax.set_ylabel('True Positive Rate', fontsize=12)
-        ax.set_title(f'ROC Curves - {model_name} (One-vs-Rest)', fontsize=14, fontweight='bold')
-        ax.legend(loc="lower right", fontsize=10)
+        ax.set_xlabel('False positive rate', fontsize=12)
+        ax.set_ylabel('True positive rate', fontsize=12)
+        ax.set_title('ROC curves — all models (micro-averaged, multiclass)', fontsize=13, fontweight='bold')
+        ax.legend(loc='lower right', fontsize=9)
         ax.grid(alpha=0.3)
         plt.tight_layout()
-        plt.savefig(os.path.join(self.output_dir, 'figures', f'13_roc_curves_{model_name.replace(" ", "_")}.png'), 
-                   dpi=300, bbox_inches='tight')
+        plt.savefig(os.path.join(fig_dir, '03_combined_roc_curves.png'), dpi=300, bbox_inches='tight')
         plt.close()
-    
-    def _plot_model_comparison(self, all_metrics):
-        """Plot model comparison"""
-        models = list(all_metrics.keys())
-        metrics_to_plot = ['accuracy', 'macro_precision', 'macro_recall', 'macro_f1', 'kappa']
         
-        fig, axes = plt.subplots(2, 3, figsize=(18, 12))
-        axes = axes.flatten()
-        
-        for i, metric in enumerate(metrics_to_plot):
-            values = [all_metrics[m].get(metric, 0) for m in models]
-            axes[i].barh(models, values, color=sns.color_palette("husl", len(models)))
-            axes[i].set_xlabel(metric.replace('_', ' ').title())
-            axes[i].set_title(f'{metric.replace("_", " ").title()} Comparison', fontweight='bold')
-            axes[i].grid(axis='x', alpha=0.3)
-        
-        # ROC AUC if available
-        roc_values = [all_metrics[m].get('roc_auc', 0) if all_metrics[m].get('roc_auc') else 0 for m in models]
-        if any(roc_values):
-            axes[5].barh(models, roc_values, color=sns.color_palette("husl", len(models)))
-            axes[5].set_xlabel('ROC AUC')
-            axes[5].set_title('ROC AUC Comparison', fontweight='bold')
-            axes[5].grid(axis='x', alpha=0.3)
-        else:
-            axes[5].axis('off')
-        
-        plt.tight_layout()
-        plt.savefig(os.path.join(self.output_dir, 'figures', '09_model_comparison.png'), dpi=300, bbox_inches='tight')
-        plt.close()
+        self.log("\nSaved 3 training figures: 01_combined_confusion_matrices.png, "
+                 "02_classification_metrics_all_models.png, 03_combined_roc_curves.png")
     
     def cross_validation(self):
         """Perform cross-validation"""
@@ -831,27 +707,6 @@ class IADModelTrainer:
             mean_score = np.mean(cv_scores[name])
             std_score = np.std(cv_scores[name])
             self.log(f"{name}: {mean_score:.4f} (+/- {std_score:.4f})")
-        
-        # Visualize CV results
-        fig, ax = plt.subplots(figsize=(12, 6))
-        models = list(cv_scores.keys())
-        positions = np.arange(len(models))
-        
-        data_to_plot = [cv_scores[m] for m in models]
-        bp = ax.boxplot(data_to_plot, labels=models, patch_artist=True)
-        
-        colors = sns.color_palette("husl", len(models))
-        for patch, color in zip(bp['boxes'], colors):
-            patch.set_facecolor(color)
-            patch.set_alpha(0.7)
-        
-        ax.set_ylabel('Accuracy')
-        ax.set_title('5-Fold Cross-Validation Results', fontsize=14, fontweight='bold')
-        ax.grid(axis='y', alpha=0.3)
-        plt.xticks(rotation=45)
-        plt.tight_layout()
-        plt.savefig(os.path.join(self.output_dir, 'figures', '10_cross_validation.png'), dpi=300, bbox_inches='tight')
-        plt.close()
         
         return cv_scores
     
@@ -913,7 +768,7 @@ class IADModelTrainer:
                     self.log(f"\nANN vs {name}:")
                     self.log(f"  b (ANN correct, {name} wrong): {b}")
                     self.log(f"  c (ANN wrong, {name} correct): {c}")
-                    self.log(f"  χ²: {chi2_mcnemar:.4f}")
+                    self.log(f"  chi2: {chi2_mcnemar:.4f}")
                     self.log(f"  p-value: {p_mcnemar:.4f}")
                 else:
                     self.log(f"\nANN vs {name}: Cannot compute (b+c=0)")
@@ -941,21 +796,6 @@ class IADModelTrainer:
                     for i in range(min(10, len(indices))):
                         idx = indices[i]
                         self.log(f"  {feature_names[idx]}: {importances[idx]:.4f}")
-                    
-                    # Visualize
-                    fig, ax = plt.subplots(figsize=(12, 8))
-                    top_n = min(15, len(indices))
-                    top_indices = indices[:top_n]
-                    ax.barh(range(top_n), importances[top_indices], color='steelblue')
-                    ax.set_yticks(range(top_n))
-                    ax.set_yticklabels([feature_names[i] for i in top_indices])
-                    ax.set_xlabel('Importance')
-                    ax.set_title(f'{name} - Feature Importance (Top {top_n})', fontsize=14, fontweight='bold')
-                    ax.invert_yaxis()
-                    plt.tight_layout()
-                    plt.savefig(os.path.join(self.output_dir, 'figures', f'11_feature_importance_{name.replace(" ", "_")}.png'), 
-                               dpi=300, bbox_inches='tight')
-                    plt.close()
         
         # Permutation importance for all models
         self.log("\nPermutation Importance (on test set):")
@@ -980,25 +820,7 @@ class IADModelTrainer:
             for i in range(min(10, len(indices))):
                 idx = indices[i]
                 self.log(f"  {feature_names[idx]}: {perm_importance.importances_mean[idx]:.4f} "
-                        f"(±{perm_importance.importances_std[idx]:.4f})")
-            
-            # Visualize
-            fig, ax = plt.subplots(figsize=(12, 8))
-            top_n = min(15, len(indices))
-            top_indices = indices[:top_n]
-            y_pos = np.arange(top_n)
-            ax.barh(y_pos, perm_importance.importances_mean[top_indices], 
-                   xerr=perm_importance.importances_std[top_indices], 
-                   color='coral', capsize=5)
-            ax.set_yticks(y_pos)
-            ax.set_yticklabels([feature_names[i] for i in top_indices])
-            ax.set_xlabel('Importance (Decrease in Accuracy)')
-            ax.set_title(f'{name} - Permutation Importance (Top {top_n})', fontsize=14, fontweight='bold')
-            ax.invert_yaxis()
-            plt.tight_layout()
-            plt.savefig(os.path.join(self.output_dir, 'figures', f'12_permutation_importance_{name.replace(" ", "_")}.png'), 
-                       dpi=300, bbox_inches='tight')
-            plt.close()
+                        f"(+/-{perm_importance.importances_std[idx]:.4f})")
         
         return permutation_results
     
@@ -1089,7 +911,8 @@ class IADModelTrainer:
         self.log("="*80)
         self.log(f"End Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
         self.log(f"\nAll outputs saved to: {self.output_dir}")
-        self.log(f"Figures saved to: {os.path.join(self.output_dir, 'figures')}")
+        self.log(f"Training figures (3): {os.path.join(self.output_dir, 'figures', '01_combined_confusion_matrices.png')}, "
+                 f"02_classification_metrics_all_models.png, 03_combined_roc_curves.png")
         
         return metrics, cv_scores
 
@@ -1103,8 +926,9 @@ if __name__ == "__main__":
     trainer = IADModelTrainer(data_path, output_dir)
     metrics, cv_scores = trainer.run_full_pipeline()
     
-    print("\n✅ Training completed successfully!")
-    print(f"📊 Check {output_dir}/training_report.txt for detailed statistics")
-    print(f"📈 Check {output_dir}/figures/ for all visualizations")
-    print(f"🤖 Best model saved as {output_dir}/best_model_ann.pkl")
+    print("\nTraining completed successfully.")
+    print(f"Check {output_dir}/training_report.txt for detailed statistics.")
+    print(f"Training figures (3): {output_dir}/figures/01_combined_confusion_matrices.png, "
+          f"02_classification_metrics_all_models.png, 03_combined_roc_curves.png")
+    print(f"Best model saved as {output_dir}/best_model_ann.pkl")
 

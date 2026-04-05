@@ -6,7 +6,8 @@
     <title>Doctor Dashboard - Digital Media & Mental Health Assessment</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/animations.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -488,6 +489,17 @@
             color: #088395;
         }
         
+        .chart-caption {
+            text-align: center;
+            color: #64748b;
+            font-size: 0.88em;
+            margin: -8px 0 16px 0;
+            line-height: 1.45;
+            max-width: 420px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
         .no-patients {
             text-align: center;
             padding: 60px 20px;
@@ -574,27 +586,33 @@
                     <div class="charts-grid">
                         <div class="chart-box">
                             <h3><i class="fas fa-exclamation-triangle"></i> Risk Category Distribution</h3>
+                            <p class="chart-caption">Count of assessments by AI-assigned risk level. Slices show number and share of total.</p>
                             <canvas id="riskChart"></canvas>
                         </div>
                         <div class="chart-box">
-                            <h3><i class="fas fa-clock"></i> Assessments Over Time</h3>
-                            <canvas id="timeChart"></canvas>
+                            <h3><i class="fas fa-layer-group"></i> Risk by Patient Gender</h3>
+                            <p class="chart-caption">Assessments stacked by risk level for each patient gender (X: gender, Y: count; colors = risk category).</p>
+                            <canvas id="genderRiskChart"></canvas>
                         </div>
                         <div class="chart-box">
                             <h3><i class="fas fa-venus-mars"></i> Gender Distribution</h3>
+                            <p class="chart-caption">Number of registered patients by gender (X: category, Y: patient count).</p>
                             <canvas id="genderChart"></canvas>
                         </div>
                         <div class="chart-box">
                             <h3><i class="fas fa-user-check"></i> Assessments per Patient</h3>
+                            <p class="chart-caption">How many patients have 1, 2, 3, or 4+ completed assessments (X: bucket, Y: patients).</p>
                             <canvas id="apChart"></canvas>
                         </div>
                         <div class="chart-box">
                             <h3><i class="fas fa-tachometer-alt"></i> Score Distribution</h3>
+                            <p class="chart-caption">Assessments grouped by total questionnaire score bands (max 92). Values shown on each slice.</p>
                             <canvas id="scoreChart"></canvas>
                         </div>
                         <div class="chart-box">
-                            <h3><i class="fas fa-chart-area"></i> Risk Trend by Week</h3>
-                            <canvas id="weekChart"></canvas>
+                            <h3><i class="fas fa-balance-scale"></i> Average Score by Risk Category</h3>
+                            <p class="chart-caption">Mean questionnaire total score (0–92) for assessments in each AI risk category (X: category, Y: average score).</p>
+                            <canvas id="avgScoreChart"></canvas>
                         </div>
                     </div>
                 </div>
@@ -603,6 +621,47 @@
     </div>
     
     <script>
+        Chart.register(ChartDataLabels);
+
+        const axisTitleX = (text) => ({
+            display: true,
+            text: text,
+            font: { size: 12, weight: '600', family: "'Segoe UI', sans-serif" },
+            color: '#0a4d68',
+            padding: { top: 10 }
+        });
+        const axisTitleY = (text) => ({
+            display: true,
+            text: text,
+            font: { size: 12, weight: '600', family: "'Segoe UI', sans-serif" },
+            color: '#0a4d68',
+            padding: { bottom: 8, top: 0 }
+        });
+
+        const barValueLabels = {
+            anchor: 'end',
+            align: 'top',
+            offset: 2,
+            formatter: (v) => (v > 0 ? String(v) : ''),
+            color: '#0a4d68',
+            font: { weight: '700', size: 11 }
+        };
+
+        const doughnutLabels = {
+            formatter: (value, ctx) => {
+                if (!value) return '';
+                const arr = ctx.dataset.data;
+                const sum = arr.reduce((a, b) => a + b, 0);
+                const pct = sum ? Math.round((value / sum) * 100) : 0;
+                return value + '\n(' + pct + '%)';
+            },
+            color: '#1e293b',
+            font: { weight: '700', size: 10 },
+            textStrokeColor: '#fff',
+            textStrokeWidth: 3,
+            clamp: true
+        };
+
         // Risk Category Distribution
         const riskCtx = document.getElementById('riskChart');
         if (riskCtx) {
@@ -619,43 +678,83 @@
                 },
                 options: {
                     responsive: true,
+                    maintainAspectRatio: true,
                     plugins: {
-                        legend: {
-                            position: 'bottom'
-                        }
+                        legend: { position: 'bottom', labels: { padding: 14, font: { size: 11 } } },
+                        tooltip: {
+                            callbacks: {
+                                label: (ctx) => {
+                                    const v = ctx.raw;
+                                    const sum = ctx.dataset.data.reduce((a, b) => a + b, 0);
+                                    const pct = sum ? ((v / sum) * 100).toFixed(1) : 0;
+                                    return ' ' + ctx.label + ': ' + v + ' assessments (' + pct + '%)';
+                                }
+                            }
+                        },
+                        datalabels: doughnutLabels
                     }
                 }
             });
         }
-        
-        // Assessments Over Time
-        const timeCtx = document.getElementById('timeChart');
-        if (timeCtx) {
-            new Chart(timeCtx.getContext('2d'), {
-                type: 'line',
+
+        // Risk by patient gender (stacked)
+        const genderRiskCtx = document.getElementById('genderRiskChart');
+        if (genderRiskCtx) {
+            const riskCatsStack = {{ risk_cats_stack|safe }};
+            const genderRiskData = {{ gender_risk_stack_data|safe }};
+            const stackColors = ['#28a745', '#ffc107', '#fd7e14', '#dc3545', '#6f42c1', '#20c997'];
+            const grDatasets = (riskCatsStack && riskCatsStack.length)
+                ? riskCatsStack.map((cat, i) => ({
+                    label: cat,
+                    data: genderRiskData[cat] || [],
+                    backgroundColor: stackColors[i % stackColors.length],
+                    borderWidth: 2
+                }))
+                : [{ label: 'No data', data: [0], backgroundColor: '#e9ecef', borderWidth: 0 }];
+            new Chart(genderRiskCtx.getContext('2d'), {
+                type: 'bar',
                 data: {
-                    labels: {{ time_labels|safe }},
-                    datasets: [{
-                        label: 'Assessments',
-                        data: {{ time_data|safe }},
-                        borderColor: '#088395',
-                        backgroundColor: 'rgba(8, 131, 149, 0.1)',
-                        borderWidth: 3,
-                        fill: true,
-                        tension: 0.4
-                    }]
+                    labels: {{ gender_axis_labels|safe }},
+                    datasets: grDatasets
                 },
                 options: {
                     responsive: true,
                     scales: {
+                        x: {
+                            stacked: true,
+                            title: axisTitleX('Patient gender')
+                        },
                         y: {
-                            beginAtZero: true
+                            stacked: true,
+                            beginAtZero: true,
+                            title: axisTitleY('Number of assessments'),
+                            ticks: { stepSize: 1 }
+                        }
+                    },
+                    plugins: {
+                        legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 9 }, padding: 8 } },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                            callbacks: {
+                                footer: (items) => {
+                                    const total = items.reduce((s, it) => s + (Number(it.raw) || 0), 0);
+                                    return 'Total for gender: ' + total;
+                                }
+                            }
+                        },
+                        datalabels: {
+                            color: '#1e293b',
+                            font: { weight: '700', size: 9 },
+                            formatter: (v) => (v > 0 ? String(v) : ''),
+                            anchor: 'center',
+                            align: 'center'
                         }
                     }
                 }
             });
         }
-        
+
         // Gender Distribution
         const genderCtx = document.getElementById('genderChart');
         if (genderCtx) {
@@ -664,7 +763,7 @@
                 data: {
                     labels: {{ gender_labels|safe }},
                     datasets: [{
-                        label: 'Patients',
+                        label: 'Patient count',
                         data: {{ gender_data|safe }},
                         backgroundColor: ['#088395', '#05bfdb', '#0a4d68'],
                         borderWidth: 2
@@ -673,14 +772,26 @@
                 options: {
                     responsive: true,
                     scales: {
+                        x: { title: axisTitleX('Gender') },
                         y: {
-                            beginAtZero: true
+                            beginAtZero: true,
+                            title: axisTitleY('Number of patients'),
+                            ticks: { stepSize: 1 }
                         }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: (ctx) => ' Patients: ' + ctx.raw
+                            }
+                        },
+                        datalabels: barValueLabels
                     }
                 }
             });
         }
-        
+
         // Assessments per Patient
         const apCtx = document.getElementById('apChart');
         if (apCtx) {
@@ -698,13 +809,31 @@
                 options: {
                     responsive: true,
                     scales: {
+                        x: { title: axisTitleX('Number of assessments per patient') },
                         y: {
-                            beginAtZero: true
+                            beginAtZero: true,
+                            title: axisTitleY('Number of patients'),
+                            ticks: { stepSize: 1 }
                         }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                title: (items) => {
+                                    const i = items[0].dataIndex;
+                                    const lbl = ['1 assessment', '2 assessments', '3 assessments', '4 or more'][i] || items[0].label;
+                                    return lbl;
+                                },
+                                label: (ctx) => ' Patients: ' + ctx.raw
+                            }
+                        },
+                        datalabels: barValueLabels
                     }
                 }
             });
         }
+
         // Score Distribution
         const scoreCtx = document.getElementById('scoreChart');
         if (scoreCtx) {
@@ -722,33 +851,64 @@
                 options: {
                     responsive: true,
                     plugins: {
-                        legend: { position: 'bottom' }
+                        legend: { position: 'bottom', labels: { padding: 12, font: { size: 11 } } },
+                        tooltip: {
+                            callbacks: {
+                                label: (ctx) => {
+                                    const v = ctx.raw;
+                                    const sum = ctx.dataset.data.reduce((a, b) => a + b, 0);
+                                    const pct = sum ? ((v / sum) * 100).toFixed(1) : 0;
+                                    return ' Score band ' + ctx.label + ': ' + v + ' (' + pct + '% of assessments)';
+                                }
+                            }
+                        },
+                        datalabels: doughnutLabels
                     }
                 }
             });
         }
-        // Risk Trend by Week
-        const weekCtx = document.getElementById('weekChart');
-        if (weekCtx) {
-            const weekData = {{ week_data|safe }};
-            const riskCats = {{ risk_categories|safe }};
-            const colors = ['#28a745', '#ffc107', '#fd7e14', '#dc3545'];
-            new Chart(weekCtx.getContext('2d'), {
+
+        // Average score by risk category
+        const avgScoreCtx = document.getElementById('avgScoreChart');
+        if (avgScoreCtx) {
+            const avgLabels = {{ avg_risk_labels|safe }};
+            const avgVals = {{ avg_risk_values|safe }};
+            new Chart(avgScoreCtx.getContext('2d'), {
                 type: 'bar',
                 data: {
-                    labels: {{ week_labels|safe }},
-                    datasets: riskCats.map((cat, i) => ({
-                        label: cat,
-                        data: weekData[cat] || [],
-                        backgroundColor: colors[i % colors.length],
+                    labels: avgLabels.length ? avgLabels : ['No data'],
+                    datasets: [{
+                        label: 'Average total score',
+                        data: avgLabels.length ? avgVals : [0],
+                        backgroundColor: avgLabels.length ? '#088395' : '#dee2e6',
                         borderWidth: 2
-                    }))
+                    }]
                 },
                 options: {
                     responsive: true,
                     scales: {
-                        x: { stacked: true },
-                        y: { stacked: true, beginAtZero: true }
+                        x: {
+                            title: axisTitleX('Risk category'),
+                            ticks: { maxRotation: 40, minRotation: 25, font: { size: 10 } }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            suggestedMax: 92,
+                            title: axisTitleY('Average score (max 92)'),
+                            ticks: { stepSize: 5 }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: (ctx) => ' Average score: ' + ctx.raw + ' / 92'
+                            }
+                        },
+                        datalabels: {
+                            ...barValueLabels,
+                            formatter: (v) => (avgLabels.length && v > 0 ? String(v) : '')
+                        }
                     }
                 }
             });
